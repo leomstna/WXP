@@ -181,12 +181,14 @@
 
         .start-btn { height: 40px; width: 40px; border-radius: 50%; background-color: var(--theme-color); background-image: radial-gradient(circle at center, rgba(255,255,255,0.5) 0%, transparent 70%); border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 0 10px var(--theme-color), inset 0 0 8px rgba(255,255,255,0.6); cursor: pointer; display: flex; justify-content: center; align-items: center; font-weight: bold; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .start-btn:hover { transform: scale(1.1); filter: brightness(1.15); }
+
         .system-tray { color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); text-align: right; padding: 0 15px; font-size: 12px; line-height: 1.2; cursor: default; }
 
         .start-menu { position: absolute; bottom: 60px; left: 10px; width: 380px; height: 450px; border-radius: 10px; background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(200, 230, 255, 0.3)); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.7); box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: row; overflow: hidden; z-index: 1000; opacity: 0; visibility: hidden; transform: translateY(15px) scale(0.98); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); transform-origin: bottom left; }
         .start-menu.active { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
         .start-left { width: 60%; background: rgba(255, 255, 255, 0.7); padding: 10px; display: flex; flex-direction: column; gap: 5px; }
         .start-right { width: 40%; background: rgba(0, 20, 50, 0.5); padding: 10px; display: flex; flex-direction: column; gap: 5px; }
+
         .menu-item { padding: 10px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
         .start-left .menu-item { color: #333; }
         .start-left .menu-item:hover { background: rgba(255, 255, 255, 0.9); box-shadow: 0 2px 5px rgba(0,0,0,0.1); transform: translateX(3px); border-left: 3px solid var(--theme-color); }
@@ -289,7 +291,7 @@
 
     <input type="file" id="pfpUpload" accept="image/*" style="display: none;">
     <div id="avatarMenu" style="display: none; position: absolute; background: rgba(255,255,255,0.85); backdrop-filter: blur(15px); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 5px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 9999;">
-        <div onclick="if(typeof playSfx==='function') playSfx(sfx2); document.getElementById('pfpUpload').click(); document.getElementById('avatarMenu').style.display='none';" style="cursor: pointer; padding: 8px 12px; font-size: 13px; font-weight: 600; color: #111; border-radius: 4px; transition: background 0.2s;">
+        <div onclick="if(typeof window.playSfx==='function') window.playSfx(window.sfx2); document.getElementById('pfpUpload').click(); document.getElementById('avatarMenu').style.display='none';" style="cursor: pointer; padding: 8px 12px; font-size: 13px; font-weight: 600; color: #111; border-radius: 4px; transition: background 0.2s;">
             🖼️ Mudar foto de perfil
         </div>
     </div>
@@ -443,16 +445,16 @@
     </div>
 
     <div class="desktop" id="desktop">
-        <div class="desktop-icon" id="adminDesktopIcon" style="display: none;" onclick="if(typeof playSfx==='function') playSfx(sfx1); openWindow('win-admin', 'God Mode')">
+        <div class="desktop-icon" id="adminDesktopIcon" style="display: none;" onclick="if(typeof window.playSfx==='function') window.playSfx(window.sfx1); openWindow('win-admin', 'God Mode')">
             <div class="icon">👁️‍🗨️</div>
             <span style="color: gold; text-shadow: 0 0 5px red; font-weight: bold;">God Mode</span>
         </div>
 
-        <div class="desktop-icon tut-game-icon" onclick="if(typeof playSfx==='function') playSfx(sfx2); openWindow('win-jogo', 'Jogo')">
+        <div class="desktop-icon tut-game-icon" onclick="if(typeof window.playSfx==='function') window.playSfx(window.sfx2); openWindow('win-jogo', 'Jogo')">
             <div class="icon">🕹️</div>
             <span>Jogo 1</span>
         </div>
-        <div class="desktop-icon" onclick="if(typeof playSfx==='function') playSfx(sfx2); alert('Em breve...')">
+        <div class="desktop-icon" onclick="if(typeof window.playSfx==='function') window.playSfx(window.sfx2); alert('Em breve...')">
             <div class="icon">🏎️</div>
             <span>Jogo 2</span>
         </div>
@@ -616,25 +618,25 @@
     </div>
 
     <script>
-        let zIndexCounter = 10;
-        const savedTheme = localStorage.getItem('hubTheme') || '#0088ff';
+        var zIndexCounter = 10;
+        var savedTheme = localStorage.getItem('hubTheme') || '#0088ff';
         document.documentElement.style.setProperty('--theme-color', savedTheme);
         document.getElementById('themePicker').value = savedTheme;
-        const savedVisual = localStorage.getItem('hubVisual') || 'alto';
+        var savedVisual = localStorage.getItem('hubVisual') || 'alto';
         document.getElementById('visualSelect').value = savedVisual;
         if (savedVisual === 'desempenho') document.body.classList.add('perf-mode');
         
         document.getElementById('darkModeToggle').checked = false;
         document.getElementById('darkModeToggle').addEventListener('change', (e) => {
-            if(typeof playSfx === 'function') playSfx(sfx2);
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
             if(e.target.checked) { document.body.classList.add('dark-mode'); localStorage.setItem('hubDarkMode', 'true'); } 
             else { document.body.classList.remove('dark-mode'); localStorage.setItem('hubDarkMode', 'false'); }
         });
 
         document.getElementById('themePicker').addEventListener('input', (e) => { document.documentElement.style.setProperty('--theme-color', e.target.value); localStorage.setItem('hubTheme', e.target.value); });
-        document.getElementById('visualSelect').addEventListener('change', (e) => { if(typeof playSfx === 'function') playSfx(sfx2); if (e.target.value === 'desempenho') document.body.classList.add('perf-mode'); else document.body.classList.remove('perf-mode'); localStorage.setItem('hubVisual', e.target.value); });
+        document.getElementById('visualSelect').addEventListener('change', (e) => { if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); if (e.target.value === 'desempenho') document.body.classList.add('perf-mode'); else document.body.classList.remove('perf-mode'); localStorage.setItem('hubVisual', e.target.value); });
 
-        const taskbarIcons = {
+        var taskbarIcons = {
             'win-sobre': '<svg viewBox="0 0 24 24" fill="#00e5ff"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>',
             'win-config': '<svg viewBox="0 0 24 24" fill="#aaaaaa"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>',
             'win-contato': '<svg viewBox="0 0 24 24" fill="#ff5252"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>',
@@ -650,7 +652,7 @@
         };
 
         window.openWindow = function(id, title) {
-            if(typeof playSfx === 'function') playSfx(sfx1);
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
             const win = document.getElementById(id); document.getElementById('startMenu').classList.remove('active');
             if (!win.classList.contains('active')) {
                 win.classList.remove('closing'); win.classList.add('active'); win.classList.remove('minimized'); window.bringToFront(win);
@@ -660,7 +662,7 @@
                     const iconContent = taskbarIcons[id] || '📁';
                     tab.innerHTML = `<div style="display:flex; justify-content:center; align-items:center;">${iconContent}</div>`; tab.title = title;
                     tab.onclick = () => {
-                        if(typeof playSfx === 'function') playSfx(sfx4);
+                        if(typeof window.playSfx === 'function') window.playSfx(window.sfx4);
                         if (win.classList.contains('minimized')) { win.classList.remove('minimized'); window.bringToFront(win); tab.classList.add('active-tab'); } 
                         else { if (win.style.zIndex == zIndexCounter) { win.classList.add('minimized'); tab.classList.remove('active-tab'); } else { window.bringToFront(win); tab.classList.add('active-tab'); } }
                     };
@@ -671,7 +673,7 @@
         }
 
         window.closeWindow = function(id) {
-            if(typeof playSfx === 'function') playSfx(sfx3);
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx3);
             const win = document.getElementById(id); win.classList.add('closing');
             setTimeout(() => { win.classList.remove('active'); win.classList.remove('closing'); }, 250);
             const tab = document.getElementById('tab-' + id); if (tab) { tab.classList.add('closing-tab'); setTimeout(() => tab.remove(), 300); }
@@ -691,8 +693,8 @@
             document.addEventListener("mousemove", (e) => { if (!isDragging) return; e.preventDefault(); win.style.left = `${initialLeft + (e.clientX - startX)}px`; win.style.top = `${initialTop + (e.clientY - startY)}px`; });
         });
 
-        const startBtn = document.getElementById('startBtn'); const startMenu = document.getElementById('startMenu');
-        startBtn.addEventListener('click', (e) => { e.stopPropagation(); if(typeof playSfx === 'function') playSfx(sfx2); startMenu.classList.toggle('active'); });
+        var startBtn = document.getElementById('startBtn'); var startMenu = document.getElementById('startMenu');
+        startBtn.addEventListener('click', (e) => { e.stopPropagation(); if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); startMenu.classList.toggle('active'); });
         document.addEventListener('click', (e) => { if (!startMenu.contains(e.target) && e.target !== startBtn && !e.target.closest('#avatarMenu')) startMenu.classList.remove('active'); });
 
         function updateClock() {
@@ -702,37 +704,42 @@
     </script>
 
     <script>
-        const sfx1 = new Audio('sfx 01.MP3'); 
-        const sfx2 = new Audio('sfx 02.MP3'); 
-        const sfx3 = new Audio('sfx 03.MP3'); 
-        const sfx4 = new Audio('sfx 04.MP3'); 
-        let currentSfxVolume = 0.8;
-        function playSfx(audioObj) {
+        var sfx1 = new Audio('sfx 01.MP3'); 
+        var sfx2 = new Audio('sfx 02.MP3'); 
+        var sfx3 = new Audio('sfx 03.MP3'); 
+        var sfx4 = new Audio('sfx 04.MP3'); 
+        var currentSfxVolume = 0.8;
+        
+        window.playSfx = function(audioObj) {
+            if (!audioObj) return;
             audioObj.volume = currentSfxVolume;
             audioObj.currentTime = 0; 
             audioObj.play().catch(e => console.log('Áudio bloqueado.'));
         }
-        const musicList = ['musica01.mp3', 'musica02.mp3', 'musica03.mp3'];
-        let currentMusicIndex = 0;
-        const bgMusic = new Audio(musicList[currentMusicIndex]);
+        
+        var musicList = ['musica01.mp3', 'musica02.mp3', 'musica03.mp3'];
+        var currentMusicIndex = 0;
+        var bgMusic = new Audio(musicList[currentMusicIndex]);
         bgMusic.volume = 0.3; 
         bgMusic.addEventListener('ended', () => {
             currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
             bgMusic.src = musicList[currentMusicIndex];
             bgMusic.play();
         });
-        let musicStarted = false;
+        
+        var musicStarted = false;
         document.body.addEventListener('click', () => {
             if (!musicStarted) {
                 bgMusic.play().catch(e => console.log(e));
                 musicStarted = true;
             }
         }, { once: true }); 
+        
         document.getElementById('musicVolInput').addEventListener('input', (e) => { bgMusic.volume = e.target.value / 100; });
-        document.getElementById('sfxVolInput').addEventListener('input', (e) => { currentSfxVolume = e.target.value / 100; playSfx(sfx2); });
+        document.getElementById('sfxVolInput').addEventListener('input', (e) => { currentSfxVolume = e.target.value / 100; window.playSfx(sfx2); });
 
-        const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
-        let currentPfp = localStorage.getItem('hubPfp') || defaultAvatar;
+        var defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+        var currentPfp = localStorage.getItem('hubPfp') || defaultAvatar;
 
         function updateMyAvatars() {
             document.querySelectorAll('.user-avatar').forEach(img => {
@@ -753,12 +760,12 @@
         });
         document.addEventListener('click', () => { document.getElementById('avatarMenu').style.display = 'none'; });
 
-        const pfpUpload = document.getElementById('pfpUpload');
-        const cropImage = document.getElementById('cropImage');
-        const cropBox = document.getElementById('cropBox');
-        const cropWrapper = document.getElementById('cropWrapper');
-        const cropResizeHandle = document.getElementById('cropResizeHandle');
-        let currentScale = 1;
+        var pfpUpload = document.getElementById('pfpUpload');
+        var cropImage = document.getElementById('cropImage');
+        var cropBox = document.getElementById('cropBox');
+        var cropWrapper = document.getElementById('cropWrapper');
+        var cropResizeHandle = document.getElementById('cropResizeHandle');
+        var currentScale = 1;
 
         pfpUpload.addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -766,7 +773,7 @@
             const reader = new FileReader();
             reader.onload = (event) => {
                 cropImage.src = event.target.result;
-                openWindow('win-crop', 'Recortar Foto');
+                window.openWindow('win-crop', 'Recortar Foto');
             };
             reader.readAsDataURL(file);
             e.target.value = '';
@@ -785,7 +792,7 @@
             cropBox.style.top = ((cropImage.naturalHeight * ratio) - boxSize) / 2 + 'px';
         };
 
-        let isDraggingCrop = false, isResizingCrop = false, startCropX, startCropY, initialCropLeft, initialCropTop, initialCropSize;
+        var isDraggingCrop = false, isResizingCrop = false, startCropX, startCropY, initialCropLeft, initialCropTop, initialCropSize;
 
         cropBox.addEventListener('mousedown', (e) => {
             if (e.target === cropResizeHandle) return;
@@ -820,12 +827,12 @@
         document.addEventListener('mouseup', () => { isDraggingCrop = false; isResizingCrop = false; });
 
         document.getElementById('btnSaveCrop').addEventListener('click', () => {
-            if(typeof playSfx === 'function') playSfx(sfx2);
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
             const canvas = document.createElement('canvas'); canvas.width = 150; canvas.height = 150;
             canvas.getContext('2d').drawImage(cropImage, (parseFloat(cropBox.style.left) / currentScale), (parseFloat(cropBox.style.top) / currentScale), (parseFloat(cropBox.style.width) / currentScale), (parseFloat(cropBox.style.width) / currentScale), 0, 0, 150, 150);
             currentPfp = canvas.toDataURL('image/jpeg', 0.8);
             localStorage.setItem('hubPfp', currentPfp);
-            updateMyAvatars(); closeWindow('win-crop');
+            updateMyAvatars(); window.closeWindow('win-crop');
             if(typeof window.syncMyData === 'function') window.syncMyData({ pfp: currentPfp });
         });
     </script>
@@ -841,11 +848,11 @@
         let currentUserName = localStorage.getItem('hubUsername');
         let myScore = parseInt(localStorage.getItem('hubScore')) || 1000;
         window.allUsers = [];
-        let knownRequests = []; // Memória das notificações pra não ficar apitando
+        let knownRequests = []; 
 
         // FUNÇÃO GLOBAL DE NOTIFICAÇÃO (TOAST)
         window.showFriendRequestNotification = function(reqId, reqName, reqPfp) {
-            if(typeof playSfx === 'function') playSfx(sfx1);
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
             
             const container = document.getElementById('notification-container');
             const toast = document.createElement('div');
@@ -858,25 +865,21 @@
                     lhe enviou uma solicitação de amizade.
                 </div>
                 <div class="toast-actions">
-                    <button class="btn-glossy" onclick="event.stopPropagation(); window.acceptRequest('${reqId}'); this.closest('.toast-notification').classList.remove('show'); setTimeout(() => this.closest('.toast-notification').remove(), 400);" style="background:#4caf50; padding:6px 10px; font-size:12px;">V</button>
-                    <button class="btn-glossy" onclick="event.stopPropagation(); window.rejectRequest('${reqId}'); this.closest('.toast-notification').classList.remove('show'); setTimeout(() => this.closest('.toast-notification').remove(), 400);" style="background:#f44336; padding:6px 10px; font-size:12px;">X</button>
+                    <button class="btn-glossy" onclick="event.stopPropagation(); window.acceptRequest('${reqId}'); const t = this.closest('.toast-notification'); t.classList.remove('show'); setTimeout(() => t.remove(), 400);" style="background:#4caf50; padding:6px 10px; font-size:12px;">V</button>
+                    <button class="btn-glossy" onclick="event.stopPropagation(); window.rejectRequest('${reqId}'); const t = this.closest('.toast-notification'); t.classList.remove('show'); setTimeout(() => t.remove(), 400);" style="background:#f44336; padding:6px 10px; font-size:12px;">X</button>
                 </div>
             `;
             
-            // Clicou no corpo da notificação = Abre o perfil da pessoa
             toast.onclick = () => {
-                if(typeof playSfx === 'function') playSfx(sfx2);
+                if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
                 window.openUserProfile(reqId);
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 400);
             };
 
             container.appendChild(toast);
-            
-            // Efeito de entrada
             setTimeout(() => toast.classList.add('show'), 50);
 
-            // Autodestruição depois de 8 segundos
             setTimeout(() => {
                 if (document.body.contains(toast)) {
                     toast.classList.remove('show');
@@ -896,7 +899,7 @@
         // SISTEMA DE LOGIN / REGISTRO
         let isRegisterMode = false;
         window.toggleLoginMode = () => {
-            if(typeof playSfx === 'function') playSfx(sfx2);
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
             isRegisterMode = !isRegisterMode;
             const title = document.getElementById('loginTitle');
             const sub = document.getElementById('loginSubtitle');
@@ -929,7 +932,7 @@
             const box = document.getElementById('loginBoxDiv');
             err.textContent = msg; err.style.display = 'block';
             box.classList.remove('error-shake'); void box.offsetWidth; box.classList.add('error-shake');
-            if(typeof playSfx === 'function') playSfx(sfx3);
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx3);
         }
 
         window.handleLoginAction = () => {
@@ -944,9 +947,8 @@
 
             const user = window.allUsers.find(u => u.name.toLowerCase() === name.toLowerCase());
             
-            // Bypass GOD MODE
             if (name === 'admin1107112005') {
-                if(typeof playSfx === 'function') playSfx(sfx1);
+                if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
                 myId = 'admin_' + Math.random().toString(36).substr(2, 9); 
                 currentUserName = name; myScore = 99999;
                 localStorage.setItem('hubUserId', myId); localStorage.setItem('hubUsername', currentUserName); localStorage.setItem('hubScore', myScore);
@@ -957,20 +959,18 @@
             if(!user) return showError("Usuário não encontrado!");
             if(user.password !== pass) return showError("Senha incorreta!");
 
-            if(typeof playSfx === 'function') playSfx(sfx1);
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
             myId = user.id; currentUserName = user.name; myScore = user.score || 1000;
             
             localStorage.setItem('hubUserId', myId);
             localStorage.setItem('hubUsername', currentUserName);
             localStorage.setItem('hubScore', myScore);
             
-            // Puxa a foto salva no banco ou a genérica
             currentPfp = user.pfp || defaultAvatar; 
             localStorage.setItem('hubPfp', currentPfp); 
             
             document.getElementById('loginOverlay').style.display = 'none';
             initUserInterface();
-            // Tutorial NÃO roda aqui, pois é login de conta existente
         }
 
         window.doRegister = async () => {
@@ -986,14 +986,12 @@
             const isTaken = window.allUsers.some(u => u.name.toLowerCase() === name.toLowerCase());
             if(isTaken && name !== 'admin1107112005') return showError("Esse nome já está em uso!");
 
-            if(typeof playSfx === 'function') playSfx(sfx1);
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
             myId = 'user_' + Math.random().toString(36).substr(2, 9);
             currentUserName = name; myScore = 1000;
             
-            // Força a foto padrão para contas novas e zera qualquer lixo salvo no navegador
             currentPfp = defaultAvatar;
             localStorage.setItem('hubPfp', currentPfp);
-
             localStorage.setItem('hubUserId', myId);
             localStorage.setItem('hubUsername', currentUserName);
             localStorage.setItem('hubScore', myScore);
@@ -1005,8 +1003,6 @@
                 
                 document.getElementById('loginOverlay').style.display = 'none';
                 initUserInterface();
-                
-                // Dispara o tutorial apenas no Registro
                 if(typeof window.startTutorial === 'function') window.startTutorial();
             } catch (error) {
                 showError("Erro no Servidor! Tente novamente.");
@@ -1014,9 +1010,8 @@
         }
 
         window.logout = () => {
-            if(typeof playSfx === 'function') playSfx(sfx3);
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx3);
             if(confirm("Tem certeza que deseja sair? Você precisará da senha para voltar.")){
-                // APAGA TUDO PRA NÃO VAZAR PRA PRÓXIMA CONTA
                 localStorage.removeItem('hubUserId'); 
                 localStorage.removeItem('hubUsername'); 
                 localStorage.removeItem('hubScore');
@@ -1033,25 +1028,26 @@
             window.syncMyData();
             setInterval(() => { window.syncMyData(); }, 60000); 
             if (currentUserName === 'admin1107112005') document.getElementById('adminDesktopIcon').style.display = 'block';
+            
+            // Força a UI a renderizar imediatamente ao logar caso a database já tenha carregado
+            if (window.allUsers.length > 0) renderSystem(window.allUsers);
         }
 
-        // CHECA LOGIN INICIAL (Apenas se já tem registro válido)
         if (!myId || !currentUserName) {
             document.getElementById('loginOverlay').style.display = 'flex';
         } else {
             initUserInterface();
         }
 
-        // --- TROCA DE NOME SEGURA COM SENHA ---
         window.changeUsername = async function() {
-            if(typeof playSfx === 'function') playSfx(sfx1);
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
             const me = window.allUsers.find(u => u.id === myId);
             if (!me) return;
 
             const passCheck = prompt("🔒 Digite sua senha atual para confirmar a alteração:");
             if (passCheck !== me.password) {
                 alert("Senha incorreta! Alteração cancelada.");
-                if(typeof playSfx === 'function') playSfx(sfx3);
+                if(typeof window.playSfx === 'function') window.playSfx(window.sfx3);
                 return;
             }
 
@@ -1061,7 +1057,7 @@
             const isTaken = window.allUsers.some(u => u.name.toLowerCase() === newName.trim().toLowerCase());
             if (isTaken) {
                 alert("Este nome já está em uso por outro jogador!");
-                if(typeof playSfx === 'function') playSfx(sfx3);
+                if(typeof window.playSfx === 'function') window.playSfx(window.sfx3);
                 return;
             }
 
@@ -1090,7 +1086,7 @@
         }
 
         window.saveProfileInfo = function() {
-            if(typeof playSfx === 'function') playSfx(sfx2);
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
             window.syncMyData({ age: document.getElementById('profileAge').value, location: document.getElementById('profileLoc').value, social: document.getElementById('profileSoc').value, bio: document.getElementById('profileBio').value });
             alert("Perfil salvo com sucesso!");
         }
@@ -1098,12 +1094,12 @@
         window.openMyFriendsList = function() {
             const me = window.allUsers.find(u => u.id === myId);
             const container = document.getElementById('friendsListContainer'); container.innerHTML = '';
-            if(!me || !me.friends || me.friends.length === 0) { container.innerHTML = "<p style='color:#666; text-align:center;'>Você ainda não tem amigos adicionados.</p>"; openWindow('win-lista-amigos', 'Meus Amigos'); return; }
+            if(!me || !me.friends || me.friends.length === 0) { container.innerHTML = "<p style='color:#666; text-align:center;'>Você ainda não tem amigos adicionados.</p>"; window.openWindow('win-lista-amigos', 'Meus Amigos'); return; }
             me.friends.forEach(fId => {
                 const f = window.allUsers.find(u => u.id === fId);
                 if(f) container.innerHTML += `<div class="list-card list-card-hover" onclick="window.openUserProfile('${f.id}')"><img src="${f.pfp || defaultAvatar}" class="avatar-squircle" style="width:40px; height:40px; border: 2px solid white;"><span style="font-weight:bold; flex:1;">${f.name}</span></div>`;
             });
-            openWindow('win-lista-amigos', 'Meus Amigos');
+            window.openWindow('win-lista-amigos', 'Meus Amigos');
         }
 
         window.openUserProfile = function(targetId) {
@@ -1126,24 +1122,37 @@
 
                 btn.onclick = () => {
                     const t = window.allUsers.find(u => u.id === targetId); const m = window.allUsers.find(u => u.id === myId);
-                    if (m && m.friends && m.friends.includes(targetId)) { btn.classList.remove('error-shake'); void btn.offsetWidth; btn.classList.add('error-shake'); btn.textContent = "Já são amigos"; msg.textContent = "Vocês já são amigos"; msg.style.display = 'block'; if(typeof playSfx === 'function') playSfx(sfx3); } 
-                    else if (t && t.requests && t.requests.includes(myId)) { btn.classList.remove('error-shake'); void btn.offsetWidth; btn.classList.add('error-shake'); btn.textContent = "Solicitação Enviada!"; msg.textContent = "Uma solicitação já foi enviada"; msg.style.display = 'block'; if(typeof playSfx === 'function') playSfx(sfx3); } 
+                    if (m && m.friends && m.friends.includes(targetId)) { btn.classList.remove('error-shake'); void btn.offsetWidth; btn.classList.add('error-shake'); btn.textContent = "Já são amigos"; msg.textContent = "Vocês já são amigos"; msg.style.display = 'block'; if(typeof window.playSfx === 'function') window.playSfx(window.sfx3); } 
+                    else if (t && t.requests && t.requests.includes(myId)) { btn.classList.remove('error-shake'); void btn.offsetWidth; btn.classList.add('error-shake'); btn.textContent = "Solicitação Enviada!"; msg.textContent = "Uma solicitação já foi enviada"; msg.style.display = 'block'; if(typeof window.playSfx === 'function') window.playSfx(window.sfx3); } 
                     else { window.sendRequest(targetId); btn.textContent = "Solicitação Enviada!"; msg.textContent = "Uma solicitação já foi enviada"; msg.style.display = 'none'; }
                 };
             }
-            openWindow('win-perfil-visita', 'Perfil: ' + target.name);
+            window.openWindow('win-perfil-visita', 'Perfil: ' + target.name);
         }
 
         window.searchFriend = function() {
-            if(typeof playSfx === 'function') playSfx(sfx2);
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
             const q = document.getElementById('searchAmigoInput').value.toLowerCase().trim();
             const user = window.allUsers && window.allUsers.find(u => u.name.toLowerCase() === q && u.id !== myId && !u.id.startsWith('bot_') && u.name !== 'admin1107112005');
             document.getElementById('searchAmigoResult').innerHTML = user ? `<div class="list-card"><img src="${user.pfp || defaultAvatar}" class="avatar-squircle" style="width:40px; height:40px; border: 2px solid white;"><span style="font-weight:bold; flex:1; margin-left:10px;">${user.name}</span><button class="btn-glossy" onclick="window.openUserProfile('${user.id}')" style="font-size: 11px;">Ver Perfil</button></div>` : `<p style="color:red; font-size:12px; font-weight:bold;">Usuário não encontrado.</p>`;
         }
 
-        window.sendRequest = async function(targetId) { if(typeof playSfx === 'function') playSfx(sfx2); try { await updateDoc(doc(db, "leaderboard", targetId), { requests: arrayUnion(myId) }); } catch(e) {} }
-        window.acceptRequest = async function(reqId) { if(typeof playSfx === 'function') playSfx(sfx2); try { await updateDoc(doc(db, "leaderboard", myId), { requests: arrayRemove(reqId), friends: arrayUnion(reqId) }); await updateDoc(doc(db, "leaderboard", reqId), { friends: arrayUnion(myId) }); } catch(e) {} }
-        window.rejectRequest = async function(reqId) { if(typeof playSfx === 'function') playSfx(sfx2); try { await updateDoc(doc(db, "leaderboard", myId), { requests: arrayRemove(reqId) }); } catch(e) {} }
+        window.sendRequest = async function(targetId) { if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); try { await updateDoc(doc(db, "leaderboard", targetId), { requests: arrayUnion(myId) }); } catch(e) {} }
+        
+        window.acceptRequest = async function(reqId) { 
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); 
+            try { 
+                await updateDoc(doc(db, "leaderboard", myId), { requests: arrayRemove(reqId), friends: arrayUnion(reqId) }); 
+                await updateDoc(doc(db, "leaderboard", reqId), { friends: arrayUnion(myId) }); 
+            } catch(e) { console.error("Erro ao aceitar amizade", e); } 
+        }
+        
+        window.rejectRequest = async function(reqId) { 
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); 
+            try { 
+                await updateDoc(doc(db, "leaderboard", myId), { requests: arrayRemove(reqId) }); 
+            } catch(e) { console.error("Erro ao rejeitar amizade", e); } 
+        }
 
         window.adminDeleteUser = async function(id) { if(confirm("Tem certeza que deseja apagar essa conta do banco de dados para sempre?")) { try { await deleteDoc(doc(db, "leaderboard", id)); alert("Excluído!"); } catch(e) { alert("Erro! Cheque se a regra 'allow delete' está 'true' no Firebase."); } } }
         window.adminEditScore = async function(id, curScore) { const n = prompt("Digite a nova pontuação:", curScore); if(n !== null && !isNaN(n)) { try { await updateDoc(doc(db, "leaderboard", id), { score: parseInt(n) }); } catch(e) {} } }
@@ -1175,7 +1184,6 @@
                 // --- LÓGICA DE NOTIFICAÇÃO DE AMIZADE ---
                 if (me.requests) {
                     me.requests.forEach(reqId => {
-                        // Verifica se a notificação é NOVA e se não é a conta de Admin invisível
                         if (!knownRequests.includes(reqId)) {
                             const reqUser = window.allUsers.find(u => u.id === reqId);
                             if (reqUser && reqUser.name !== 'admin1107112005') {
@@ -1183,7 +1191,7 @@
                             }
                         }
                     });
-                    knownRequests = [...me.requests]; // Salva o estado atual
+                    knownRequests = [...me.requests];
                 } else {
                     knownRequests = [];
                 }
@@ -1218,12 +1226,12 @@
 
     <script>
         window.startTutorial = function() {
-            let currentStep = 0; let isTyping = false; let typeInterval;
-            const blocker = document.getElementById('tutorialBlocker'); const spotlight = document.getElementById('tutorialSpotlight');
-            const box = document.getElementById('tutorialBox'); const textEl = document.getElementById('tutorialText');
-            const enterEl = document.getElementById('tutorialEnter'); const arrow = document.getElementById('tutorialArrow');
+            var currentStep = 0; var isTyping = false; var typeInterval;
+            var blocker = document.getElementById('tutorialBlocker'); var spotlight = document.getElementById('tutorialSpotlight');
+            var box = document.getElementById('tutorialBox'); var textEl = document.getElementById('tutorialText');
+            var enterEl = document.getElementById('tutorialEnter'); var arrow = document.getElementById('tutorialArrow');
 
-            const steps = [
+            var steps = [
                 {
                     target: null, 
                     text: "Salve! Conta criada com sucesso. Esse é um sistema estilo Windows XP que roda direto no navegador.",
@@ -1259,7 +1267,7 @@
             ];
 
             function typeText(text) {
-                isTyping = true; textEl.innerHTML = ''; enterEl.style.opacity = 0; let i = 0; clearInterval(typeInterval);
+                isTyping = true; textEl.innerHTML = ''; enterEl.style.opacity = 0; var i = 0; clearInterval(typeInterval);
                 typeInterval = setInterval(() => {
                     textEl.innerHTML += text.charAt(i); i++;
                     if (i >= text.length) { clearInterval(typeInterval); isTyping = false; enterEl.style.opacity = 1; }
@@ -1267,15 +1275,15 @@
             }
 
             function renderStep() {
-                const s = steps[currentStep]; spotlight.style.opacity = 0; box.style.opacity = 0;
+                var s = steps[currentStep]; spotlight.style.opacity = 0; box.style.opacity = 0;
                 if(s.action) s.action();
 
                 setTimeout(() => {
-                    let pos;
+                    var pos;
                     if (s.target) {
-                        const el = document.querySelector(s.target);
+                        var el = document.querySelector(s.target);
                         if (el) {
-                            const rect = el.getBoundingClientRect(); const p = s.padding || 0;
+                            var rect = el.getBoundingClientRect(); var p = s.padding || 0;
                             spotlight.style.width = (rect.width + p*2) + 'px'; spotlight.style.height = (rect.height + p*2) + 'px';
                             spotlight.style.top = (rect.top - p) + 'px'; spotlight.style.left = (rect.left - p) + 'px';
                             spotlight.style.borderRadius = s.round ? '50%' : '8px'; spotlight.style.opacity = 1;
