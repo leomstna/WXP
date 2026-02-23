@@ -5,34 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hub de Jogos - Hyo</title>
     <style>
-        :root {
-            --theme-color: #0088ff; 
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            background-color: #000; 
-        }
+        :root { --theme-color: #0088ff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { height: 100vh; overflow: hidden; display: flex; flex-direction: column; background-color: #000; }
 
         /* --- CROSSFADE DOS WALLPAPERS --- */
         .bg-layer {
-            position: fixed; 
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-size: cover;
-            background-position: center center;
-            z-index: -10;
-            transition: opacity 0.8s ease-in-out; 
-            pointer-events: none; 
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-size: cover; background-position: center center;
+            z-index: -10; transition: opacity 0.8s ease-in-out; pointer-events: none; 
         }
         #bg-day { background-image: url('wallpaper01.jpeg'); opacity: 1; }
         #bg-night { background-image: url('wallpaper02.jpg'); opacity: 0; }
@@ -41,18 +22,14 @@
 
         /* --- TELA DE LOGIN / REGISTRO --- */
         #loginOverlay {
-            position: fixed; inset: 0; 
-            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(25px);
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(25px);
             z-index: 20000; display: none; justify-content: center; align-items: center;
         }
         .login-box {
-            width: 360px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.75), rgba(200, 230, 255, 0.4));
-            backdrop-filter: blur(20px) saturate(150%);
-            border: 1px solid rgba(255,255,255,0.9); border-radius: 16px; padding: 30px;
+            width: 360px; background: linear-gradient(135deg, rgba(255, 255, 255, 0.75), rgba(200, 230, 255, 0.4));
+            backdrop-filter: blur(20px) saturate(150%); border: 1px solid rgba(255,255,255,0.9); border-radius: 16px; padding: 30px;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 2px 15px rgba(255,255,255,0.8);
-            text-align: center; color: #111;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center; color: #111; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .login-box h2 {
             margin-bottom: 5px; color: var(--theme-color); text-shadow: 0 1px 2px rgba(255,255,255,0.8);
@@ -63,7 +40,7 @@
         .login-input {
             width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.8);
             outline: none; margin-bottom: 12px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-            font-size: 15px; font-weight: bold; color: #333; text-align: center;
+            font-size: 14px; font-weight: bold; color: #333; text-align: center;
             background: rgba(255,255,255,0.9); transition: all 0.3s ease;
         }
         .login-input:focus { border-color: var(--theme-color); box-shadow: 0 0 8px var(--theme-color); }
@@ -102,7 +79,7 @@
         body.dark-mode #win-contato a { color: white !important; }
         body.dark-mode #win-perfil .list-card-hover { color: #eee !important; }
         body.dark-mode .window-content p, body.dark-mode label, body.dark-mode .start-left .menu-item, body.dark-mode .login-box p { color: #ccc !important; }
-        body.dark-mode input[type="text"], body.dark-mode input[type="number"], body.dark-mode select, body.dark-mode textarea, body.dark-mode input[type="password"] { background: rgba(60, 60, 60, 0.8) !important; border: 1px solid #555 !important; color: #fff !important; }
+        body.dark-mode input[type="text"], body.dark-mode input[type="number"], body.dark-mode input[type="email"], body.dark-mode select, body.dark-mode textarea, body.dark-mode input[type="password"] { background: rgba(60, 60, 60, 0.8) !important; border: 1px solid #555 !important; color: #fff !important; }
         body.dark-mode input[type="color"] { border: 1px solid #555 !important; background: transparent !important; }
         body.dark-mode .start-menu { background: linear-gradient(135deg, rgba(40, 40, 40, 0.9), rgba(20, 20, 30, 0.8)) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
         body.dark-mode .start-left { background: rgba(50, 50, 50, 0.6) !important; }
@@ -137,13 +114,6 @@
         body.perf-mode .window-content { background: #f5f5f5 !important; color: #111 !important; }
         body.perf-mode label, body.perf-mode p { color: #111 !important; }
 
-        /* MODO DESEMPENHO + ESCURO */
-        body.perf-mode.dark-mode .window, body.perf-mode.dark-mode .start-menu, body.perf-mode.dark-mode #avatarMenu, body.perf-mode.dark-mode .login-box { background: #222222 !important; backdrop-filter: none !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.8) !important; border: 1px solid #444 !important; }
-        body.perf-mode.dark-mode .taskbar { background: #1a1a1a !important; backdrop-filter: none !important; border-top: 1px solid #444 !important; }
-        body.perf-mode.dark-mode .window-content { background: #2a2a2a !important; color: #eee !important; }
-        body.perf-mode.dark-mode label, body.perf-mode.dark-mode p { color: #eee !important; }
-        body.perf-mode.dark-mode .list-card { background: #333 !important; border-color: #555 !important; }
-
         @keyframes popElastic { 0% { transform: scale(0.6); opacity: 0; } 50% { transform: scale(1.05); opacity: 1; } 75% { transform: scale(0.98); } 100% { transform: scale(1); opacity: 1; } }
         @keyframes zoomOut { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.5); opacity: 0; } }
         @keyframes shakeError { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
@@ -167,9 +137,9 @@
         .leaderboard-item { display: flex; align-items: center; padding: 10px 0 !important; }
         input[type="range"] { -webkit-appearance: none; width: 100%; height: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 4px; outline: none; margin: 10px 0; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--theme-color); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-        input[type="text"], input[type="color"], input[type="number"], select, textarea, input[type="password"] { width: 100%; padding: 8px; margin: 5px 0 15px 0; border-radius: 5px; border: 1px solid #ccc; outline: none; background: rgba(255,255,255,0.9); transition: all 0.2s; }
+        input[type="text"], input[type="email"], input[type="color"], input[type="number"], select, textarea, input[type="password"] { width: 100%; padding: 8px; margin: 5px 0 15px 0; border-radius: 5px; border: 1px solid #ccc; outline: none; background: rgba(255,255,255,0.9); transition: all 0.2s; }
         input[type="color"] { padding: 2px; cursor: pointer; }
-        input[type="text"]:focus, input[type="number"]:focus, input[type="password"]:focus, select:focus, textarea:focus { border-color: var(--theme-color); box-shadow: 0 0 5px var(--theme-color); }
+        input[type="text"]:focus, input[type="email"]:focus, input[type="number"]:focus, input[type="password"]:focus, select:focus, textarea:focus { border-color: var(--theme-color); box-shadow: 0 0 5px var(--theme-color); }
 
         .taskbar { height: 50px; width: 100%; background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, rgba(200, 220, 255, 0.3) 100%); backdrop-filter: blur(15px); border-top: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 -2px 10px rgba(0,0,0,0.2); display: flex; align-items: center; padding: 0 10px; position: relative; z-index: 100; }
         .taskbar-items { display: flex; gap: 8px; flex: 1; margin-left: 15px; overflow-x: auto; }
@@ -229,9 +199,7 @@
 
         /* --- SISTEMA DE NOTIFICAÇÕES (TOAST) --- */
         #notification-container {
-            position: absolute; bottom: 65px; right: 15px;
-            display: flex; flex-direction: column; gap: 10px;
-            z-index: 25000; pointer-events: none;
+            position: absolute; bottom: 65px; right: 15px; display: flex; flex-direction: column; gap: 10px; z-index: 25000; pointer-events: none;
         }
         .toast-notification {
             width: 320px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px);
@@ -246,10 +214,7 @@
         .toast-notification:hover { background: rgba(255, 255, 255, 0.95); transform: translateX(-5px) scale(1.02); }
         .toast-content { flex: 1; font-size: 12px; line-height: 1.3; }
         .toast-actions { display: flex; gap: 6px; }
-        
-        body.dark-mode .toast-notification {
-            background: rgba(40, 40, 40, 0.85) !important; border: 1px solid rgba(255,255,255,0.15) !important; color: #eee !important;
-        }
+        body.dark-mode .toast-notification { background: rgba(40, 40, 40, 0.85) !important; border: 1px solid rgba(255,255,255,0.15) !important; color: #eee !important; }
         body.perf-mode .toast-notification { background: #e0e0e0 !important; backdrop-filter: none !important; }
         body.perf-mode.dark-mode .toast-notification { background: #222 !important; }
 
@@ -270,7 +235,8 @@
             </h2>
             <p id="loginSubtitle">Faça login com seu perfil para continuar.</p>
             
-            <input type="text" id="loginName" class="login-input" maxlength="15" placeholder="Nome de Usuário">
+            <input type="text" id="loginName" class="login-input" maxlength="15" placeholder="Nome de Usuário" style="display: none;">
+            <input type="email" id="loginEmail" class="login-input" placeholder="Seu E-mail">
             <input type="password" id="loginPass" class="login-input" placeholder="Sua Senha">
             <input type="password" id="loginConfirmPass" class="login-input" placeholder="Confirmar Senha" style="display: none;">
             
@@ -483,14 +449,17 @@
             </div>
             <div class="window-content">
                 <h3>Opções do Sistema</h3>
+                
                 <label>👤 Perfil Atual:</label>
                 <div style="display: flex; align-items: center; gap: 10px; margin: 5px 0 15px 0;">
                     <img class="user-avatar" id="configAvatar" src="" style="width: 35px; height: 35px;">
                     <input type="text" id="usernameInput" maxlength="15" readonly style="margin: 0; flex: 1; background: rgba(0,0,0,0.05); color: #888; font-weight: bold;">
                     <button class="btn-glossy" onclick="window.changeUsername()" style="padding: 8px 12px; font-size: 12px;">✏️ Alterar</button>
                 </div>
+
                 <label style="display:block; margin-top:15px;">🎨 Cor Tema:</label>
                 <input type="color" id="themePicker" value="#0088ff" style="height: 35px; width: 100%;">
+
                 <div style="display: flex; align-items: center; justify-content: space-between; margin: 15px 0; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 8px;">
                     <label for="darkModeToggle" style="margin:0; cursor:pointer; font-weight:bold;">🌙 Modo Escuro</label>
                     <label class="switch">
@@ -498,10 +467,13 @@
                         <span class="slider"></span>
                     </label>
                 </div>
+
                 <label>🎵 Música:</label>
                 <input type="range" id="musicVolInput" min="0" max="100" value="30">
+                
                 <label>🔊 Efeitos Sonoros:</label>
                 <input type="range" id="sfxVolInput" min="0" max="100" value="80">
+                
                 <label>🖼️ Efeitos Visuais:</label>
                 <select id="visualSelect">
                     <option value="alto">Alto (Aero Glass Ativo)</option>
@@ -818,15 +790,18 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, doc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyAWgDNee5lz90sNRZnA5gh53WB8rLFRExA", authDomain: "hubwxp.firebaseapp.com", projectId: "hubwxp", storageBucket: "hubwxp.firebasestorage.app", messagingSenderId: "476695396272", appId: "1:476695396272:web:5cee35eb7d8817c632a075" };
-        const app = initializeApp(firebaseConfig); const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig); 
+        const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        let myId = localStorage.getItem('hubUserId');
-        let currentUserName = localStorage.getItem('hubUsername');
-        let myScore = parseInt(localStorage.getItem('hubScore')) || 1000;
+        window.myId = null;
+        window.currentUserName = null;
+        window.myScore = 1000;
         window.allUsers = [];
-        let knownRequests = []; 
+        window.knownRequests = []; 
 
         // ==========================================
         // 1. DECLARAÇÃO DAS FUNÇÕES GLOBAIS PRIMEIRO
@@ -886,12 +861,13 @@
             }, 8000);
         }
 
-        let isRegisterMode = false;
+        window.isRegisterMode = false;
         window.toggleLoginMode = () => {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
-            isRegisterMode = !isRegisterMode;
+            window.isRegisterMode = !window.isRegisterMode;
             const title = document.getElementById('loginTitle');
             const sub = document.getElementById('loginSubtitle');
+            const nameField = document.getElementById('loginName');
             const confirmPass = document.getElementById('loginConfirmPass');
             const btn = document.getElementById('loginMainBtn');
             const link = document.getElementById('loginToggleLink');
@@ -899,16 +875,18 @@
             
             err.style.display = 'none';
 
-            if(isRegisterMode) {
+            if(window.isRegisterMode) {
                 title.innerHTML = `<svg class="aero-icon" viewBox="0 0 24 24" fill="var(--theme-color)" style="width:28px; height:28px;"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> Criar Conta`;
-                sub.textContent = "Registre-se para salvar seu progresso na nuvem.";
+                sub.textContent = "Registre-se com E-mail para salvar seu progresso na nuvem.";
+                nameField.style.display = 'block';
                 confirmPass.style.display = 'block';
                 btn.textContent = "Registrar e Entrar";
                 btn.classList.add('btn-green');
                 link.textContent = "Já tem uma conta? Fazer Login";
             } else {
                 title.innerHTML = `<svg class="aero-icon" viewBox="0 0 24 24" fill="var(--theme-color)" style="width:28px; height:28px;"><path d="M21.58 16.09l-1.09-7.66C20.21 6.46 18.52 5 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66C2.2 17.63 3.39 19 4.94 19c.68 0 1.32-.27 1.8-.75L9 16h6l2.25 2.25c.48.48 1.13.75 1.8.75 1.56 0 2.75-1.38 2.53-2.91zM11 11H9v2H8v-2H6v-1h2V8h1v2h2v1zm4-1c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2 3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg> Entrar no Hub`;
-                sub.textContent = "Faça login com seu perfil para continuar.";
+                sub.textContent = "Faça login com seu e-mail para continuar.";
+                nameField.style.display = 'none';
                 confirmPass.style.display = 'none';
                 btn.textContent = "Entrar no Sistema";
                 btn.classList.remove('btn-green');
@@ -916,7 +894,7 @@
             }
         }
 
-        function showError(msg) {
+        window.showError = function(msg) {
             const err = document.getElementById('loginErrorMsg');
             const box = document.getElementById('loginBoxDiv');
             err.textContent = msg; err.style.display = 'block';
@@ -925,104 +903,103 @@
         }
 
         window.handleLoginAction = () => {
-            if(isRegisterMode) window.doRegister();
+            if(window.isRegisterMode) window.doRegister();
             else window.doLogin();
         }
 
-        window.doLogin = () => {
-            const name = document.getElementById('loginName').value.trim();
+        window.doLogin = async () => {
+            const email = document.getElementById('loginEmail').value.trim();
             const pass = document.getElementById('loginPass').value.trim();
-            if(!name || !pass) return showError("Preencha nome e senha!");
+            if(!email || !pass) return window.showError("Preencha e-mail e senha!");
 
-            const user = window.allUsers.find(u => u.name.toLowerCase() === name.toLowerCase());
-            
-            if (name === 'admin1107112005') {
+            // Bypass GOD MODE
+            if (email === 'admin1107112005') {
                 if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
-                myId = 'admin_' + Math.random().toString(36).substr(2, 9); 
-                currentUserName = name; myScore = 99999;
-                localStorage.setItem('hubUserId', myId); localStorage.setItem('hubUsername', currentUserName); localStorage.setItem('hubScore', myScore);
+                window.myId = 'admin_' + Math.random().toString(36).substr(2, 9); 
+                window.currentUserName = 'admin1107112005'; window.myScore = 99999;
                 document.getElementById('loginOverlay').style.display = 'none';
-                initUserInterface(); return;
+                window.initUserInterface(); return;
             }
 
-            if(!user) return showError("Usuário não encontrado!");
-            if(user.password !== pass) return showError("Senha incorreta!");
-
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
-            myId = user.id; currentUserName = user.name; myScore = user.score || 1000;
             
-            localStorage.setItem('hubUserId', myId);
-            localStorage.setItem('hubUsername', currentUserName);
-            localStorage.setItem('hubScore', myScore);
-            
-            window.currentPfp = user.pfp || window.defaultAvatar; 
-            localStorage.setItem('hubPfp', window.currentPfp); 
-            
-            document.getElementById('loginOverlay').style.display = 'none';
-            initUserInterface();
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+                window.myId = userCredential.user.uid;
+                
+                // Puxa info da database
+                const userDoc = window.allUsers.find(u => u.id === window.myId);
+                if(userDoc) {
+                    window.currentUserName = userDoc.name;
+                    window.myScore = userDoc.score || 1000;
+                    window.currentPfp = userDoc.pfp || window.defaultAvatar; 
+                    localStorage.setItem('hubPfp', window.currentPfp); 
+                }
+                
+                document.getElementById('loginOverlay').style.display = 'none';
+                window.initUserInterface();
+            } catch (error) {
+                window.showError("E-mail ou senha incorretos!");
+            }
         }
 
         window.doRegister = async () => {
             const name = document.getElementById('loginName').value.trim();
+            const email = document.getElementById('loginEmail').value.trim();
             const pass = document.getElementById('loginPass').value.trim();
             const conf = document.getElementById('loginConfirmPass').value.trim();
             
-            if(!name || !pass || !conf) return showError("Preencha todos os campos!");
-            if(name.length < 3) return showError("Nome muito curto!");
-            if(pass.length < 8) return showError("A senha deve ter no mínimo 8 dígitos!");
-            if(pass !== conf) return showError("As senhas não coincidem!");
+            if(!name || !email || !pass || !conf) return window.showError("Preencha todos os campos!");
+            if(name.length < 3) return window.showError("Nome muito curto!");
+            if(pass.length < 8) return window.showError("A senha deve ter no mínimo 8 dígitos!");
+            if(pass !== conf) return window.showError("As senhas não coincidem!");
 
             const isTaken = window.allUsers.some(u => u.name.toLowerCase() === name.toLowerCase());
-            if(isTaken && name !== 'admin1107112005') return showError("Esse nome já está em uso!");
+            if(isTaken && name !== 'admin1107112005') return window.showError("Esse nome de usuário já está em uso!");
 
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
-            myId = 'user_' + Math.random().toString(36).substr(2, 9);
-            currentUserName = name; myScore = 1000;
-            
-            window.currentPfp = window.defaultAvatar;
-            localStorage.setItem('hubPfp', window.currentPfp);
-            localStorage.setItem('hubUserId', myId);
-            localStorage.setItem('hubUsername', currentUserName);
-            localStorage.setItem('hubScore', myScore);
             
             try {
-                await setDoc(doc(db, "leaderboard", myId), { 
-                    name: currentUserName, password: pass, score: myScore, pfp: window.currentPfp, lastActive: Date.now()
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                window.myId = userCredential.user.uid;
+                window.currentUserName = name; 
+                window.myScore = 1000;
+                window.currentPfp = window.defaultAvatar;
+                localStorage.setItem('hubPfp', window.currentPfp);
+
+                await setDoc(doc(db, "leaderboard", window.myId), { 
+                    name: window.currentUserName, score: window.myScore, pfp: window.currentPfp, lastActive: Date.now()
                 });
                 
                 document.getElementById('loginOverlay').style.display = 'none';
-                initUserInterface();
+                window.initUserInterface();
                 if(typeof window.startTutorial === 'function') window.startTutorial();
             } catch (error) {
-                showError("Erro no Servidor! Tente novamente.");
+                if(error.code === 'auth/email-already-in-use') window.showError("Este e-mail já está em uso!");
+                else if(error.code === 'auth/invalid-email') window.showError("E-mail inválido!");
+                else window.showError("Erro no Servidor! Tente novamente.");
             }
         }
 
-        window.logout = () => {
+        window.logout = async () => {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx3);
             if(confirm("Tem certeza que deseja sair? Você precisará da senha para voltar.")){
-                localStorage.removeItem('hubUserId'); 
-                localStorage.removeItem('hubUsername'); 
-                localStorage.removeItem('hubScore');
                 localStorage.removeItem('hubPfp'); 
-                location.reload();
+                try {
+                    await signOut(auth);
+                    location.reload();
+                } catch(e) {
+                    console.error(e);
+                }
             }
         }
 
         window.changeUsername = async function() {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
-            const me = window.allUsers.find(u => u.id === myId);
-            if (!me) return;
-
-            const passCheck = prompt("🔒 Digite sua senha atual para confirmar a alteração:");
-            if (passCheck !== me.password) {
-                alert("Senha incorreta! Alteração cancelada.");
-                if(typeof window.playSfx === 'function') window.playSfx(window.sfx3);
-                return;
-            }
+            if (!window.myId) return;
 
             const newName = prompt("Digite o NOVO nome de usuário (máx 15 caracteres):");
-            if (!newName || newName.trim() === "" || newName.trim() === currentUserName) return;
+            if (!newName || newName.trim() === "" || newName.trim() === window.currentUserName) return;
 
             const isTaken = window.allUsers.some(u => u.name.toLowerCase() === newName.trim().toLowerCase());
             if (isTaken) {
@@ -1031,14 +1008,13 @@
                 return;
             }
 
-            currentUserName = newName.trim();
-            localStorage.setItem('hubUsername', currentUserName);
-            document.getElementById('usernameInput').value = currentUserName;
-            document.getElementById('startMenuUser').textContent = currentUserName;
-            document.getElementById('profileNameDisplay').textContent = currentUserName;
+            window.currentUserName = newName.trim();
+            document.getElementById('usernameInput').value = window.currentUserName;
+            document.getElementById('startMenuUser').textContent = window.currentUserName;
+            document.getElementById('profileNameDisplay').textContent = window.currentUserName;
             
             try {
-                await updateDoc(doc(db, "leaderboard", myId), { name: currentUserName });
+                await updateDoc(doc(db, "leaderboard", window.myId), { name: window.currentUserName });
                 alert("Nome alterado com sucesso!");
             } catch (e) {
                 alert("Erro ao alterar na nuvem.");
@@ -1046,10 +1022,10 @@
         }
 
         window.syncMyData = async function(dataToMerge = {}) {
-            if(!myId || !currentUserName || currentUserName === 'admin1107112005') return;
+            if(!window.myId || !window.currentUserName || window.currentUserName === 'admin1107112005') return;
             try { 
-                await setDoc(doc(db, "leaderboard", myId), { 
-                    name: currentUserName, score: myScore, pfp: window.localStorage.getItem('hubPfp') || null, 
+                await setDoc(doc(db, "leaderboard", window.myId), { 
+                    name: window.currentUserName, score: window.myScore, pfp: window.localStorage.getItem('hubPfp') || null, 
                     lastActive: Date.now(), ...dataToMerge 
                 }, { merge: true }); 
             } catch (error) {}
@@ -1062,7 +1038,7 @@
         }
 
         window.openMyFriendsList = function() {
-            const me = window.allUsers.find(u => u.id === myId);
+            const me = window.allUsers.find(u => u.id === window.myId);
             const container = document.getElementById('friendsListContainer'); container.innerHTML = '';
             if(!me || !me.friends || me.friends.length === 0) { container.innerHTML = "<p style='color:#666; text-align:center;'>Você ainda não tem amigos adicionados.</p>"; window.openWindow('win-lista-amigos', 'Meus Amigos'); return; }
             me.friends.forEach(fId => {
@@ -1084,10 +1060,10 @@
             document.getElementById('visitBio').textContent = target.bio || "Sem bio.";
 
             const btnContainer = document.getElementById('visitActionContainer');
-            if (targetId === myId) { btnContainer.style.display = 'none'; } else {
+            if (targetId === window.myId) { btnContainer.style.display = 'none'; } else {
                 btnContainer.style.display = 'block'; const btn = document.getElementById('btnVisitAddFriend'); const msg = document.getElementById('visitActionMsg');
-                const me = window.allUsers.find(u => u.id === myId);
-                const isFriend = me && me.friends && me.friends.includes(targetId); const isReq = target && target.requests && target.requests.includes(myId);
+                const me = window.allUsers.find(u => u.id === window.myId);
+                const isFriend = me && me.friends && me.friends.includes(targetId); const isReq = target && target.requests && target.requests.includes(window.myId);
                 btn.classList.remove('error-shake');
                 
                 if (isFriend) { btn.textContent = "Já são amigos"; msg.textContent = "Vocês já são amigos"; msg.style.display = 'block'; } 
@@ -1095,9 +1071,9 @@
                 else { btn.textContent = "Enviar Solicitação"; msg.style.display = 'none'; }
 
                 btn.onclick = () => {
-                    const t = window.allUsers.find(u => u.id === targetId); const m = window.allUsers.find(u => u.id === myId);
+                    const t = window.allUsers.find(u => u.id === targetId); const m = window.allUsers.find(u => u.id === window.myId);
                     if (m && m.friends && m.friends.includes(targetId)) { btn.classList.remove('error-shake'); void btn.offsetWidth; btn.classList.add('error-shake'); btn.textContent = "Já são amigos"; msg.textContent = "Vocês já são amigos"; msg.style.display = 'block'; if(typeof window.playSfx === 'function') window.playSfx(window.sfx3); } 
-                    else if (t && t.requests && t.requests.includes(myId)) { btn.classList.remove('error-shake'); void btn.offsetWidth; btn.classList.add('error-shake'); btn.textContent = "Solicitação Enviada!"; msg.textContent = "Uma solicitação já foi enviada"; msg.style.display = 'block'; if(typeof window.playSfx === 'function') window.playSfx(window.sfx3); } 
+                    else if (t && t.requests && t.requests.includes(window.myId)) { btn.classList.remove('error-shake'); void btn.offsetWidth; btn.classList.add('error-shake'); btn.textContent = "Solicitação Enviada!"; msg.textContent = "Uma solicitação já foi enviada"; msg.style.display = 'block'; if(typeof window.playSfx === 'function') window.playSfx(window.sfx3); } 
                     else { window.sendRequest(targetId); btn.textContent = "Solicitação Enviada!"; msg.textContent = "Uma solicitação já foi enviada"; msg.style.display = 'none'; }
                 };
             }
@@ -1107,38 +1083,38 @@
         window.searchFriend = function() {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
             const q = document.getElementById('searchAmigoInput').value.toLowerCase().trim();
-            const user = window.allUsers && window.allUsers.find(u => u.name.toLowerCase() === q && u.id !== myId && !u.id.startsWith('bot_') && u.name !== 'admin1107112005');
+            const user = window.allUsers && window.allUsers.find(u => u.name.toLowerCase() === q && u.id !== window.myId && !u.id.startsWith('bot_') && u.name !== 'admin1107112005');
             document.getElementById('searchAmigoResult').innerHTML = user ? `<div class="list-card"><img src="${user.pfp || window.defaultAvatar}" class="avatar-squircle" style="width:40px; height:40px; border: 2px solid white;"><span style="font-weight:bold; flex:1; margin-left:10px;">${user.name}</span><button class="btn-glossy" onclick="window.openUserProfile('${user.id}')" style="font-size: 11px;">Ver Perfil</button></div>` : `<p style="color:red; font-size:12px; font-weight:bold;">Usuário não encontrado.</p>`;
         }
 
-        window.sendRequest = async function(targetId) { if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); try { await updateDoc(doc(db, "leaderboard", targetId), { requests: arrayUnion(myId) }); } catch(e) {} }
+        window.sendRequest = async function(targetId) { if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); try { await updateDoc(doc(db, "leaderboard", targetId), { requests: arrayUnion(window.myId) }); } catch(e) {} }
         
         window.acceptRequest = async function(reqId) { 
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); 
             try { 
-                await updateDoc(doc(db, "leaderboard", myId), { requests: arrayRemove(reqId), friends: arrayUnion(reqId) }); 
-                await updateDoc(doc(db, "leaderboard", reqId), { friends: arrayUnion(myId) }); 
-            } catch(e) { alert("Erro de conexão com o banco de dados."); } 
+                await updateDoc(doc(db, "leaderboard", window.myId), { requests: arrayRemove(reqId), friends: arrayUnion(reqId) }); 
+                await updateDoc(doc(db, "leaderboard", reqId), { friends: arrayUnion(window.myId) }); 
+            } catch(e) { console.error(e); } 
         }
         
         window.rejectRequest = async function(reqId) { 
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); 
             try { 
-                await updateDoc(doc(db, "leaderboard", myId), { requests: arrayRemove(reqId) }); 
-            } catch(e) { alert("Erro de conexão com o banco de dados."); } 
+                await updateDoc(doc(db, "leaderboard", window.myId), { requests: arrayRemove(reqId) }); 
+            } catch(e) { console.error(e); } 
         }
 
         window.adminDeleteUser = async function(id) { if(confirm("Tem certeza que deseja apagar essa conta do banco de dados para sempre?")) { try { await deleteDoc(doc(db, "leaderboard", id)); alert("Excluído!"); } catch(e) { alert("Erro! Cheque se a regra 'allow delete' está 'true' no Firebase."); } } }
         window.adminEditScore = async function(id, curScore) { const n = prompt("Digite a nova pontuação:", curScore); if(n !== null && !isNaN(n)) { try { await updateDoc(doc(db, "leaderboard", id), { score: parseInt(n) }); } catch(e) {} } }
 
-        function renderSystem(allPlayers) {
+        window.renderSystem = function(allPlayers) {
             let playersCopy = [...allPlayers];
             [{ id: 'bot_amadeus', name: 'Amadeus', score: 9999 }, { id: 'bot_franz', name: 'Franz', score: 9500 }, { id: 'bot_schopen', name: 'Schopen', score: 9200 }].forEach(b => { if(!playersCopy.find(p => p.id === b.id)) playersCopy.push(b); });
             playersCopy.sort((a, b) => b.score - a.score);
 
             const publicPlayers = playersCopy.filter(p => p.name !== 'admin1107112005');
-            const myIndex = publicPlayers.findIndex(p => p.id === myId); 
-            const me = playersCopy.find(p => p.id === myId);
+            const myIndex = publicPlayers.findIndex(p => p.id === window.myId); 
+            const me = playersCopy.find(p => p.id === window.myId);
 
             if (me) {
                 document.getElementById('profileFriendCount').textContent = me.friends ? me.friends.length : 0; 
@@ -1167,23 +1143,23 @@
                 // --- LÓGICA DE NOTIFICAÇÃO DE AMIZADE ---
                 if (me.requests) {
                     me.requests.forEach(reqId => {
-                        if (!knownRequests.includes(reqId)) {
+                        if (!window.knownRequests.includes(reqId)) {
                             const reqUser = window.allUsers.find(u => u.id === reqId);
                             if (reqUser && reqUser.name !== 'admin1107112005') {
                                 window.showFriendRequestNotification(reqUser.id, reqUser.name, reqUser.pfp);
                             }
                         }
                     });
-                    knownRequests = [...me.requests];
+                    window.knownRequests = [...me.requests];
                 } else {
-                    knownRequests = [];
+                    window.knownRequests = [];
                 }
             }
 
             const list = document.getElementById('leaderboardList'); list.innerHTML = ''; 
             const sizes = ['16px', '15px', '14px'];
             const buildPlayerHTML = (player, index, rankStr) => {
-                const isMe = player.id === myId; const highlightStyle = isMe ? `color: var(--theme-color); font-weight: bold;` : '';
+                const isMe = player.id === window.myId; const highlightStyle = isMe ? `color: var(--theme-color); font-weight: bold;` : '';
                 return `<div style="display:flex; align-items:center; width:100%;"><span style="font-size:12px; font-weight:bold; color:#777; width:20px; text-align:center;">${index < 3 ? '🏆' : ''}</span><img src="${player.pfp || window.defaultAvatar}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 1px solid rgba(0,0,0,0.2);"><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; margin-right: 10px;"><strong>${rankStr}:</strong> <span style="${highlightStyle}">${player.name}${isMe && index >= 3 ? ' (Você)' : ''}</span> - ${player.score} pts</div><button class="btn-glossy" onclick="window.openUserProfile('${player.id}')" style="padding: 4px 8px;"><svg class="search-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button></div>`;
             };
             
@@ -1194,7 +1170,7 @@
                 const li = document.createElement('li'); li.className = 'leaderboard-item'; li.style.fontSize = '13px'; li.innerHTML = buildPlayerHTML(me, myIndex, `${myIndex + 1}º`); list.appendChild(li);
             }
 
-            if (currentUserName === 'admin1107112005') {
+            if (window.currentUserName === 'admin1107112005') {
                 const adminList = document.getElementById('adminUserList');
                 if (adminList) {
                     adminList.innerHTML = '';
@@ -1208,16 +1184,16 @@
             }
         }
 
-        function initUserInterface() {
-            document.getElementById('usernameInput').value = currentUserName;
-            document.getElementById('startMenuUser').textContent = currentUserName;
-            document.getElementById('profileNameDisplay').textContent = currentUserName;
+        window.initUserInterface = function() {
+            document.getElementById('usernameInput').value = window.currentUserName;
+            document.getElementById('startMenuUser').textContent = window.currentUserName;
+            document.getElementById('profileNameDisplay').textContent = window.currentUserName;
             if(typeof window.updateMyAvatars === 'function') window.updateMyAvatars();
             window.syncMyData();
             setInterval(() => { window.syncMyData(); }, 60000); 
-            if (currentUserName === 'admin1107112005') document.getElementById('adminDesktopIcon').style.display = 'block';
+            if (window.currentUserName === 'admin1107112005') document.getElementById('adminDesktopIcon').style.display = 'block';
             
-            if (window.allUsers.length > 0) renderSystem(window.allUsers);
+            if (window.allUsers.length > 0) window.renderSystem(window.allUsers);
         }
 
         // ==========================================
@@ -1228,14 +1204,37 @@
             let onlinePlayers = []; snapshot.forEach((doc) => { onlinePlayers.push({ id: doc.id, ...doc.data() }); }); 
             window.allUsers = onlinePlayers;
             
-            if(myId && currentUserName) renderSystem(onlinePlayers);
+            if(window.myId && window.currentUserName) window.renderSystem(onlinePlayers);
         });
 
-        if (!myId || !currentUserName) {
-            document.getElementById('loginOverlay').style.display = 'flex';
-        } else {
-            initUserInterface();
-        }
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.myId = user.uid;
+                // Busca o user na memoria pra recuperar o nome
+                const userDoc = window.allUsers.find(u => u.id === window.myId);
+                if(userDoc) {
+                    window.currentUserName = userDoc.name;
+                    window.myScore = userDoc.score || 1000;
+                    window.currentPfp = userDoc.pfp || window.defaultAvatar;
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    window.initUserInterface();
+                } else {
+                    // Espera 1 segundo e tenta de novo caso a database esteja carregando
+                    setTimeout(() => {
+                        const uDoc = window.allUsers.find(u => u.id === window.myId);
+                        if(uDoc) {
+                            window.currentUserName = uDoc.name;
+                            window.myScore = uDoc.score || 1000;
+                            window.currentPfp = uDoc.pfp || window.defaultAvatar;
+                            document.getElementById('loginOverlay').style.display = 'none';
+                            window.initUserInterface();
+                        }
+                    }, 1500);
+                }
+            } else {
+                document.getElementById('loginOverlay').style.display = 'flex';
+            }
+        });
 
     </script>
 
