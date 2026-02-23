@@ -645,7 +645,12 @@
 
         window.startBtn = document.getElementById('startBtn'); window.startMenu = document.getElementById('startMenu');
         window.startBtn.addEventListener('click', (e) => { e.stopPropagation(); if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); window.startMenu.classList.toggle('active'); });
-        document.addEventListener('click', (e) => { if (!window.startMenu.contains(e.target) && e.target !== window.startBtn && !e.target.closest('#avatarMenu')) window.startMenu.classList.remove('active'); });
+        
+        // CORREÇÃO: O MENU NÃO PODE FECHAR ENQUANTO O TUTORIAL ESTIVER RODANDO
+        document.addEventListener('click', (e) => { 
+            if (document.getElementById('tutorialBlocker').style.display === 'block') return; // Bloqueia clicks fora durante o tutorial
+            if (!window.startMenu.contains(e.target) && e.target !== window.startBtn && !e.target.closest('#avatarMenu')) window.startMenu.classList.remove('active'); 
+        });
 
         function updateClock() {
             const now = new Date(); document.getElementById('clockTime').textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`; document.getElementById('clockDate').textContent = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
@@ -1269,6 +1274,7 @@
                 },
                 {
                     target: '.tut-menu-perfil', round: false, padding: 5,
+                    action: () => { document.getElementById('startMenu').classList.add('active'); }, // GARANTE O MENU ABERTO
                     text: "E aqui na direita é o seu Perfil! Você pode trocar a foto, editar sua Bio e ver quem te mandou solicitação.",
                     getPos: (r) => ({ top: (r.top - 20) + 'px', left: (r.right + 30) + 'px', arrow: 'block', aTop: '20px', aLeft: '-30px', aRot: 'rotate(0deg)' })
                 },
