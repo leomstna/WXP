@@ -299,7 +299,7 @@
     <div class="window" id="win-crop" style="width: 400px; z-index: 10001; top: 10%; left: 30%;">
         <div class="title-bar">
             <div class="title-info"><div style="font-size:16px;">✂️</div> Recortar Foto</div>
-            <div class="close-btn" onclick="closeWindow('win-crop')">X</div>
+            <div class="close-btn" onclick="window.closeWindow('win-crop')">X</div>
         </div>
         <div class="window-content" style="display: flex; flex-direction: column; align-items: center; background: rgba(30, 30, 30, 0.8);">
             <div id="cropContainer" style="position: relative; width: 340px; height: 340px; background: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; border-radius: 5px; box-shadow: inset 0 0 10px rgba(0,0,0,0.8);">
@@ -311,7 +311,7 @@
                 </div>
             </div>
             <div style="display: flex; gap: 10px; margin-top: 15px; width: 100%;">
-                <button onclick="closeWindow('win-crop')" style="flex: 1; padding: 8px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); border-radius: 5px; cursor: pointer; font-weight: bold;">Cancelar</button>
+                <button onclick="window.closeWindow('win-crop')" style="flex: 1; padding: 8px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); border-radius: 5px; cursor: pointer; font-weight: bold;">Cancelar</button>
                 <button id="btnSaveCrop" style="flex: 1; padding: 8px; background: var(--theme-color); color: white; border: 1px solid rgba(255,255,255,0.8); border-radius: 5px; cursor: pointer; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.4);">Salvar Foto</button>
             </div>
         </div>
@@ -320,11 +320,11 @@
     <div class="window" id="win-admin" style="top: 50px; left: 150px; width: 500px; z-index: 10050;">
         <div class="title-bar" style="background: linear-gradient(180deg, #333 0%, #000 100%); border-bottom: 2px solid gold;">
             <div class="title-info" style="color: gold; text-shadow: 0 0 5px red;">👁️‍🗨️ SYSTEM GOD MODE</div>
-            <div class="close-btn" onclick="closeWindow('win-admin')">X</div>
+            <div class="close-btn" onclick="window.closeWindow('win-admin')">X</div>
         </div>
         <div class="window-content" style="background: rgba(15,15,15,0.9); color: #fff;">
             <h3 style="color: gold; border-bottom: 1px solid #333; padding-bottom: 5px;">Painel de Controle</h3>
-            <p style="font-size: 11px; color: #888; margin-bottom: 15px;">Atenção: Ações aqui afetam o banco de dados real. Certifique-se que o "allow delete" está true no Firebase para a exclusão funcionar.</p>
+            <p style="font-size: 11px; color: #888; margin-bottom: 15px;">Atenção: Ações aqui afetam o banco de dados real.</p>
             <div id="adminUserList" style="display: flex; flex-direction: column; gap: 5px;"></div>
         </div>
     </div>
@@ -335,7 +335,7 @@
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> 
                 Meu Perfil
             </div>
-            <div class="close-btn" onclick="closeWindow('win-perfil')">X</div>
+            <div class="close-btn" onclick="window.closeWindow('win-perfil')">X</div>
         </div>
         <div class="window-content">
             <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
@@ -346,7 +346,7 @@
                         <svg class="aero-icon" viewBox="0 0 24 24" fill="#555" style="width:16px; height:16px;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
                         Amigos: <strong id="profileFriendCount" style="color:#111;">0</strong>
                     </div>
-                    <button class="btn-glossy" onclick="openWindow('win-solicitacoes', 'Solicitações')" style="font-size: 12px; padding: 5px 10px;">📩 Solicitações (<span id="profileReqCount">0</span>)</button>
+                    <button class="btn-glossy" onclick="window.openWindow('win-solicitacoes', 'Solicitações')" style="font-size: 12px; padding: 5px 10px;">📩 Solicitações (<span id="profileReqCount">0</span>)</button>
                 </div>
             </div>
             <hr style="border-color: rgba(0,0,0,0.1); margin: 15px 0;">
@@ -368,7 +368,7 @@
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="white"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
                 Meus Amigos
             </div>
-            <div class="close-btn" onclick="closeWindow('win-lista-amigos')">X</div>
+            <div class="close-btn" onclick="window.closeWindow('win-lista-amigos')">X</div>
         </div>
         <div class="window-content" id="friendsListContainer"></div>
     </div>
@@ -379,7 +379,7 @@
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> 
                 Visualizar Perfil
             </div>
-            <div class="close-btn" onclick="closeWindow('win-perfil-visita')">X</div>
+            <div class="close-btn" onclick="window.closeWindow('win-perfil-visita')">X</div>
         </div>
         <div class="window-content">
             <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
@@ -391,7 +391,6 @@
                         <svg class="aero-icon" viewBox="0 0 24 24" fill="#888" style="width:14px; height:14px;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
                         Amigos: <strong id="visitFriendCount">0</strong>
                     </div>
-                    
                     <div id="visitActionContainer" style="margin-top: 8px;">
                         <button id="btnVisitAddFriend" class="btn-glossy" style="font-size: 12px; padding: 5px 10px;">Enviar Solicitação</button>
                         <div id="visitActionMsg" style="display:none; color:#ff6b6b; font-size:11px; margin-top:4px; font-weight:bold;"></div>
@@ -415,7 +414,7 @@
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="white"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                 Adicionar Amigos
             </div>
-            <div class="close-btn" onclick="closeWindow('win-add-amigo')">X</div>
+            <div class="close-btn" onclick="window.closeWindow('win-add-amigo')">X</div>
         </div>
         <div class="window-content">
             <h3 style="font-size: 16px;">Buscar Usuário</h3>
@@ -435,7 +434,7 @@
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="white"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
                 Solicitações de Amizade
             </div>
-            <div class="close-btn" onclick="closeWindow('win-solicitacoes')">X</div>
+            <div class="close-btn" onclick="window.closeWindow('win-solicitacoes')">X</div>
         </div>
         <div class="window-content">
             <div id="requestsList">
@@ -445,12 +444,12 @@
     </div>
 
     <div class="desktop" id="desktop">
-        <div class="desktop-icon" id="adminDesktopIcon" style="display: none;" onclick="if(typeof window.playSfx==='function') window.playSfx(window.sfx1); openWindow('win-admin', 'God Mode')">
+        <div class="desktop-icon" id="adminDesktopIcon" style="display: none;" onclick="if(typeof window.playSfx==='function') window.playSfx(window.sfx1); window.openWindow('win-admin', 'God Mode')">
             <div class="icon">👁️‍🗨️</div>
             <span style="color: gold; text-shadow: 0 0 5px red; font-weight: bold;">God Mode</span>
         </div>
 
-        <div class="desktop-icon tut-game-icon" onclick="if(typeof window.playSfx==='function') window.playSfx(window.sfx2); openWindow('win-jogo', 'Jogo')">
+        <div class="desktop-icon tut-game-icon" onclick="if(typeof window.playSfx==='function') window.playSfx(window.sfx2); window.openWindow('win-jogo', 'Jogo')">
             <div class="icon">🕹️</div>
             <span>Jogo 1</span>
         </div>
@@ -465,7 +464,7 @@
                     <svg class="aero-icon" viewBox="0 0 24 24" fill="#00e5ff"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                     Sobre o Site
                 </div>
-                <div class="close-btn" onclick="closeWindow('win-sobre')">X</div>
+                <div class="close-btn" onclick="window.closeWindow('win-sobre')">X</div>
             </div>
             <div class="window-content">
                 <h3>Hub de Jogos v1.0</h3>
@@ -480,21 +479,18 @@
                     <svg class="aero-icon" viewBox="0 0 24 24" fill="#aaaaaa"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
                     Configurações
                 </div>
-                <div class="close-btn" onclick="closeWindow('win-config')">X</div>
+                <div class="close-btn" onclick="window.closeWindow('win-config')">X</div>
             </div>
             <div class="window-content">
                 <h3>Opções do Sistema</h3>
-                
                 <label>👤 Perfil Atual:</label>
                 <div style="display: flex; align-items: center; gap: 10px; margin: 5px 0 15px 0;">
                     <img class="user-avatar" id="configAvatar" src="" style="width: 35px; height: 35px;">
                     <input type="text" id="usernameInput" maxlength="15" readonly style="margin: 0; flex: 1; background: rgba(0,0,0,0.05); color: #888; font-weight: bold;">
                     <button class="btn-glossy" onclick="window.changeUsername()" style="padding: 8px 12px; font-size: 12px;">✏️ Alterar</button>
                 </div>
-
                 <label style="display:block; margin-top:15px;">🎨 Cor Tema:</label>
                 <input type="color" id="themePicker" value="#0088ff" style="height: 35px; width: 100%;">
-
                 <div style="display: flex; align-items: center; justify-content: space-between; margin: 15px 0; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 8px;">
                     <label for="darkModeToggle" style="margin:0; cursor:pointer; font-weight:bold;">🌙 Modo Escuro</label>
                     <label class="switch">
@@ -502,13 +498,10 @@
                         <span class="slider"></span>
                     </label>
                 </div>
-
                 <label>🎵 Música:</label>
                 <input type="range" id="musicVolInput" min="0" max="100" value="30">
-                
                 <label>🔊 Efeitos Sonoros:</label>
                 <input type="range" id="sfxVolInput" min="0" max="100" value="80">
-                
                 <label>🖼️ Efeitos Visuais:</label>
                 <select id="visualSelect">
                     <option value="alto">Alto (Aero Glass Ativo)</option>
@@ -523,7 +516,7 @@
                     <svg class="aero-icon" viewBox="0 0 24 24" fill="#ff5252"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
                     Contato
                 </div>
-                <div class="close-btn" onclick="closeWindow('win-contato')">X</div>
+                <div class="close-btn" onclick="window.closeWindow('win-contato')">X</div>
             </div>
             <div class="window-content">
                 <h3>Fale com o Desenvolvedor</h3>
@@ -541,7 +534,7 @@
                     <svg class="aero-icon" viewBox="0 0 24 24" fill="#ffd700"><path d="M19 3h-2V1h-2v2H9V1H7v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V9h14v10z"/></svg>
                     Placar de Líderes (Global)
                 </div>
-                <div class="close-btn" onclick="closeWindow('win-placar')">X</div>
+                <div class="close-btn" onclick="window.closeWindow('win-placar')">X</div>
             </div>
             <div class="window-content">
                 <h3>Top Scores (Em tempo real)</h3>
@@ -558,53 +551,38 @@
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="#4caf50" style="width:24px; height:24px;"><path d="M21.58 16.09l-1.09-7.66C20.21 6.46 18.52 5 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66C2.2 17.63 3.39 19 4.94 19c.68 0 1.32-.27 1.8-.75L9 16h6l2.25 2.25c.48.48 1.13.75 1.8.75 1.56 0 2.75-1.38 2.53-2.91zM11 11H9v2H8v-2H6v-1h2V8h1v2h2v1zm4-1c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2 3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>
                 Hub de Jogos
             </div>
-            <div class="menu-item tut-menu-op" onclick="openWindow('win-sobre', 'Sobre o Site')">
+            <div class="menu-item tut-menu-op" onclick="window.openWindow('win-sobre', 'Sobre o Site')">
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="#00e5ff"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                 Sobre o Site
             </div>
-            <div class="menu-item tut-menu-op" onclick="openWindow('win-config', 'Configurações')">
+            <div class="menu-item tut-menu-op" onclick="window.openWindow('win-config', 'Configurações')">
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="#aaaaaa"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
                 Configurações
             </div>
-            <div class="menu-item tut-menu-op" onclick="openWindow('win-contato', 'Contato')">
+            <div class="menu-item tut-menu-op" onclick="window.openWindow('win-contato', 'Contato')">
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="#ff5252"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
                 Contato
             </div>
-            <div class="menu-item tut-menu-op" onclick="openWindow('win-placar', 'Placar de Líderes')">
+            <div class="menu-item tut-menu-op" onclick="window.openWindow('win-placar', 'Placar de Líderes')">
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="#ffd700"><path d="M19 3h-2V1h-2v2H9V1H7v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V9h14v10z"/></svg>
                 Placar de Líderes
             </div>
-            
             <hr style="border-color: rgba(0,0,0,0.1); margin: 5px 0;">
-            
-            <div class="menu-item tut-menu-op" onclick="openWindow('win-add-amigo', 'Adicionar Amigos')" style="color: var(--theme-color); font-weight: bold;">
+            <div class="menu-item tut-menu-op" onclick="window.openWindow('win-add-amigo', 'Adicionar Amigos')" style="color: var(--theme-color); font-weight: bold;">
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="var(--theme-color)"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                 Adicionar Amigos
             </div>
         </div>
         
         <div class="start-right">
-            <div class="menu-item tut-menu-perfil" onclick="openWindow('win-perfil', 'Meu Perfil')" title="Acessar Meu Perfil" style="padding-bottom: 10px; display: flex; align-items: center; gap: 8px; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 5px;">
+            <div class="menu-item tut-menu-perfil" onclick="window.openWindow('win-perfil', 'Meu Perfil')" title="Acessar Meu Perfil" style="padding-bottom: 10px; display: flex; align-items: center; gap: 8px; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 5px;">
                 <img class="user-avatar avatar-squircle" id="startMenuAvatar" src="" style="width: 36px; height: 36px; min-width: 36px; border: 2px solid rgba(255,255,255,0.6);">
                 <span id="startMenuUser" style="font-weight: bold; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">Carregando...</span>
             </div>
-            
-            <div class="menu-item locked-item">
-                <span style="font-size: 11px;">🔒</span>
-                <span class="blurred-text">Meus Projetos</span>
-            </div>
-            <div class="menu-item locked-item">
-                <span style="font-size: 11px;">🔒</span>
-                <span class="blurred-text">Portfólio</span>
-            </div>
-            <div class="menu-item locked-item">
-                <span style="font-size: 11px;">🔒</span>
-                <span class="blurred-text">Redes Sociais</span>
-            </div>
-            <div class="menu-item" style="margin-top: auto; color: #ff6b6b; font-weight: bold;" onclick="window.logout()">
-                <span style="font-size: 13px;">🚪</span>
-                Sair da Conta
-            </div>
+            <div class="menu-item locked-item"><span style="font-size: 11px;">🔒</span><span class="blurred-text">Meus Projetos</span></div>
+            <div class="menu-item locked-item"><span style="font-size: 11px;">🔒</span><span class="blurred-text">Portfólio</span></div>
+            <div class="menu-item locked-item"><span style="font-size: 11px;">🔒</span><span class="blurred-text">Redes Sociais</span></div>
+            <div class="menu-item" style="margin-top: auto; color: #ff6b6b; font-weight: bold;" onclick="window.logout()"><span style="font-size: 13px;">🚪</span>Sair da Conta</div>
         </div>
     </div>
 
@@ -618,13 +596,13 @@
     </div>
 
     <script>
-        var zIndexCounter = 10;
-        var savedTheme = localStorage.getItem('hubTheme') || '#0088ff';
-        document.documentElement.style.setProperty('--theme-color', savedTheme);
-        document.getElementById('themePicker').value = savedTheme;
-        var savedVisual = localStorage.getItem('hubVisual') || 'alto';
-        document.getElementById('visualSelect').value = savedVisual;
-        if (savedVisual === 'desempenho') document.body.classList.add('perf-mode');
+        window.zIndexCounter = 10;
+        window.savedTheme = localStorage.getItem('hubTheme') || '#0088ff';
+        document.documentElement.style.setProperty('--theme-color', window.savedTheme);
+        document.getElementById('themePicker').value = window.savedTheme;
+        window.savedVisual = localStorage.getItem('hubVisual') || 'alto';
+        document.getElementById('visualSelect').value = window.savedVisual;
+        if (window.savedVisual === 'desempenho') document.body.classList.add('perf-mode');
         
         document.getElementById('darkModeToggle').checked = false;
         document.getElementById('darkModeToggle').addEventListener('change', (e) => {
@@ -636,7 +614,7 @@
         document.getElementById('themePicker').addEventListener('input', (e) => { document.documentElement.style.setProperty('--theme-color', e.target.value); localStorage.setItem('hubTheme', e.target.value); });
         document.getElementById('visualSelect').addEventListener('change', (e) => { if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); if (e.target.value === 'desempenho') document.body.classList.add('perf-mode'); else document.body.classList.remove('perf-mode'); localStorage.setItem('hubVisual', e.target.value); });
 
-        var taskbarIcons = {
+        window.taskbarIcons = {
             'win-sobre': '<svg viewBox="0 0 24 24" fill="#00e5ff"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>',
             'win-config': '<svg viewBox="0 0 24 24" fill="#aaaaaa"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>',
             'win-contato': '<svg viewBox="0 0 24 24" fill="#ff5252"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>',
@@ -659,12 +637,12 @@
                 const taskbarItems = document.getElementById('taskbarItems');
                 if(!document.getElementById('tab-' + id)) {
                     const tab = document.createElement('div'); tab.className = 'taskbar-tab active-tab'; tab.id = 'tab-' + id;
-                    const iconContent = taskbarIcons[id] || '📁';
+                    const iconContent = window.taskbarIcons[id] || '📁';
                     tab.innerHTML = `<div style="display:flex; justify-content:center; align-items:center;">${iconContent}</div>`; tab.title = title;
                     tab.onclick = () => {
                         if(typeof window.playSfx === 'function') window.playSfx(window.sfx4);
                         if (win.classList.contains('minimized')) { win.classList.remove('minimized'); window.bringToFront(win); tab.classList.add('active-tab'); } 
-                        else { if (win.style.zIndex == zIndexCounter) { win.classList.add('minimized'); tab.classList.remove('active-tab'); } else { window.bringToFront(win); tab.classList.add('active-tab'); } }
+                        else { if (win.style.zIndex == window.zIndexCounter) { win.classList.add('minimized'); tab.classList.remove('active-tab'); } else { window.bringToFront(win); tab.classList.add('active-tab'); } }
                     };
                     taskbarItems.appendChild(tab);
                 } else document.getElementById('tab-' + id).classList.add('active-tab');
@@ -680,7 +658,7 @@
         }
 
         window.bringToFront = function(win) {
-            zIndexCounter++; win.style.zIndex = zIndexCounter;
+            window.zIndexCounter++; win.style.zIndex = window.zIndexCounter;
             document.querySelectorAll('.taskbar-tab').forEach(t => t.classList.remove('active-tab'));
             const activeTab = document.getElementById('tab-' + win.id); if(activeTab) activeTab.classList.add('active-tab');
         }
@@ -693,9 +671,9 @@
             document.addEventListener("mousemove", (e) => { if (!isDragging) return; e.preventDefault(); win.style.left = `${initialLeft + (e.clientX - startX)}px`; win.style.top = `${initialTop + (e.clientY - startY)}px`; });
         });
 
-        var startBtn = document.getElementById('startBtn'); var startMenu = document.getElementById('startMenu');
-        startBtn.addEventListener('click', (e) => { e.stopPropagation(); if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); startMenu.classList.toggle('active'); });
-        document.addEventListener('click', (e) => { if (!startMenu.contains(e.target) && e.target !== startBtn && !e.target.closest('#avatarMenu')) startMenu.classList.remove('active'); });
+        window.startBtn = document.getElementById('startBtn'); window.startMenu = document.getElementById('startMenu');
+        window.startBtn.addEventListener('click', (e) => { e.stopPropagation(); if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); window.startMenu.classList.toggle('active'); });
+        document.addEventListener('click', (e) => { if (!window.startMenu.contains(e.target) && e.target !== window.startBtn && !e.target.closest('#avatarMenu')) window.startMenu.classList.remove('active'); });
 
         function updateClock() {
             const now = new Date(); document.getElementById('clockTime').textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`; document.getElementById('clockDate').textContent = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
@@ -704,46 +682,46 @@
     </script>
 
     <script>
-        var sfx1 = new Audio('sfx 01.MP3'); 
-        var sfx2 = new Audio('sfx 02.MP3'); 
-        var sfx3 = new Audio('sfx 03.MP3'); 
-        var sfx4 = new Audio('sfx 04.MP3'); 
-        var currentSfxVolume = 0.8;
+        window.sfx1 = new Audio('sfx 01.MP3'); 
+        window.sfx2 = new Audio('sfx 02.MP3'); 
+        window.sfx3 = new Audio('sfx 03.MP3'); 
+        window.sfx4 = new Audio('sfx 04.MP3'); 
+        window.currentSfxVolume = 0.8;
         
         window.playSfx = function(audioObj) {
             if (!audioObj) return;
-            audioObj.volume = currentSfxVolume;
+            audioObj.volume = window.currentSfxVolume;
             audioObj.currentTime = 0; 
             audioObj.play().catch(e => console.log('Áudio bloqueado.'));
         }
         
-        var musicList = ['musica01.mp3', 'musica02.mp3', 'musica03.mp3'];
-        var currentMusicIndex = 0;
-        var bgMusic = new Audio(musicList[currentMusicIndex]);
-        bgMusic.volume = 0.3; 
-        bgMusic.addEventListener('ended', () => {
-            currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
-            bgMusic.src = musicList[currentMusicIndex];
-            bgMusic.play();
+        window.musicList = ['musica01.mp3', 'musica02.mp3', 'musica03.mp3'];
+        window.currentMusicIndex = 0;
+        window.bgMusic = new Audio(window.musicList[window.currentMusicIndex]);
+        window.bgMusic.volume = 0.3; 
+        window.bgMusic.addEventListener('ended', () => {
+            window.currentMusicIndex = (window.currentMusicIndex + 1) % window.musicList.length;
+            window.bgMusic.src = window.musicList[window.currentMusicIndex];
+            window.bgMusic.play();
         });
         
-        var musicStarted = false;
+        window.musicStarted = false;
         document.body.addEventListener('click', () => {
-            if (!musicStarted) {
-                bgMusic.play().catch(e => console.log(e));
-                musicStarted = true;
+            if (!window.musicStarted) {
+                window.bgMusic.play().catch(e => console.log(e));
+                window.musicStarted = true;
             }
         }, { once: true }); 
         
-        document.getElementById('musicVolInput').addEventListener('input', (e) => { bgMusic.volume = e.target.value / 100; });
-        document.getElementById('sfxVolInput').addEventListener('input', (e) => { currentSfxVolume = e.target.value / 100; window.playSfx(sfx2); });
+        document.getElementById('musicVolInput').addEventListener('input', (e) => { window.bgMusic.volume = e.target.value / 100; });
+        document.getElementById('sfxVolInput').addEventListener('input', (e) => { window.currentSfxVolume = e.target.value / 100; window.playSfx(window.sfx2); });
 
-        var defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
-        var currentPfp = localStorage.getItem('hubPfp') || defaultAvatar;
+        window.defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+        window.currentPfp = localStorage.getItem('hubPfp') || window.defaultAvatar;
 
-        function updateMyAvatars() {
+        window.updateMyAvatars = function() {
             document.querySelectorAll('.user-avatar').forEach(img => {
-                if(img.id !== 'visitAvatar') img.src = currentPfp;
+                if(img.id !== 'visitAvatar') img.src = window.currentPfp;
             });
         }
 
@@ -760,80 +738,80 @@
         });
         document.addEventListener('click', () => { document.getElementById('avatarMenu').style.display = 'none'; });
 
-        var pfpUpload = document.getElementById('pfpUpload');
-        var cropImage = document.getElementById('cropImage');
-        var cropBox = document.getElementById('cropBox');
-        var cropWrapper = document.getElementById('cropWrapper');
-        var cropResizeHandle = document.getElementById('cropResizeHandle');
-        var currentScale = 1;
+        window.pfpUpload = document.getElementById('pfpUpload');
+        window.cropImage = document.getElementById('cropImage');
+        window.cropBox = document.getElementById('cropBox');
+        window.cropWrapper = document.getElementById('cropWrapper');
+        window.cropResizeHandle = document.getElementById('cropResizeHandle');
+        window.currentScale = 1;
 
-        pfpUpload.addEventListener('change', (e) => {
+        window.pfpUpload.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
             reader.onload = (event) => {
-                cropImage.src = event.target.result;
+                window.cropImage.src = event.target.result;
                 window.openWindow('win-crop', 'Recortar Foto');
             };
             reader.readAsDataURL(file);
             e.target.value = '';
         });
 
-        cropImage.onload = () => {
+        window.cropImage.onload = () => {
             const containerSize = 340;
-            const ratio = Math.min(containerSize / cropImage.naturalWidth, containerSize / cropImage.naturalHeight);
-            currentScale = ratio;
-            cropImage.style.width = (cropImage.naturalWidth * ratio) + 'px';
-            cropImage.style.height = (cropImage.naturalHeight * ratio) + 'px';
-            const boxSize = Math.min((cropImage.naturalWidth * ratio), (cropImage.naturalHeight * ratio));
-            cropBox.style.width = boxSize + 'px';
-            cropBox.style.height = boxSize + 'px';
-            cropBox.style.left = ((cropImage.naturalWidth * ratio) - boxSize) / 2 + 'px';
-            cropBox.style.top = ((cropImage.naturalHeight * ratio) - boxSize) / 2 + 'px';
+            const ratio = Math.min(containerSize / window.cropImage.naturalWidth, containerSize / window.cropImage.naturalHeight);
+            window.currentScale = ratio;
+            window.cropImage.style.width = (window.cropImage.naturalWidth * ratio) + 'px';
+            window.cropImage.style.height = (window.cropImage.naturalHeight * ratio) + 'px';
+            const boxSize = Math.min((window.cropImage.naturalWidth * ratio), (window.cropImage.naturalHeight * ratio));
+            window.cropBox.style.width = boxSize + 'px';
+            window.cropBox.style.height = boxSize + 'px';
+            window.cropBox.style.left = ((window.cropImage.naturalWidth * ratio) - boxSize) / 2 + 'px';
+            window.cropBox.style.top = ((window.cropImage.naturalHeight * ratio) - boxSize) / 2 + 'px';
         };
 
-        var isDraggingCrop = false, isResizingCrop = false, startCropX, startCropY, initialCropLeft, initialCropTop, initialCropSize;
+        window.isDraggingCrop = false; window.isResizingCrop = false; window.startCropX = 0; window.startCropY = 0; window.initialCropLeft = 0; window.initialCropTop = 0; window.initialCropSize = 0;
 
-        cropBox.addEventListener('mousedown', (e) => {
-            if (e.target === cropResizeHandle) return;
-            isDraggingCrop = true; startCropX = e.clientX; startCropY = e.clientY;
-            initialCropLeft = parseFloat(cropBox.style.left) || 0; initialCropTop = parseFloat(cropBox.style.top) || 0;
+        window.cropBox.addEventListener('mousedown', (e) => {
+            if (e.target === window.cropResizeHandle) return;
+            window.isDraggingCrop = true; window.startCropX = e.clientX; window.startCropY = e.clientY;
+            window.initialCropLeft = parseFloat(window.cropBox.style.left) || 0; window.initialCropTop = parseFloat(window.cropBox.style.top) || 0;
             e.stopPropagation();
         });
 
-        cropResizeHandle.addEventListener('mousedown', (e) => {
-            isResizingCrop = true; startCropX = e.clientX; startCropY = e.clientY;
-            initialCropSize = parseFloat(cropBox.style.width) || 100;
+        window.cropResizeHandle.addEventListener('mousedown', (e) => {
+            window.isResizingCrop = true; window.startCropX = e.clientX; window.startCropY = e.clientY;
+            window.initialCropSize = parseFloat(window.cropBox.style.width) || 100;
             e.stopPropagation();
         });
 
         document.addEventListener('mousemove', (e) => {
-            if (isDraggingCrop) {
+            if (window.isDraggingCrop) {
                 e.preventDefault();
-                let newLeft = initialCropLeft + (e.clientX - startCropX);
-                let newTop = initialCropTop + (e.clientY - startCropY);
-                newLeft = Math.max(0, Math.min(newLeft, cropWrapper.offsetWidth - cropBox.offsetWidth));
-                newTop = Math.max(0, Math.min(newTop, cropWrapper.offsetHeight - cropBox.offsetHeight));
-                cropBox.style.left = newLeft + 'px'; cropBox.style.top = newTop + 'px';
-            } else if (isResizingCrop) {
+                let newLeft = window.initialCropLeft + (e.clientX - window.startCropX);
+                let newTop = window.initialCropTop + (e.clientY - window.startCropY);
+                newLeft = Math.max(0, Math.min(newLeft, window.cropWrapper.offsetWidth - window.cropBox.offsetWidth));
+                newTop = Math.max(0, Math.min(newTop, window.cropWrapper.offsetHeight - window.cropBox.offsetHeight));
+                window.cropBox.style.left = newLeft + 'px'; window.cropBox.style.top = newTop + 'px';
+            } else if (window.isResizingCrop) {
                 e.preventDefault();
-                let newSize = initialCropSize + Math.max(e.clientX - startCropX, e.clientY - startCropY);
-                const maxAllowedSize = Math.min(cropWrapper.offsetWidth - (parseFloat(cropBox.style.left)||0), cropWrapper.offsetHeight - (parseFloat(cropBox.style.top)||0));
-                cropBox.style.width = Math.max(50, Math.min(newSize, maxAllowedSize)) + 'px';
-                cropBox.style.height = Math.max(50, Math.min(newSize, maxAllowedSize)) + 'px';
+                let newSize = window.initialCropSize + Math.max(e.clientX - window.startCropX, e.clientY - window.startCropY);
+                const maxAllowedSize = Math.min(window.cropWrapper.offsetWidth - (parseFloat(window.cropBox.style.left)||0), window.cropWrapper.offsetHeight - (parseFloat(window.cropBox.style.top)||0));
+                window.cropBox.style.width = Math.max(50, Math.min(newSize, maxAllowedSize)) + 'px';
+                window.cropBox.style.height = Math.max(50, Math.min(newSize, maxAllowedSize)) + 'px';
             }
         });
 
-        document.addEventListener('mouseup', () => { isDraggingCrop = false; isResizingCrop = false; });
+        document.addEventListener('mouseup', () => { window.isDraggingCrop = false; window.isResizingCrop = false; });
 
         document.getElementById('btnSaveCrop').addEventListener('click', () => {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
             const canvas = document.createElement('canvas'); canvas.width = 150; canvas.height = 150;
-            canvas.getContext('2d').drawImage(cropImage, (parseFloat(cropBox.style.left) / currentScale), (parseFloat(cropBox.style.top) / currentScale), (parseFloat(cropBox.style.width) / currentScale), (parseFloat(cropBox.style.width) / currentScale), 0, 0, 150, 150);
-            currentPfp = canvas.toDataURL('image/jpeg', 0.8);
-            localStorage.setItem('hubPfp', currentPfp);
-            updateMyAvatars(); window.closeWindow('win-crop');
-            if(typeof window.syncMyData === 'function') window.syncMyData({ pfp: currentPfp });
+            canvas.getContext('2d').drawImage(window.cropImage, (parseFloat(window.cropBox.style.left) / window.currentScale), (parseFloat(window.cropBox.style.top) / window.currentScale), (parseFloat(window.cropBox.style.width) / window.currentScale), (parseFloat(window.cropBox.style.width) / window.currentScale), 0, 0, 150, 150);
+            window.currentPfp = canvas.toDataURL('image/jpeg', 0.8);
+            localStorage.setItem('hubPfp', window.currentPfp);
+            window.updateMyAvatars(); window.closeWindow('win-crop');
+            if(typeof window.syncMyData === 'function') window.syncMyData({ pfp: window.currentPfp });
         });
     </script>
 
@@ -850,7 +828,10 @@
         window.allUsers = [];
         let knownRequests = []; 
 
-        // FUNÇÃO GLOBAL DE NOTIFICAÇÃO (TOAST)
+        // ==========================================
+        // 1. DECLARAÇÃO DAS FUNÇÕES GLOBAIS PRIMEIRO
+        // ==========================================
+
         window.showFriendRequestNotification = function(reqId, reqName, reqPfp) {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
             
@@ -859,17 +840,34 @@
             toast.className = 'toast-notification';
             
             toast.innerHTML = `
-                <img src="${reqPfp || defaultAvatar}" class="avatar-squircle" style="width: 40px; height: 40px; border: 2px solid rgba(255,255,255,0.8);">
+                <img src="${reqPfp || window.defaultAvatar}" class="avatar-squircle" style="width: 40px; height: 40px; border: 2px solid rgba(255,255,255,0.8);">
                 <div class="toast-content">
                     <strong style="color: var(--theme-color); font-size: 14px;">${reqName}</strong><br>
                     lhe enviou uma solicitação de amizade.
                 </div>
                 <div class="toast-actions">
-                    <button class="btn-glossy" onclick="event.stopPropagation(); window.acceptRequest('${reqId}'); const t = this.closest('.toast-notification'); t.classList.remove('show'); setTimeout(() => t.remove(), 400);" style="background:#4caf50; padding:6px 10px; font-size:12px;">V</button>
-                    <button class="btn-glossy" onclick="event.stopPropagation(); window.rejectRequest('${reqId}'); const t = this.closest('.toast-notification'); t.classList.remove('show'); setTimeout(() => t.remove(), 400);" style="background:#f44336; padding:6px 10px; font-size:12px;">X</button>
+                    <button class="btn-glossy btn-toast-accept" style="background:#4caf50; padding:6px 10px; font-size:12px;">V</button>
+                    <button class="btn-glossy btn-toast-reject" style="background:#f44336; padding:6px 10px; font-size:12px;">X</button>
                 </div>
             `;
             
+            const btnAccept = toast.querySelector('.btn-toast-accept');
+            const btnReject = toast.querySelector('.btn-toast-reject');
+            
+            btnAccept.onclick = (e) => {
+                e.stopPropagation(); 
+                window.acceptRequest(reqId);
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            };
+            
+            btnReject.onclick = (e) => {
+                e.stopPropagation(); 
+                window.rejectRequest(reqId);
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            };
+
             toast.onclick = () => {
                 if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
                 window.openUserProfile(reqId);
@@ -888,15 +886,6 @@
             }, 8000);
         }
 
-        // OUVINTE DO BANCO DE DADOS
-        onSnapshot(collection(db, "leaderboard"), (snapshot) => {
-            let onlinePlayers = []; snapshot.forEach((doc) => { onlinePlayers.push({ id: doc.id, ...doc.data() }); }); 
-            window.allUsers = onlinePlayers;
-            
-            if(myId && currentUserName) renderSystem(onlinePlayers);
-        });
-
-        // SISTEMA DE LOGIN / REGISTRO
         let isRegisterMode = false;
         window.toggleLoginMode = () => {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
@@ -966,8 +955,8 @@
             localStorage.setItem('hubUsername', currentUserName);
             localStorage.setItem('hubScore', myScore);
             
-            currentPfp = user.pfp || defaultAvatar; 
-            localStorage.setItem('hubPfp', currentPfp); 
+            window.currentPfp = user.pfp || window.defaultAvatar; 
+            localStorage.setItem('hubPfp', window.currentPfp); 
             
             document.getElementById('loginOverlay').style.display = 'none';
             initUserInterface();
@@ -990,15 +979,15 @@
             myId = 'user_' + Math.random().toString(36).substr(2, 9);
             currentUserName = name; myScore = 1000;
             
-            currentPfp = defaultAvatar;
-            localStorage.setItem('hubPfp', currentPfp);
+            window.currentPfp = window.defaultAvatar;
+            localStorage.setItem('hubPfp', window.currentPfp);
             localStorage.setItem('hubUserId', myId);
             localStorage.setItem('hubUsername', currentUserName);
             localStorage.setItem('hubScore', myScore);
             
             try {
                 await setDoc(doc(db, "leaderboard", myId), { 
-                    name: currentUserName, password: pass, score: myScore, pfp: currentPfp, lastActive: Date.now()
+                    name: currentUserName, password: pass, score: myScore, pfp: window.currentPfp, lastActive: Date.now()
                 });
                 
                 document.getElementById('loginOverlay').style.display = 'none';
@@ -1018,25 +1007,6 @@
                 localStorage.removeItem('hubPfp'); 
                 location.reload();
             }
-        }
-
-        function initUserInterface() {
-            document.getElementById('usernameInput').value = currentUserName;
-            document.getElementById('startMenuUser').textContent = currentUserName;
-            document.getElementById('profileNameDisplay').textContent = currentUserName;
-            updateMyAvatars();
-            window.syncMyData();
-            setInterval(() => { window.syncMyData(); }, 60000); 
-            if (currentUserName === 'admin1107112005') document.getElementById('adminDesktopIcon').style.display = 'block';
-            
-            // Força a UI a renderizar imediatamente ao logar caso a database já tenha carregado
-            if (window.allUsers.length > 0) renderSystem(window.allUsers);
-        }
-
-        if (!myId || !currentUserName) {
-            document.getElementById('loginOverlay').style.display = 'flex';
-        } else {
-            initUserInterface();
         }
 
         window.changeUsername = async function() {
@@ -1097,17 +1067,21 @@
             if(!me || !me.friends || me.friends.length === 0) { container.innerHTML = "<p style='color:#666; text-align:center;'>Você ainda não tem amigos adicionados.</p>"; window.openWindow('win-lista-amigos', 'Meus Amigos'); return; }
             me.friends.forEach(fId => {
                 const f = window.allUsers.find(u => u.id === fId);
-                if(f) container.innerHTML += `<div class="list-card list-card-hover" onclick="window.openUserProfile('${f.id}')"><img src="${f.pfp || defaultAvatar}" class="avatar-squircle" style="width:40px; height:40px; border: 2px solid white;"><span style="font-weight:bold; flex:1;">${f.name}</span></div>`;
+                if(f) container.innerHTML += `<div class="list-card list-card-hover" onclick="window.openUserProfile('${f.id}')"><img src="${f.pfp || window.defaultAvatar}" class="avatar-squircle" style="width:40px; height:40px; border: 2px solid white;"><span style="font-weight:bold; flex:1;">${f.name}</span></div>`;
             });
             window.openWindow('win-lista-amigos', 'Meus Amigos');
         }
 
         window.openUserProfile = function(targetId) {
             const target = window.allUsers.find(u => u.id === targetId); if(!target) return;
-            document.getElementById('visitAvatar').src = target.pfp || defaultAvatar; document.getElementById('visitName').textContent = target.name;
-            document.getElementById('visitScore').textContent = target.score; document.getElementById('visitFriendCount').textContent = target.friends ? target.friends.length : 0;
-            document.getElementById('visitAge').textContent = target.age || "Não informado"; document.getElementById('visitLoc').textContent = target.location || "Não informado";
-            document.getElementById('visitSoc').textContent = target.social || "Não informado"; document.getElementById('visitBio').textContent = target.bio || "Sem bio.";
+            document.getElementById('visitAvatar').src = target.pfp || window.defaultAvatar; 
+            document.getElementById('visitName').textContent = target.name;
+            document.getElementById('visitScore').textContent = target.score; 
+            document.getElementById('visitFriendCount').textContent = target.friends ? target.friends.length : 0;
+            document.getElementById('visitAge').textContent = target.age || "Não informado"; 
+            document.getElementById('visitLoc').textContent = target.location || "Não informado";
+            document.getElementById('visitSoc').textContent = target.social || "Não informado"; 
+            document.getElementById('visitBio').textContent = target.bio || "Sem bio.";
 
             const btnContainer = document.getElementById('visitActionContainer');
             if (targetId === myId) { btnContainer.style.display = 'none'; } else {
@@ -1134,7 +1108,7 @@
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
             const q = document.getElementById('searchAmigoInput').value.toLowerCase().trim();
             const user = window.allUsers && window.allUsers.find(u => u.name.toLowerCase() === q && u.id !== myId && !u.id.startsWith('bot_') && u.name !== 'admin1107112005');
-            document.getElementById('searchAmigoResult').innerHTML = user ? `<div class="list-card"><img src="${user.pfp || defaultAvatar}" class="avatar-squircle" style="width:40px; height:40px; border: 2px solid white;"><span style="font-weight:bold; flex:1; margin-left:10px;">${user.name}</span><button class="btn-glossy" onclick="window.openUserProfile('${user.id}')" style="font-size: 11px;">Ver Perfil</button></div>` : `<p style="color:red; font-size:12px; font-weight:bold;">Usuário não encontrado.</p>`;
+            document.getElementById('searchAmigoResult').innerHTML = user ? `<div class="list-card"><img src="${user.pfp || window.defaultAvatar}" class="avatar-squircle" style="width:40px; height:40px; border: 2px solid white;"><span style="font-weight:bold; flex:1; margin-left:10px;">${user.name}</span><button class="btn-glossy" onclick="window.openUserProfile('${user.id}')" style="font-size: 11px;">Ver Perfil</button></div>` : `<p style="color:red; font-size:12px; font-weight:bold;">Usuário não encontrado.</p>`;
         }
 
         window.sendRequest = async function(targetId) { if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); try { await updateDoc(doc(db, "leaderboard", targetId), { requests: arrayUnion(myId) }); } catch(e) {} }
@@ -1144,14 +1118,14 @@
             try { 
                 await updateDoc(doc(db, "leaderboard", myId), { requests: arrayRemove(reqId), friends: arrayUnion(reqId) }); 
                 await updateDoc(doc(db, "leaderboard", reqId), { friends: arrayUnion(myId) }); 
-            } catch(e) { console.error("Erro ao aceitar amizade", e); } 
+            } catch(e) { alert("Erro de conexão com o banco de dados."); } 
         }
         
         window.rejectRequest = async function(reqId) { 
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); 
             try { 
                 await updateDoc(doc(db, "leaderboard", myId), { requests: arrayRemove(reqId) }); 
-            } catch(e) { console.error("Erro ao rejeitar amizade", e); } 
+            } catch(e) { alert("Erro de conexão com o banco de dados."); } 
         }
 
         window.adminDeleteUser = async function(id) { if(confirm("Tem certeza que deseja apagar essa conta do banco de dados para sempre?")) { try { await deleteDoc(doc(db, "leaderboard", id)); alert("Excluído!"); } catch(e) { alert("Erro! Cheque se a regra 'allow delete' está 'true' no Firebase."); } } }
@@ -1167,16 +1141,25 @@
             const me = playersCopy.find(p => p.id === myId);
 
             if (me) {
-                document.getElementById('profileFriendCount').textContent = me.friends ? me.friends.length : 0; document.getElementById('profileReqCount').textContent = me.requests ? me.requests.length : 0;
-                if(document.activeElement.id !== 'profileAge' && me.age) document.getElementById('profileAge').value = me.age; if(document.activeElement.id !== 'profileLoc' && me.location) document.getElementById('profileLoc').value = me.location;
-                if(document.activeElement.id !== 'profileSoc' && me.social) document.getElementById('profileSoc').value = me.social; if(document.activeElement.id !== 'profileBio' && me.bio) document.getElementById('profileBio').value = me.bio;
+                document.getElementById('profileFriendCount').textContent = me.friends ? me.friends.length : 0; 
+                document.getElementById('profileReqCount').textContent = me.requests ? me.requests.length : 0;
+                
+                if(document.activeElement.id !== 'profileAge' && me.age) document.getElementById('profileAge').value = me.age; 
+                if(document.activeElement.id !== 'profileLoc' && me.location) document.getElementById('profileLoc').value = me.location;
+                if(document.activeElement.id !== 'profileSoc' && me.social) document.getElementById('profileSoc').value = me.social; 
+                if(document.activeElement.id !== 'profileBio' && me.bio) document.getElementById('profileBio').value = me.bio;
+                
                 const reqDiv = document.getElementById('requestsList');
                 if (reqDiv) {
-                    if (!me.requests || me.requests.length === 0) reqDiv.innerHTML = "<p style='color: #666; text-align: center;'>Nenhuma solicitação no momento.</p>";
-                    else {
-                        reqDiv.innerHTML = ''; me.requests.forEach(reqId => {
+                    if (!me.requests || me.requests.length === 0) {
+                        reqDiv.innerHTML = "<p style='color: #666; text-align: center;'>Nenhuma solicitação no momento.</p>";
+                    } else {
+                        reqDiv.innerHTML = ''; 
+                        me.requests.forEach(reqId => {
                             const u = window.allUsers.find(user => user.id === reqId);
-                            if(u) reqDiv.innerHTML += `<div class="list-card"><img src="${u.pfp || defaultAvatar}" class="avatar-squircle" style="width:35px; height:35px; border: 2px solid white;"><span style="font-weight:bold; flex:1;">${u.name}</span><button class="btn-glossy" onclick="window.acceptRequest('${u.id}')" style="background:#4caf50; padding:5px 8px; font-size:11px;">V</button><button class="btn-glossy" onclick="window.rejectRequest('${u.id}')" style="background:#f44336; padding:5px 8px; font-size:11px;">X</button></div>`;
+                            if(u) {
+                                reqDiv.innerHTML += `<div class="list-card"><img src="${u.pfp || window.defaultAvatar}" class="avatar-squircle" style="width:35px; height:35px; border: 2px solid white;"><span style="font-weight:bold; flex:1;">${u.name}</span><button class="btn-glossy" onclick="window.acceptRequest('${u.id}')" style="background:#4caf50; padding:5px 8px; font-size:11px;">V</button><button class="btn-glossy" onclick="window.rejectRequest('${u.id}')" style="background:#f44336; padding:5px 8px; font-size:11px;">X</button></div>`;
+                            }
                         });
                     }
                 }
@@ -1201,9 +1184,11 @@
             const sizes = ['16px', '15px', '14px'];
             const buildPlayerHTML = (player, index, rankStr) => {
                 const isMe = player.id === myId; const highlightStyle = isMe ? `color: var(--theme-color); font-weight: bold;` : '';
-                return `<div style="display:flex; align-items:center; width:100%;"><span style="font-size:12px; font-weight:bold; color:#777; width:20px; text-align:center;">${index < 3 ? '🏆' : ''}</span><img src="${player.pfp || defaultAvatar}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 1px solid rgba(0,0,0,0.2);"><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; margin-right: 10px;"><strong>${rankStr}:</strong> <span style="${highlightStyle}">${player.name}${isMe && index >= 3 ? ' (Você)' : ''}</span> - ${player.score} pts</div><button class="btn-glossy" onclick="window.openUserProfile('${player.id}')" style="padding: 4px 8px;"><svg class="search-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button></div>`;
+                return `<div style="display:flex; align-items:center; width:100%;"><span style="font-size:12px; font-weight:bold; color:#777; width:20px; text-align:center;">${index < 3 ? '🏆' : ''}</span><img src="${player.pfp || window.defaultAvatar}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 1px solid rgba(0,0,0,0.2);"><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; margin-right: 10px;"><strong>${rankStr}:</strong> <span style="${highlightStyle}">${player.name}${isMe && index >= 3 ? ' (Você)' : ''}</span> - ${player.score} pts</div><button class="btn-glossy" onclick="window.openUserProfile('${player.id}')" style="padding: 4px 8px;"><svg class="search-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button></div>`;
             };
+            
             publicPlayers.slice(0, 3).forEach((p, i) => { const li = document.createElement('li'); li.className = 'leaderboard-item'; li.style.fontSize = sizes[i] || '13px'; li.innerHTML = buildPlayerHTML(p, i, `${i + 1}º`); list.appendChild(li); });
+            
             if ((myIndex + 1) > 3 && myIndex !== -1) {
                 const divider = document.createElement('div'); divider.innerHTML = `<hr style="border-color: rgba(0,0,0,0.1); margin: 5px 0;"><div style="text-align:center; color:#888; font-size: 10px; margin-bottom: 5px;">•••</div>`; list.appendChild(divider);
                 const li = document.createElement('li'); li.className = 'leaderboard-item'; li.style.fontSize = '13px'; li.innerHTML = buildPlayerHTML(me, myIndex, `${myIndex + 1}º`); list.appendChild(li);
@@ -1217,11 +1202,41 @@
                         const isOnline = u.lastActive && (Date.now() - u.lastActive < 120000); 
                         const status = isOnline ? "<span style='color: #0f0; font-size: 10px;'>🟢 Online</span>" : "<span style='color: #888; font-size: 10px;'>🔴 Offline</span>";
                         const isBot = u.id.startsWith('bot_') ? "<span style='color: gold; font-size: 10px;'>🤖 Bot</span>" : status;
-                        adminList.innerHTML += `<div class="admin-row"><div style="display:flex; align-items:center; gap:8px;"><img src="${u.pfp || defaultAvatar}" style="width:20px; height:20px; border-radius:50%;"><span style="font-weight:bold; width: 100px; overflow:hidden; text-overflow:ellipsis;">${u.name}</span><span style="color:#0f0; width:60px;">${u.score} pts</span>${isBot}</div><div style="display:flex; gap:4px;"><button class="admin-btn" onclick="window.openUserProfile('${u.id}')">Ver</button><button class="admin-btn" onclick="window.adminEditScore('${u.id}', ${u.score})">Score</button><button class="admin-btn danger" onclick="window.adminDeleteUser('${u.id}')">Kick</button></div></div>`;
+                        adminList.innerHTML += `<div class="admin-row"><div style="display:flex; align-items:center; gap:8px;"><img src="${u.pfp || window.defaultAvatar}" style="width:20px; height:20px; border-radius:50%;"><span style="font-weight:bold; width: 100px; overflow:hidden; text-overflow:ellipsis;">${u.name}</span><span style="color:#0f0; width:60px;">${u.score} pts</span>${isBot}</div><div style="display:flex; gap:4px;"><button class="admin-btn" onclick="window.openUserProfile('${u.id}')">Ver</button><button class="admin-btn" onclick="window.adminEditScore('${u.id}', ${u.score})">Score</button><button class="admin-btn danger" onclick="window.adminDeleteUser('${u.id}')">Kick</button></div></div>`;
                     });
                 }
             }
         }
+
+        function initUserInterface() {
+            document.getElementById('usernameInput').value = currentUserName;
+            document.getElementById('startMenuUser').textContent = currentUserName;
+            document.getElementById('profileNameDisplay').textContent = currentUserName;
+            if(typeof window.updateMyAvatars === 'function') window.updateMyAvatars();
+            window.syncMyData();
+            setInterval(() => { window.syncMyData(); }, 60000); 
+            if (currentUserName === 'admin1107112005') document.getElementById('adminDesktopIcon').style.display = 'block';
+            
+            if (window.allUsers.length > 0) renderSystem(window.allUsers);
+        }
+
+        // ==========================================
+        // 2. LISTENERS E INÍCIO DA EXECUÇÃO
+        // ==========================================
+        
+        onSnapshot(collection(db, "leaderboard"), (snapshot) => {
+            let onlinePlayers = []; snapshot.forEach((doc) => { onlinePlayers.push({ id: doc.id, ...doc.data() }); }); 
+            window.allUsers = onlinePlayers;
+            
+            if(myId && currentUserName) renderSystem(onlinePlayers);
+        });
+
+        if (!myId || !currentUserName) {
+            document.getElementById('loginOverlay').style.display = 'flex';
+        } else {
+            initUserInterface();
+        }
+
     </script>
 
     <script>
