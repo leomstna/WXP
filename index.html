@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub de Jogos - Hyo</title>
+    <style>
+        :root {
+            --theme-color: #0088ff; 
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background-color: #000; 
+        }
+
+        /* --- CROSSFADE DOS WALLPAPERS --- */
+        .bg-layer {
+            position: fixed; 
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-size: cover;
+            background-position: center center;
+            z-index: -10;
+            transition: opacity 0.8s ease-in-out; 
+            pointer-events: none; 
+        }
+        #bg-day { background-image: url('wallpaper01.jpeg'); opacity: 1; }
+        #bg-night { background-image: url('wallpaper02.jpg'); opacity: 0; }
+        body.dark-mode #bg-day { opacity: 0; }
+        body.dark-mode #bg-night { opacity: 1; }
+
+        /* --- TELA DE LOGIN / REGISTRO --- */
+        #loginOverlay {
+            position: fixed; inset: 0; 
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(25px);
+            z-index: 20000; display: none; justify-content: center; align-items: center;
+        }
+        .login-box {
+            width: 360px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.75), rgba(200, 230, 255, 0.4));
+            backdrop-filter: blur(20px) saturate(150%);
+            border: 1px solid rgba(255,255,255,0.9); border-radius: 16px; padding: 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 2px 15px rgba(255,255,255,0.8);
+            text-align: center; color: #111;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .login-box h2 {
+            margin-bottom: 5px; color: var(--theme-color); text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+            display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 24px;
+        }
+        .login-box p { font-size: 13px; color: #444; margin-bottom: 20px; font-weight: 500; }
+        
+        .login-input {
+            width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.8);
+            outline: none; margin-bottom: 12px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 15px; font-weight: bold; color: #333; text-align: center;
+            background: rgba(255,255,255,0.9); transition: all 0.3s ease;
+        }
+        .login-input:focus { border-color: var(--theme-color); box-shadow: 0 0 8px var(--theme-color); }
+        
+        .btn-login-action {
+            width: 100%; padding: 12px; border-radius: 8px; font-size: 15px; letter-spacing: 0.5px; margin-top: 5px;
+        }
+        .btn-green {
+            background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(0,0,0,0.1) 100%), #4caf50 !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.5);
+            color: white !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
+        }
+        .login-toggle-link {
+            display: inline-block; margin-top: 15px; font-size: 13px; color: var(--theme-color);
+            font-weight: bold; text-decoration: none; cursor: pointer; transition: filter 0.2s;
+        }
+        .login-toggle-link:hover { filter: brightness(0.8); text-decoration: underline; }
+
+        /* --- TOGGLE SWITCH --- */
+        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.2); transition: .3s; border-radius: 24px; border: 2px solid rgba(255,255,255,0.5); }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+        input:checked + .slider { background-color: var(--theme-color); border-color: transparent; }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        /* --- MODO ESCURO --- */
+        body.dark-mode { color: #eee; color-scheme: dark; }
+        body.dark-mode .window, body.dark-mode #avatarMenu, body.dark-mode .login-box {
+            background: rgba(30, 30, 30, 0.6) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 2px 10px rgba(255,255,255,0.05) !important;
+        }
+        body.dark-mode .title-bar { background: linear-gradient(180deg, rgba(50, 50, 50, 0.8) 0%, rgba(30, 30, 30, 0.8) 100%) !important; color: #fff !important; text-shadow: 0 1px 1px rgba(0,0,0,0.8) !important; }
+        body.dark-mode .window-content { background: rgba(40, 40, 40, 0.7) !important; color: #eee !important; }
+        body.dark-mode .window-content h3, body.dark-mode #profileNameDisplay, body.dark-mode #visitName, body.dark-mode .start-left .menu-item:hover:not(.locked-item), body.dark-mode .login-box h2 { color: var(--theme-color) !important; text-shadow: none !important; }
+        body.dark-mode #win-perfil-visita strong, body.dark-mode strong { color: #ffffff !important; }
+        body.dark-mode #win-contato a { color: white !important; }
+        body.dark-mode #win-perfil .list-card-hover { color: #eee !important; }
+        body.dark-mode .window-content p, body.dark-mode label, body.dark-mode .start-left .menu-item, body.dark-mode .login-box p { color: #ccc !important; }
+        body.dark-mode input[type="text"], body.dark-mode input[type="number"], body.dark-mode select, body.dark-mode textarea, body.dark-mode input[type="password"] { background: rgba(60, 60, 60, 0.8) !important; border: 1px solid #555 !important; color: #fff !important; }
+        body.dark-mode input[type="color"] { border: 1px solid #555 !important; background: transparent !important; }
+        body.dark-mode .start-menu { background: linear-gradient(135deg, rgba(40, 40, 40, 0.9), rgba(20, 20, 30, 0.8)) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
+        body.dark-mode .start-left { background: rgba(50, 50, 50, 0.6) !important; }
+        body.dark-mode .start-right { background: rgba(30, 30, 40, 0.8) !important; }
+        body.dark-mode .taskbar { background: linear-gradient(to bottom, rgba(40, 40, 40, 0.8) 0%, rgba(20, 20, 30, 0.8) 100%) !important; border-top: 1px solid rgba(255, 255, 255, 0.1) !important; }
+        body.dark-mode .taskbar-tab { background: rgba(60, 60, 60, 0.5) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 2px 4px rgba(0,0,0,0.3) !important; }
+        body.dark-mode .taskbar-tab:hover { background: rgba(80, 80, 80, 0.7) !important; }
+        body.dark-mode .taskbar-tab.active-tab { background: rgba(100, 100, 100, 0.6) !important; }
+        body.dark-mode .aero-icon, body.dark-mode .taskbar-tab svg, body.dark-mode .search-icon-svg { fill: #eee !important; }
+        body.dark-mode .start-menu .menu-item[style*="var(--theme-color)"] .aero-icon { fill: var(--theme-color) !important; }
+        body.dark-mode .list-card { background: rgba(60, 60, 60, 0.6) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: #eee !important; }
+        body.dark-mode .list-card-hover:hover { background: rgba(80, 80, 80, 0.8) !important; }
+        .window, .window-content, .title-bar, .start-menu, .start-left, .start-right, .taskbar, .taskbar-tab, input, select, textarea, .menu-item, p, label, h1, h2, h3, span, div { transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
+
+        /* --- DESKTOP --- */
+        .desktop { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 15px; position: relative; flex-wrap: wrap; align-content: flex-start; }
+        .desktop-icon { width: 70px; text-align: center; color: white; text-shadow: 1px 1px 2px black; cursor: pointer; padding: 8px; border-radius: 5px; transition: all 0.25s ease; }
+        .desktop-icon:hover { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.4); transform: translateY(-2px); }
+        .desktop-icon .icon { font-size: 32px; margin-bottom: 5px; filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.4)); transition: transform 0.2s ease; }
+        .desktop-icon:hover .icon { transform: scale(1.1); }
+        .desktop-icon span { font-size: 12px; }
+
+        /* --- JANELAS --- */
+        .window { position: absolute; width: 350px; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(20px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.7); border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.2), inset 0 2px 10px rgba(255,255,255,0.5); display: none; flex-direction: column; overflow: hidden; z-index: 10; }
+        
+        /* MODO DESEMPENHO */
+        body.perf-mode .window, body.perf-mode .start-menu, body.perf-mode #avatarMenu, body.perf-mode .login-box { background: #e0e0e0 !important; backdrop-filter: none !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.5) !important; border: 1px solid #999 !important; }
+        body.perf-mode #loginOverlay { backdrop-filter: none !important; background: rgba(0,0,0,0.8); }
+        body.perf-mode .taskbar { background: #cccccc !important; backdrop-filter: none !important; border-top: 1px solid #999 !important; }
+        body.perf-mode .title-bar { background: var(--theme-color) !important; color: #fff !important; border-bottom: 1px solid #222 !important; text-shadow: none !important; }
+        body.perf-mode .start-btn { background: var(--theme-color) !important; box-shadow: inset 0 0 5px rgba(255,255,255,0.5) !important; background-image: none !important; }
+        body.perf-mode .window-content { background: #f5f5f5 !important; color: #111 !important; }
+        body.perf-mode label, body.perf-mode p { color: #111 !important; }
+
+        /* MODO DESEMPENHO + ESCURO */
+        body.perf-mode.dark-mode .window, body.perf-mode.dark-mode .start-menu, body.perf-mode.dark-mode #avatarMenu, body.perf-mode.dark-mode .login-box { background: #222222 !important; backdrop-filter: none !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.8) !important; border: 1px solid #444 !important; }
+        body.perf-mode.dark-mode .taskbar { background: #1a1a1a !important; backdrop-filter: none !important; border-top: 1px solid #444 !important; }
+        body.perf-mode.dark-mode .window-content { background: #2a2a2a !important; color: #eee !important; }
+        body.perf-mode.dark-mode label, body.perf-mode.dark-mode p { color: #eee !important; }
+        body.perf-mode.dark-mode .list-card { background: #333 !important; border-color: #555 !important; }
+
+        @keyframes popElastic { 0% { transform: scale(0.6); opacity: 0; } 50% { transform: scale(1.05); opacity: 1; } 75% { transform: scale(0.98); } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes zoomOut { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.5); opacity: 0; } }
+        @keyframes shakeError { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+        
+        .error-shake { animation: shakeError 0.4s ease; background: #8b0000 !important; background-image: none !important; border-color: #4a0000 !important; color: #ffffff !important; text-shadow: none !important; box-shadow: none !important; }
+
+        .window.active { display: flex; animation: popElastic 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
+        .window.closing { animation: zoomOut 0.25s ease-in forwards !important; }
+        .window.minimized { display: none !important; }
+
+        .title-bar { background: linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.2) 100%); border-bottom: 2px solid var(--theme-color); color: #111; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 13px; text-shadow: 0 1px 1px rgba(255,255,255,0.8); cursor: grab; }
+        .title-bar:active { cursor: grabbing; }
+        .title-bar .title-info { display: flex; align-items: center; gap: 8px; }
+        .close-btn { background: rgba(232, 17, 35, 0.8); border: 1px solid rgba(255,255,255,0.6); color: white; border-radius: 6px; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 12px; cursor: pointer; transition: background 0.2s; }
+        .close-btn:hover { background: #ff2a3c; }
+        .window-content { padding: 20px; color: #111; font-size: 14px; background: rgba(255,255,255,0.5); flex: 1; overflow-y: auto; max-height: 400px; }
+        .window-content h3 { margin-bottom: 10px; color: var(--theme-color); text-shadow: 0 1px 0 rgba(255,255,255,0.8); }
+        .window-content ul { list-style: none; margin-top: 10px; }
+        .window-content ul li { padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.1); }
+
+        .leaderboard-item { display: flex; align-items: center; padding: 10px 0 !important; }
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 4px; outline: none; margin: 10px 0; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--theme-color); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        input[type="text"], input[type="color"], input[type="number"], select, textarea, input[type="password"] { width: 100%; padding: 8px; margin: 5px 0 15px 0; border-radius: 5px; border: 1px solid #ccc; outline: none; background: rgba(255,255,255,0.9); transition: all 0.2s; }
+        input[type="color"] { padding: 2px; cursor: pointer; }
+        input[type="text"]:focus, input[type="number"]:focus, input[type="password"]:focus, select:focus, textarea:focus { border-color: var(--theme-color); box-shadow: 0 0 5px var(--theme-color); }
+
+        .taskbar { height: 50px; width: 100%; background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, rgba(200, 220, 255, 0.3) 100%); backdrop-filter: blur(15px); border-top: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 -2px 10px rgba(0,0,0,0.2); display: flex; align-items: center; padding: 0 10px; position: relative; z-index: 100; }
+        .taskbar-items { display: flex; gap: 8px; flex: 1; margin-left: 15px; overflow-x: auto; }
+        .taskbar-tab { background: rgba(255, 255, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.6); width: 38px; height: 38px; border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s ease; transform-origin: center; opacity: 1; }
+        .taskbar-tab:hover { background: rgba(255, 255, 255, 0.6); transform: translateY(-2px); }
+        .taskbar-tab.active-tab { background: rgba(255, 255, 255, 0.8); box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); border: 2px solid var(--theme-color); }
+        .taskbar-tab.closing-tab { width: 0; padding: 0; margin: 0; opacity: 0; border-width: 0; transform: scale(0); }
+        .taskbar-tab svg { width: 20px; height: 20px; filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3)); }
+
+        .start-btn { height: 40px; width: 40px; border-radius: 50%; background-color: var(--theme-color); background-image: radial-gradient(circle at center, rgba(255,255,255,0.5) 0%, transparent 70%); border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 0 10px var(--theme-color), inset 0 0 8px rgba(255,255,255,0.6); cursor: pointer; display: flex; justify-content: center; align-items: center; font-weight: bold; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .start-btn:hover { transform: scale(1.1); filter: brightness(1.15); }
+        .system-tray { color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); text-align: right; padding: 0 15px; font-size: 12px; line-height: 1.2; cursor: default; }
+
+        .start-menu { position: absolute; bottom: 60px; left: 10px; width: 380px; height: 450px; border-radius: 10px; background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(200, 230, 255, 0.3)); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.7); box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: row; overflow: hidden; z-index: 1000; opacity: 0; visibility: hidden; transform: translateY(15px) scale(0.98); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); transform-origin: bottom left; }
+        .start-menu.active { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+        .start-left { width: 60%; background: rgba(255, 255, 255, 0.7); padding: 10px; display: flex; flex-direction: column; gap: 5px; }
+        .start-right { width: 40%; background: rgba(0, 20, 50, 0.5); padding: 10px; display: flex; flex-direction: column; gap: 5px; }
+        .menu-item { padding: 10px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .start-left .menu-item { color: #333; }
+        .start-left .menu-item:hover { background: rgba(255, 255, 255, 0.9); box-shadow: 0 2px 5px rgba(0,0,0,0.1); transform: translateX(3px); border-left: 3px solid var(--theme-color); }
+        .start-right .menu-item { color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.5); }
+        .start-right .menu-item:hover:not(.locked-item) { background: rgba(255, 255, 255, 0.2); transform: translateX(3px); }
+
+        .aero-icon { width: 20px; height: 20px; filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3)); transition: fill 0.3s ease; }
+        .user-avatar { border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.8); cursor: pointer; transition: transform 0.2s; }
+        .user-avatar:hover { transform: scale(1.1); box-shadow: 0 0 5px rgba(255,255,255,0.5); }
+        .avatar-squircle { border-radius: 12px !important; }
+
+        .btn-glossy { background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(0,0,0,0.1) 100%), var(--theme-color); color: white !important; border: 1px solid rgba(255,255,255,0.6); border-radius: 6px; padding: 8px 12px; cursor: pointer; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-glossy:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .search-icon-svg { width: 14px; height: 14px; fill: white; }
+        .list-card { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 10px; background: rgba(255,255,255,0.6); border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); color: #111; transition: background 0.3s, border 0.3s; }
+        .list-card-hover { cursor: pointer; transition: all 0.2s ease; }
+        .list-card-hover:hover { filter: brightness(1.05); transform: translateX(2px); background: rgba(255,255,255,0.8); }
+
+        .locked-item { cursor: not-allowed; opacity: 0.7; }
+        .blurred-text { filter: blur(3px); user-select: none; transition: filter 0.3s; }
+
+        /* --- GOD MODE STYLES --- */
+        .admin-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 8px; padding: 8px; border-radius: 6px; }
+        .admin-btn { background: #444; color: white; border: 1px solid #777; border-radius: 4px; padding: 4px 8px; font-size: 11px; cursor: pointer; transition: 0.2s; }
+        .admin-btn:hover { background: #666; }
+        .admin-btn.danger { background: #800; border-color: #f00; }
+        .admin-btn.danger:hover { background: #f00; }
+
+        /* --- TUTORIAL CSS --- */
+        #tutorialBlocker { display: none; position: fixed; inset: 0; background: transparent; z-index: 10000; pointer-events: all; }
+        #tutorialSpotlight { display: none; position: absolute; border: 3px solid var(--theme-color); box-shadow: 0 0 0 9999px rgba(0,0,0,0.75); border-radius: 12px; z-index: 10001; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); pointer-events: none; opacity: 0; }
+        #tutorialBox { display: none; position: absolute; width: 320px; background: rgba(255,255,255,0.95); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.8); border-radius: 12px; padding: 20px; z-index: 10002; box-shadow: 0 15px 35px rgba(0,0,0,0.5); transition: opacity 0.3s ease; opacity: 0; flex-direction: column; gap: 15px; color: #111; }
+        #tutorialArrow { position: absolute; width: 35px; height: 35px; }
+        #tutorialArrow svg { width: 100%; height: 100%; fill: var(--theme-color); filter: drop-shadow(-2px 0px 2px rgba(0,0,0,0.2)); }
+        #tutorialText { font-size: 15px; font-weight: 500; min-height: 60px; margin: 0; line-height: 1.4; }
+        #tutorialEnter { opacity: 0; font-size: 13px; color: var(--theme-color); font-weight: bold; text-align: right; transition: opacity 0.3s; animation: tutPulse 1.5s infinite; }
+        @keyframes tutPulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+    </style>
+</head>
+<body>
+
+    <div id="bg-day" class="bg-layer"></div>
+    <div id="bg-night" class="bg-layer"></div>
+
+    <div id="loginOverlay">
+        <div class="login-box" id="loginBoxDiv">
+            <h2 id="loginTitle">
+                <svg class="aero-icon" viewBox="0 0 24 24" fill="var(--theme-color)" style="width:28px; height:28px;"><path d="M21.58 16.09l-1.09-7.66C20.21 6.46 18.52 5 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66C2.2 17.63 3.39 19 4.94 19c.68 0 1.32-.27 1.8-.75L9 16h6l2.25 2.25c.48.48 1.13.75 1.8.75 1.56 0 2.75-1.38 2.53-2.91zM11 11H9v2H8v-2H6v-1h2V8h1v2h2v1zm4-1c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2 3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>
+                Entrar no Hub
+            </h2>
+            <p id="loginSubtitle">Faça login com seu perfil para continuar.</p>
+            
+            <input type="text" id="loginName" class="login-input" maxlength="15" placeholder="Nome de Usuário">
+            <input type="password" id="loginPass" class="login-input" placeholder="Sua Senha">
+            <input type="password" id="loginConfirmPass" class="login-input" placeholder="Confirmar Senha" style="display: none;">
+            
+            <div id="loginErrorMsg" style="display:none; color:red; font-size:13px; font-weight:bold; margin-bottom: 10px;">Erro!</div>
+            
+            <button id="loginMainBtn" class="btn-glossy login-btn" onclick="window.handleLoginAction()">Entrar no Sistema</button>
+            <a id="loginToggleLink" class="login-toggle-link" onclick="window.toggleLoginMode()">Novo por aqui? Criar conta</a>
+        </div>
+    </div>
+
+    <div id="tutorialBlocker"></div>
+    <div id="tutorialSpotlight"></div>
+    <div id="tutorialBox">
+        <div id="tutorialArrow"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
+        <p id="tutorialText"></p>
+        <div id="tutorialEnter">Pressione [Enter] ↵</div>
+    </div>
+
+    <input type="file" id="pfpUpload" accept="image/*" style="display: none;">
+    <div id="avatarMenu" style="display: none; position: absolute; background: rgba(255,255,255,0.85); backdrop-filter: blur(15px); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; padding: 5px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 9999;">
+        <div onclick="if(typeof playSfx==='function') playSfx(sfx2); document.getElementById('pfpUpload').click(); document.getElementById('avatarMenu').style.display='none';" style="cursor: pointer; padding: 8px 12px; font-size: 13px; font-weight: 600; color: #111; border-radius: 4px; transition: background 0.2s;">
+            🖼️ Mudar foto de perfil
+        </div>
+    </div>
+
+    <div class="window" id="win-crop" style="width: 400px; z-index: 10001; top: 10%; left: 30%;">
+        <div class="title-bar">
+            <div class="title-info"><div style="font-size:16px;">✂️</div> Recortar Foto</div>
+            <div class="close-btn" onclick="closeWindow('win-crop')">X</div>
+        </div>
+        <div class="window-content" style="display: flex; flex-direction: column; align-items: center; background: rgba(30, 30, 30, 0.8);">
+            <div id="cropContainer" style="position: relative; width: 340px; height: 340px; background: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; border-radius: 5px; box-shadow: inset 0 0 10px rgba(0,0,0,0.8);">
+                <div id="cropWrapper" style="position: relative; display: inline-block;">
+                    <img id="cropImage" style="display: block;">
+                    <div id="cropBox" style="position: absolute; border: 2px solid #fff; box-shadow: 0 0 0 9999px rgba(0,0,0,0.6); cursor: move;">
+                        <div id="cropResizeHandle" style="position: absolute; right: -6px; bottom: -6px; width: 16px; height: 16px; background: var(--theme-color); border: 2px solid white; border-radius: 50%; cursor: se-resize; box-shadow: 0 2px 4px rgba(0,0,0,0.5);"></div>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 15px; width: 100%;">
+                <button onclick="closeWindow('win-crop')" style="flex: 1; padding: 8px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); border-radius: 5px; cursor: pointer; font-weight: bold;">Cancelar</button>
+                <button id="btnSaveCrop" style="flex: 1; padding: 8px; background: var(--theme-color); color: white; border: 1px solid rgba(255,255,255,0.8); border-radius: 5px; cursor: pointer; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.4);">Salvar Foto</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="window" id="win-admin" style="top: 50px; left: 150px; width: 500px; z-index: 10050;">
+        <div class="title-bar" style="background: linear-gradient(180deg, #333 0%, #000 100%); border-bottom: 2px solid gold;">
+            <div class="title-info" style="color: gold; text-shadow: 0 0 5px red;">👁️‍🗨️ SYSTEM GOD MODE</div>
+            <div class="close-btn" onclick="closeWindow('win-admin')">X</div>
+        </div>
+        <div class="window-content" style="background: rgba(15,15,15,0.9); color: #fff;">
+            <h3 style="color: gold; border-bottom: 1px solid #333; padding-bottom: 5px;">Painel de Controle</h3>
+            <p style="font-size: 11px; color: #888; margin-bottom: 15px;">Atenção: Ações aqui afetam o banco de dados real. Certifique-se que o "allow delete" está true no Firebase para a exclusão funcionar.</p>
+            <div id="adminUserList" style="display: flex; flex-direction: column; gap: 5px;"></div>
+        </div>
+    </div>
+
+    <div class="window" id="win-perfil" style="top: 80px; left: 120px; width: 400px;">
+        <div class="title-bar">
+            <div class="title-info">
+                <svg class="aero-icon" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> 
+                Meu Perfil
+            </div>
+            <div class="close-btn" onclick="closeWindow('win-perfil')">X</div>
+        </div>
+        <div class="window-content">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                <img class="user-avatar avatar-squircle" id="profileAvatarBig" src="" style="width: 80px; height: 80px; border: 3px solid rgba(255,255,255,0.9); box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                <div style="flex: 1;">
+                    <h2 id="profileNameDisplay" style="color: var(--theme-color); margin-bottom: 5px; font-size: 22px;">Nome</h2>
+                    <div onclick="window.openMyFriendsList()" class="list-card-hover" style="display:flex; align-items:center; gap:5px; font-size: 13px; color: #555; margin-bottom: 8px; padding: 4px; border-radius: 4px; width: fit-content;">
+                        <svg class="aero-icon" viewBox="0 0 24 24" fill="#555" style="width:16px; height:16px;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                        Amigos: <strong id="profileFriendCount" style="color:#111;">0</strong>
+                    </div>
+                    <button class="btn-glossy" onclick="openWindow('win-solicitacoes', 'Solicitações')" style="font-size: 12px; padding: 5px 10px;">📩 Solicitações (<span id="profileReqCount">0</span>)</button>
+                </div>
+            </div>
+            <hr style="border-color: rgba(0,0,0,0.1); margin: 15px 0;">
+            <label style="font-weight: bold; font-size: 12px;">Idade:</label>
+            <input type="number" id="profileAge" placeholder="Ex: 21">
+            <label style="font-weight: bold; font-size: 12px;">Localização (Cidade/Estado/País):</label>
+            <input type="text" id="profileLoc" placeholder="Ex: Feira de Santana, BA">
+            <label style="font-weight: bold; font-size: 12px;">Redes Sociais:</label>
+            <input type="text" id="profileSoc" placeholder="Ex: @instagram">
+            <label style="font-weight: bold; font-size: 12px;">Sua Bio:</label>
+            <textarea id="profileBio" rows="3" placeholder="Escreva um pouco sobre você..."></textarea>
+            <button class="btn-glossy" onclick="window.saveProfileInfo()" style="width: 100%; margin-top: 5px; font-size: 14px;">💾 Salvar Perfil</button>
+        </div>
+    </div>
+
+    <div class="window" id="win-lista-amigos" style="top: 100px; left: 150px; width: 300px;">
+        <div class="title-bar">
+            <div class="title-info">
+                <svg class="aero-icon" viewBox="0 0 24 24" fill="white"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                Meus Amigos
+            </div>
+            <div class="close-btn" onclick="closeWindow('win-lista-amigos')">X</div>
+        </div>
+        <div class="window-content" id="friendsListContainer"></div>
+    </div>
+
+    <div class="window" id="win-perfil-visita" style="top: 90px; left: 130px; width: 400px; z-index: 10010;">
+        <div class="title-bar">
+            <div class="title-info">
+                <svg class="aero-icon" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> 
+                Visualizar Perfil
+            </div>
+            <div class="close-btn" onclick="closeWindow('win-perfil-visita')">X</div>
+        </div>
+        <div class="window-content">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                <img class="avatar-squircle" id="visitAvatar" src="" style="width: 80px; height: 80px; border: 3px solid rgba(255,255,255,0.9); box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                <div style="flex: 1;">
+                    <h2 id="visitName" style="color: var(--theme-color); margin-bottom: 5px; font-size: 22px;">Nome</h2>
+                    <p style="font-size: 13px; margin-bottom: 4px;">🏆 Score: <strong id="visitScore">0</strong></p>
+                    <div style="display:flex; align-items:center; gap:5px; font-size: 13px;">
+                        <svg class="aero-icon" viewBox="0 0 24 24" fill="#888" style="width:14px; height:14px;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                        Amigos: <strong id="visitFriendCount">0</strong>
+                    </div>
+                    
+                    <div id="visitActionContainer" style="margin-top: 8px;">
+                        <button id="btnVisitAddFriend" class="btn-glossy" style="font-size: 12px; padding: 5px 10px;">Enviar Solicitação</button>
+                        <div id="visitActionMsg" style="display:none; color:#ff6b6b; font-size:11px; margin-top:4px; font-weight:bold;"></div>
+                    </div>
+                </div>
+            </div>
+            <hr style="border-color: rgba(0,0,0,0.1); margin: 15px 0;">
+            <div style="background: rgba(255,255,255,0.3); padding: 15px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05);">
+                <p style="margin-bottom: 10px;">🎂 <strong>Idade:</strong> <span class="locked-field">🔒 <span class="blurred-text" id="visitAge">Não informado</span></span></p>
+                <p style="margin-bottom: 10px;">📍 <strong>Local:</strong> <span class="locked-field">🔒 <span class="blurred-text" id="visitLoc">Não informado</span></span></p>
+                <p style="margin-bottom: 10px;">🌐 <strong>Redes:</strong> <span class="locked-field">🔒 <span class="blurred-text" id="visitSoc">Não informado</span></span></p>
+                <p>📝 <strong>Bio:</strong></p>
+                <p id="visitBio" style="font-style: italic; margin-top: 5px;">Sem bio.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="window" id="win-add-amigo" style="top: 150px; left: 200px;">
+        <div class="title-bar">
+            <div class="title-info">
+                <svg class="aero-icon" viewBox="0 0 24 24" fill="white"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                Adicionar Amigos
+            </div>
+            <div class="close-btn" onclick="closeWindow('win-add-amigo')">X</div>
+        </div>
+        <div class="window-content">
+            <h3 style="font-size: 16px;">Buscar Usuário</h3>
+            <div style="display: flex; gap: 5px; margin-top: 10px;">
+                <input type="text" id="searchAmigoInput" placeholder="Nome exato..." style="margin:0;">
+                <button class="btn-glossy" onclick="window.searchFriend()">
+                    <svg class="search-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                </button>
+            </div>
+            <div id="searchAmigoResult" style="margin-top: 15px;"></div>
+        </div>
+    </div>
+
+    <div class="window" id="win-solicitacoes" style="top: 120px; left: 180px;">
+        <div class="title-bar">
+            <div class="title-info">
+                <svg class="aero-icon" viewBox="0 0 24 24" fill="white"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                Solicitações de Amizade
+            </div>
+            <div class="close-btn" onclick="closeWindow('win-solicitacoes')">X</div>
+        </div>
+        <div class="window-content">
+            <div id="requestsList">
+                <p style="text-align: center;">Nenhuma solicitação no momento.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="desktop" id="desktop">
+        <div class="desktop-icon" id="adminDesktopIcon" style="display: none;" onclick="if(typeof playSfx==='function') playSfx(sfx1); openWindow('win-admin', 'God Mode')">
+            <div class="icon">👁️‍🗨️</div>
+            <span style="color: gold; text-shadow: 0 0 5px red; font-weight: bold;">God Mode</span>
+        </div>
+
+        <div class="desktop-icon tut-game-icon" onclick="if(typeof playSfx==='function') playSfx(sfx2); openWindow('win-jogo', 'Jogo')">
+            <div class="icon">🕹️</div>
+            <span>Jogo 1</span>
+        </div>
+        <div class="desktop-icon" onclick="if(typeof playSfx==='function') playSfx(sfx2); alert('Em breve...')">
+            <div class="icon">🏎️</div>
+            <span>Jogo 2</span>
+        </div>
+
+        <div class="window" id="win-sobre" style="top: 100px; left: 100px;">
+            <div class="title-bar">
+                <div class="title-info">
+                    <svg class="aero-icon" viewBox="0 0 24 24" fill="#00e5ff"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                    Sobre o Site
+                </div>
+                <div class="close-btn" onclick="closeWindow('win-sobre')">X</div>
+            </div>
+            <div class="window-content">
+                <h3>Hub de Jogos v1.0</h3>
+                <p>Desenvolvido diretamente de Feira de Santana.</p><br>
+                <p>Este sistema é um experimento pessoal para abrigar jogos de navegador, unindo meus estudos de lógica de programação com um design focado em motion graphics e estética Frutiger Aero.</p>
+            </div>
+        </div>
+
+        <div class="window" id="win-config" style="top: 130px; left: 150px;">
+            <div class="title-bar">
+                <div class="title-info">
+                    <svg class="aero-icon" viewBox="0 0 24 24" fill="#aaaaaa"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+                    Configurações
+                </div>
+                <div class="close-btn" onclick="closeWindow('win-config')">X</div>
+            </div>
+            <div class="window-content">
+                <h3>Opções do Sistema</h3>
+                
+                <label>👤 Perfil Atual:</label>
+                <div style="display: flex; align-items: center; gap: 10px; margin: 5px 0 15px 0;">
+                    <img class="user-avatar" id="configAvatar" src="" style="width: 35px; height: 35px;">
+                    <input type="text" id="usernameInput" maxlength="15" readonly style="margin: 0; flex: 1; background: rgba(0,0,0,0.05); color: #888; font-weight: bold;">
+                    <button class="btn-glossy" onclick="window.changeUsername()" style="padding: 8px 12px; font-size: 12px;">✏️ Alterar</button>
+                </div>
+
+                <label style="display:block; margin-top:15px;">🎨 Cor Tema:</label>
+                <input type="color" id="themePicker" value="#0088ff" style="height: 35px; width: 100%;">
+
+                <div style="display: flex; align-items: center; justify-content: space-between; margin: 15px 0; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 8px;">
+                    <label for="darkModeToggle" style="margin:0; cursor:pointer; font-weight:bold;">🌙 Modo Escuro</label>
+                    <label class="switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <label>🎵 Música:</label>
+                <input type="range" id="musicVolInput" min="0" max="100" value="30">
+                
+                <label>🔊 Efeitos Sonoros:</label>
+                <input type="range" id="sfxVolInput" min="0" max="100" value="80">
+                
+                <label>🖼️ Efeitos Visuais:</label>
+                <select id="visualSelect">
+                    <option value="alto">Alto (Aero Glass Ativo)</option>
+                    <option value="desempenho">Desempenho (Sólido/Sem Blur)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="window" id="win-contato" style="top: 160px; left: 200px;">
+            <div class="title-bar">
+                <div class="title-info">
+                    <svg class="aero-icon" viewBox="0 0 24 24" fill="#ff5252"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    Contato
+                </div>
+                <div class="close-btn" onclick="closeWindow('win-contato')">X</div>
+            </div>
+            <div class="window-content">
+                <h3>Fale com o Desenvolvedor</h3>
+                <ul>
+                    <li><strong>Profissional:</strong> <a href="https://www.instagram.com/leomacedo.mp4/" target="_blank" style="color: var(--theme-color); text-decoration: none; font-weight: bold;">@leomacedo.mp4</a></li>
+                    <li><strong>Pessoal:</strong> <a href="https://www.instagram.com/leostn9/" target="_blank" style="color: var(--theme-color); text-decoration: none; font-weight: bold;">@leostn9</a></li>
+                    <li><strong>Status:</strong> Codando e editando.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="window" id="win-placar" style="top: 190px; left: 250px;">
+            <div class="title-bar">
+                <div class="title-info">
+                    <svg class="aero-icon" viewBox="0 0 24 24" fill="#ffd700"><path d="M19 3h-2V1h-2v2H9V1H7v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V9h14v10z"/></svg>
+                    Placar de Líderes (Global)
+                </div>
+                <div class="close-btn" onclick="closeWindow('win-placar')">X</div>
+            </div>
+            <div class="window-content">
+                <h3>Top Scores (Em tempo real)</h3>
+                <ul id="leaderboardList">
+                    <li style="font-size: 14px; text-align: center; color: #666; padding: 20px;">Carregando dados da nuvem...</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="start-menu" id="startMenu">
+        <div class="start-left">
+            <div class="menu-item tut-hub-title" style="font-weight: bold; font-size: 16px; margin-bottom: 10px; cursor: default;">
+                <svg class="aero-icon" viewBox="0 0 24 24" fill="#4caf50" style="width:24px; height:24px;"><path d="M21.58 16.09l-1.09-7.66C20.21 6.46 18.52 5 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66C2.2 17.63 3.39 19 4.94 19c.68 0 1.32-.27 1.8-.75L9 16h6l2.25 2.25c.48.48 1.13.75 1.8.75 1.56 0 2.75-1.38 2.53-2.91zM11 11H9v2H8v-2H6v-1h2V8h1v2h2v1zm4-1c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2 3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>
+                Hub de Jogos
+            </div>
+            <div class="menu-item tut-menu-op" onclick="openWindow('win-sobre', 'Sobre o Site')">
+                <svg class="aero-icon" viewBox="0 0 24 24" fill="#00e5ff"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                Sobre o Site
+            </div>
+            <div class="menu-item tut-menu-op" onclick="openWindow('win-config', 'Configurações')">
+                <svg class="aero-icon" viewBox="0 0 24 24" fill="#aaaaaa"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+                Configurações
+            </div>
+            <div class="menu-item tut-menu-op" onclick="openWindow('win-contato', 'Contato')">
+                <svg class="aero-icon" viewBox="0 0 24 24" fill="#ff5252"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                Contato
+            </div>
+            <div class="menu-item tut-menu-op" onclick="openWindow('win-placar', 'Placar de Líderes')">
+                <svg class="aero-icon" viewBox="0 0 24 24" fill="#ffd700"><path d="M19 3h-2V1h-2v2H9V1H7v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V9h14v10z"/></svg>
+                Placar de Líderes
+            </div>
+            
+            <hr style="border-color: rgba(0,0,0,0.1); margin: 5px 0;">
+            
+            <div class="menu-item tut-menu-op" onclick="openWindow('win-add-amigo', 'Adicionar Amigos')" style="color: var(--theme-color); font-weight: bold;">
+                <svg class="aero-icon" viewBox="0 0 24 24" fill="var(--theme-color)"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                Adicionar Amigos
+            </div>
+        </div>
+        
+        <div class="start-right">
+            <div class="menu-item tut-menu-perfil" onclick="openWindow('win-perfil', 'Meu Perfil')" title="Acessar Meu Perfil" style="padding-bottom: 10px; display: flex; align-items: center; gap: 8px; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 5px;">
+                <img class="user-avatar avatar-squircle" id="startMenuAvatar" src="" style="width: 36px; height: 36px; min-width: 36px; border: 2px solid rgba(255,255,255,0.6);">
+                <span id="startMenuUser" style="font-weight: bold; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">Carregando...</span>
+            </div>
+            
+            <div class="menu-item locked-item">
+                <span style="font-size: 11px;">🔒</span>
+                <span class="blurred-text">Meus Projetos</span>
+            </div>
+            <div class="menu-item locked-item">
+                <span style="font-size: 11px;">🔒</span>
+                <span class="blurred-text">Portfólio</span>
+            </div>
+            <div class="menu-item locked-item">
+                <span style="font-size: 11px;">🔒</span>
+                <span class="blurred-text">Redes Sociais</span>
+            </div>
+            <div class="menu-item" style="margin-top: auto; color: #ff6b6b; font-weight: bold;" onclick="window.logout()">
+                <span style="font-size: 13px;">🚪</span>
+                Sair da Conta
+            </div>
+        </div>
+    </div>
+
+    <div class="taskbar">
+        <div class="start-btn tut-btn-iniciar" id="startBtn">W</div>
+        <div class="taskbar-items" id="taskbarItems"></div>
+        <div class="system-tray">
+            <div class="time" id="clockTime">--:--</div>
+            <div class="date" id="clockDate">--/--/----</div>
+        </div>
+    </div>
+
+    <script>
+        let zIndexCounter = 10;
+        const savedTheme = localStorage.getItem('hubTheme') || '#0088ff';
+        document.documentElement.style.setProperty('--theme-color', savedTheme);
+        document.getElementById('themePicker').value = savedTheme;
+        const savedVisual = localStorage.getItem('hubVisual') || 'alto';
+        document.getElementById('visualSelect').value = savedVisual;
+        if (savedVisual === 'desempenho') document.body.classList.add('perf-mode');
+        
+        document.getElementById('darkModeToggle').checked = false;
+        document.getElementById('darkModeToggle').addEventListener('change', (e) => {
+            if(typeof playSfx === 'function') playSfx(sfx2);
+            if(e.target.checked) { document.body.classList.add('dark-mode'); localStorage.setItem('hubDarkMode', 'true'); } 
+            else { document.body.classList.remove('dark-mode'); localStorage.setItem('hubDarkMode', 'false'); }
+        });
+
+        document.getElementById('themePicker').addEventListener('input', (e) => { document.documentElement.style.setProperty('--theme-color', e.target.value); localStorage.setItem('hubTheme', e.target.value); });
+        document.getElementById('visualSelect').addEventListener('change', (e) => { if(typeof playSfx === 'function') playSfx(sfx2); if (e.target.value === 'desempenho') document.body.classList.add('perf-mode'); else document.body.classList.remove('perf-mode'); localStorage.setItem('hubVisual', e.target.value); });
+
+        const taskbarIcons = {
+            'win-sobre': '<svg viewBox="0 0 24 24" fill="#00e5ff"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>',
+            'win-config': '<svg viewBox="0 0 24 24" fill="#aaaaaa"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>',
+            'win-contato': '<svg viewBox="0 0 24 24" fill="#ff5252"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>',
+            'win-placar': '<svg viewBox="0 0 24 24" fill="#ffd700"><path d="M19 3h-2V1h-2v2H9V1H7v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V9h14v10z"/></svg>',
+            'win-add-amigo': '<svg viewBox="0 0 24 24" fill="var(--theme-color)"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>',
+            'win-perfil': '<svg viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>',
+            'win-solicitacoes': '<svg viewBox="0 0 24 24" fill="white"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>',
+            'win-jogo': '🕹️',
+            'win-crop': '✂️',
+            'win-lista-amigos': '<svg viewBox="0 0 24 24" fill="white"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>',
+            'win-perfil-visita': '<svg viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>',
+            'win-admin': '👁️‍🗨️'
+        };
+
+        window.openWindow = function(id, title) {
+            if(typeof playSfx === 'function') playSfx(sfx1);
+            const win = document.getElementById(id); document.getElementById('startMenu').classList.remove('active');
+            if (!win.classList.contains('active')) {
+                win.classList.remove('closing'); win.classList.add('active'); win.classList.remove('minimized'); window.bringToFront(win);
+                const taskbarItems = document.getElementById('taskbarItems');
+                if(!document.getElementById('tab-' + id)) {
+                    const tab = document.createElement('div'); tab.className = 'taskbar-tab active-tab'; tab.id = 'tab-' + id;
+                    const iconContent = taskbarIcons[id] || '📁';
+                    tab.innerHTML = `<div style="display:flex; justify-content:center; align-items:center;">${iconContent}</div>`; tab.title = title;
+                    tab.onclick = () => {
+                        if(typeof playSfx === 'function') playSfx(sfx4);
+                        if (win.classList.contains('minimized')) { win.classList.remove('minimized'); window.bringToFront(win); tab.classList.add('active-tab'); } 
+                        else { if (win.style.zIndex == zIndexCounter) { win.classList.add('minimized'); tab.classList.remove('active-tab'); } else { window.bringToFront(win); tab.classList.add('active-tab'); } }
+                    };
+                    taskbarItems.appendChild(tab);
+                } else document.getElementById('tab-' + id).classList.add('active-tab');
+            } else if (win.classList.contains('minimized')) { win.classList.remove('minimized'); window.bringToFront(win); document.getElementById('tab-' + id).classList.add('active-tab'); } 
+            else window.bringToFront(win);
+        }
+
+        window.closeWindow = function(id) {
+            if(typeof playSfx === 'function') playSfx(sfx3);
+            const win = document.getElementById(id); win.classList.add('closing');
+            setTimeout(() => { win.classList.remove('active'); win.classList.remove('closing'); }, 250);
+            const tab = document.getElementById('tab-' + id); if (tab) { tab.classList.add('closing-tab'); setTimeout(() => tab.remove(), 300); }
+        }
+
+        window.bringToFront = function(win) {
+            zIndexCounter++; win.style.zIndex = zIndexCounter;
+            document.querySelectorAll('.taskbar-tab').forEach(t => t.classList.remove('active-tab'));
+            const activeTab = document.getElementById('tab-' + win.id); if(activeTab) activeTab.classList.add('active-tab');
+        }
+
+        document.querySelectorAll('.window').forEach(win => {
+            const titleBar = win.querySelector('.title-bar'); let isDragging = false, startX, startY, initialLeft, initialTop;
+            win.addEventListener('mousedown', () => window.bringToFront(win));
+            titleBar.addEventListener("mousedown", (e) => { if (e.target.classList.contains('close-btn')) return; isDragging = true; startX = e.clientX; startY = e.clientY; initialLeft = win.offsetLeft; initialTop = win.offsetTop; });
+            document.addEventListener("mouseup", () => isDragging = false);
+            document.addEventListener("mousemove", (e) => { if (!isDragging) return; e.preventDefault(); win.style.left = `${initialLeft + (e.clientX - startX)}px`; win.style.top = `${initialTop + (e.clientY - startY)}px`; });
+        });
+
+        const startBtn = document.getElementById('startBtn'); const startMenu = document.getElementById('startMenu');
+        startBtn.addEventListener('click', (e) => { e.stopPropagation(); if(typeof playSfx === 'function') playSfx(sfx2); startMenu.classList.toggle('active'); });
+        document.addEventListener('click', (e) => { if (!startMenu.contains(e.target) && e.target !== startBtn && !e.target.closest('#avatarMenu')) startMenu.classList.remove('active'); });
+
+        function updateClock() {
+            const now = new Date(); document.getElementById('clockTime').textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`; document.getElementById('clockDate').textContent = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+        }
+        updateClock(); setInterval(updateClock, 1000);
+    </script>
+
+    <script>
+        const sfx1 = new Audio('sfx 01.MP3'); 
+        const sfx2 = new Audio('sfx 02.MP3'); 
+        const sfx3 = new Audio('sfx 03.MP3'); 
+        const sfx4 = new Audio('sfx 04.MP3'); 
+        let currentSfxVolume = 0.8;
+        function playSfx(audioObj) {
+            audioObj.volume = currentSfxVolume;
+            audioObj.currentTime = 0; 
+            audioObj.play().catch(e => console.log('Áudio bloqueado.'));
+        }
+        const musicList = ['musica01.mp3', 'musica02.mp3', 'musica03.mp3'];
+        let currentMusicIndex = 0;
+        const bgMusic = new Audio(musicList[currentMusicIndex]);
+        bgMusic.volume = 0.3; 
+        bgMusic.addEventListener('ended', () => {
+            currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
+            bgMusic.src = musicList[currentMusicIndex];
+            bgMusic.play();
+        });
+        let musicStarted = false;
+        document.body.addEventListener('click', () => {
+            if (!musicStarted) {
+                bgMusic.play().catch(e => console.log(e));
+                musicStarted = true;
+            }
+        }, { once: true }); 
+        document.getElementById('musicVolInput').addEventListener('input', (e) => { bgMusic.volume = e.target.value / 100; });
+        document.getElementById('sfxVolInput').addEventListener('input', (e) => { currentSfxVolume = e.target.value / 100; playSfx(sfx2); });
+
+        const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+        let currentPfp = localStorage.getItem('hubPfp') || defaultAvatar;
+
+        function updateMyAvatars() {
+            document.querySelectorAll('.user-avatar').forEach(img => {
+                if(img.id !== 'visitAvatar') img.src = currentPfp;
+            });
+        }
+
+        document.querySelectorAll('.user-avatar').forEach(img => {
+            if(img.id === 'configAvatar' || img.id === 'startMenuAvatar' || img.id === 'profileAvatarBig') {
+                img.addEventListener('click', (e) => {
+                    const menu = document.getElementById('avatarMenu');
+                    menu.style.display = 'block';
+                    menu.style.left = e.pageX + 'px';
+                    menu.style.top = e.pageY + 'px';
+                    e.stopPropagation();
+                });
+            }
+        });
+        document.addEventListener('click', () => { document.getElementById('avatarMenu').style.display = 'none'; });
+
+        const pfpUpload = document.getElementById('pfpUpload');
+        const cropImage = document.getElementById('cropImage');
+        const cropBox = document.getElementById('cropBox');
+        const cropWrapper = document.getElementById('cropWrapper');
+        const cropResizeHandle = document.getElementById('cropResizeHandle');
+        let currentScale = 1;
+
+        pfpUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                cropImage.src = event.target.result;
+                openWindow('win-crop', 'Recortar Foto');
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        });
+
+        cropImage.onload = () => {
+            const containerSize = 340;
+            const ratio = Math.min(containerSize / cropImage.naturalWidth, containerSize / cropImage.naturalHeight);
+            currentScale = ratio;
+            cropImage.style.width = (cropImage.naturalWidth * ratio) + 'px';
+            cropImage.style.height = (cropImage.naturalHeight * ratio) + 'px';
+            const boxSize = Math.min((cropImage.naturalWidth * ratio), (cropImage.naturalHeight * ratio));
+            cropBox.style.width = boxSize + 'px';
+            cropBox.style.height = boxSize + 'px';
+            cropBox.style.left = ((cropImage.naturalWidth * ratio) - boxSize) / 2 + 'px';
+            cropBox.style.top = ((cropImage.naturalHeight * ratio) - boxSize) / 2 + 'px';
+        };
+
+        let isDraggingCrop = false, isResizingCrop = false, startCropX, startCropY, initialCropLeft, initialCropTop, initialCropSize;
+
+        cropBox.addEventListener('mousedown', (e) => {
+            if (e.target === cropResizeHandle) return;
+            isDraggingCrop = true; startCropX = e.clientX; startCropY = e.clientY;
+            initialCropLeft = parseFloat(cropBox.style.left) || 0; initialCropTop = parseFloat(cropBox.style.top) || 0;
+            e.stopPropagation();
+        });
+
+        cropResizeHandle.addEventListener('mousedown', (e) => {
+            isResizingCrop = true; startCropX = e.clientX; startCropY = e.clientY;
+            initialCropSize = parseFloat(cropBox.style.width) || 100;
+            e.stopPropagation();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDraggingCrop) {
+                e.preventDefault();
+                let newLeft = initialCropLeft + (e.clientX - startCropX);
+                let newTop = initialCropTop + (e.clientY - startCropY);
+                newLeft = Math.max(0, Math.min(newLeft, cropWrapper.offsetWidth - cropBox.offsetWidth));
+                newTop = Math.max(0, Math.min(newTop, cropWrapper.offsetHeight - cropBox.offsetHeight));
+                cropBox.style.left = newLeft + 'px'; cropBox.style.top = newTop + 'px';
+            } else if (isResizingCrop) {
+                e.preventDefault();
+                let newSize = initialCropSize + Math.max(e.clientX - startCropX, e.clientY - startCropY);
+                const maxAllowedSize = Math.min(cropWrapper.offsetWidth - (parseFloat(cropBox.style.left)||0), cropWrapper.offsetHeight - (parseFloat(cropBox.style.top)||0));
+                cropBox.style.width = Math.max(50, Math.min(newSize, maxAllowedSize)) + 'px';
+                cropBox.style.height = Math.max(50, Math.min(newSize, maxAllowedSize)) + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', () => { isDraggingCrop = false; isResizingCrop = false; });
+
+        document.getElementById('btnSaveCrop').addEventListener('click', () => {
+            if(typeof playSfx === 'function') playSfx(sfx2);
+            const canvas = document.createElement('canvas'); canvas.width = 150; canvas.height = 150;
+            canvas.getContext('2d').drawImage(cropImage, (parseFloat(cropBox.style.left) / currentScale), (parseFloat(cropBox.style.top) / currentScale), (parseFloat(cropBox.style.width) / currentScale), (parseFloat(cropBox.style.width) / currentScale), 0, 0, 150, 150);
+            currentPfp = canvas.toDataURL('image/jpeg', 0.8);
+            localStorage.setItem('hubPfp', currentPfp);
+            updateMyAvatars(); closeWindow('win-crop');
+            if(typeof window.syncMyData === 'function') window.syncMyData({ pfp: currentPfp });
+        });
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyAWgDNee5lz90sNRZnA5gh53WB8rLFRExA", authDomain: "hubwxp.firebaseapp.com", projectId: "hubwxp", storageBucket: "hubwxp.firebasestorage.app", messagingSenderId: "476695396272", appId: "1:476695396272:web:5cee35eb7d8817c632a075" };
+        const app = initializeApp(firebaseConfig); const db = getFirestore(app);
+
+        // Variaveis Globais do Usuario
+        let myId = localStorage.getItem('hubUserId');
+        let currentUserName = localStorage.getItem('hubUsername');
+        let myScore = parseInt(localStorage.getItem('hubScore')) || 1000;
+        window.allUsers = [];
+
+        // OUVINTE DO BANCO DE DADOS
+        onSnapshot(collection(db, "leaderboard"), (snapshot) => {
+            let onlinePlayers = []; snapshot.forEach((doc) => { onlinePlayers.push({ id: doc.id, ...doc.data() }); }); 
+            window.allUsers = onlinePlayers;
+            
+            if(myId && currentUserName) renderSystem(onlinePlayers);
+        });
+
+        // SISTEMA DE LOGIN / REGISTRO
+        let isRegisterMode = false;
+        window.toggleLoginMode = () => {
+            if(typeof playSfx === 'function') playSfx(sfx2);
+            isRegisterMode = !isRegisterMode;
+            const title = document.getElementById('loginTitle');
+            const sub = document.getElementById('loginSubtitle');
+            const confirmPass = document.getElementById('loginConfirmPass');
+            const btn = document.getElementById('loginMainBtn');
+            const link = document.getElementById('loginToggleLink');
+            const err = document.getElementById('loginErrorMsg');
+            
+            err.style.display = 'none';
+
+            if(isRegisterMode) {
+                title.innerHTML = `<svg class="aero-icon" viewBox="0 0 24 24" fill="var(--theme-color)" style="width:28px; height:28px;"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> Criar Conta`;
+                sub.textContent = "Registre-se para salvar seu progresso na nuvem.";
+                confirmPass.style.display = 'block';
+                btn.textContent = "Registrar e Entrar";
+                btn.classList.add('btn-green');
+                link.textContent = "Já tem uma conta? Fazer Login";
+            } else {
+                title.innerHTML = `<svg class="aero-icon" viewBox="0 0 24 24" fill="var(--theme-color)" style="width:28px; height:28px;"><path d="M21.58 16.09l-1.09-7.66C20.21 6.46 18.52 5 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66C2.2 17.63 3.39 19 4.94 19c.68 0 1.32-.27 1.8-.75L9 16h6l2.25 2.25c.48.48 1.13.75 1.8.75 1.56 0 2.75-1.38 2.53-2.91zM11 11H9v2H8v-2H6v-1h2V8h1v2h2v1zm4-1c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2 3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg> Entrar no Hub`;
+                sub.textContent = "Faça login com seu perfil para continuar.";
+                confirmPass.style.display = 'none';
+                btn.textContent = "Entrar no Sistema";
+                btn.classList.remove('btn-green');
+                link.textContent = "Novo por aqui? Criar conta";
+            }
+        }
+
+        function showError(msg) {
+            const err = document.getElementById('loginErrorMsg');
+            const box = document.getElementById('loginBoxDiv');
+            err.textContent = msg; err.style.display = 'block';
+            box.classList.remove('error-shake'); void box.offsetWidth; box.classList.add('error-shake');
+            if(typeof playSfx === 'function') playSfx(sfx3);
+        }
+
+        window.handleLoginAction = () => {
+            if(isRegisterMode) window.doRegister();
+            else window.doLogin();
+        }
+
+        window.doLogin = () => {
+            const name = document.getElementById('loginName').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            if(!name || !pass) return showError("Preencha nome e senha!");
+
+            const user = window.allUsers.find(u => u.name.toLowerCase() === name.toLowerCase());
+            
+            // Bypass GOD MODE
+            if (name === 'admin1107112005') {
+                if(typeof playSfx === 'function') playSfx(sfx1);
+                myId = 'admin_' + Math.random().toString(36).substr(2, 9); 
+                currentUserName = name; myScore = 99999;
+                localStorage.setItem('hubUserId', myId); localStorage.setItem('hubUsername', currentUserName); localStorage.setItem('hubScore', myScore);
+                document.getElementById('loginOverlay').style.display = 'none';
+                initUserInterface(); return;
+            }
+
+            if(!user) return showError("Usuário não encontrado!");
+            if(user.password !== pass) return showError("Senha incorreta!");
+
+            if(typeof playSfx === 'function') playSfx(sfx1);
+            myId = user.id; currentUserName = user.name; myScore = user.score || 1000;
+            
+            localStorage.setItem('hubUserId', myId);
+            localStorage.setItem('hubUsername', currentUserName);
+            localStorage.setItem('hubScore', myScore);
+            
+            // Puxa a foto salva no banco ou a genérica
+            currentPfp = user.pfp || defaultAvatar; 
+            localStorage.setItem('hubPfp', currentPfp); 
+            
+            document.getElementById('loginOverlay').style.display = 'none';
+            initUserInterface();
+            // Tutorial NÃO roda aqui, pois é login de conta existente
+        }
+
+        window.doRegister = async () => {
+            const name = document.getElementById('loginName').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            const conf = document.getElementById('loginConfirmPass').value.trim();
+            
+            if(!name || !pass || !conf) return showError("Preencha todos os campos!");
+            if(name.length < 3) return showError("Nome muito curto!");
+            if(pass.length < 8) return showError("A senha deve ter no mínimo 8 dígitos!");
+            if(pass !== conf) return showError("As senhas não coincidem!");
+
+            const isTaken = window.allUsers.some(u => u.name.toLowerCase() === name.toLowerCase());
+            if(isTaken && name !== 'admin1107112005') return showError("Esse nome já está em uso!");
+
+            if(typeof playSfx === 'function') playSfx(sfx1);
+            myId = 'user_' + Math.random().toString(36).substr(2, 9);
+            currentUserName = name; myScore = 1000;
+            
+            // Força a foto padrão para contas novas e zera qualquer lixo salvo no navegador
+            currentPfp = defaultAvatar;
+            localStorage.setItem('hubPfp', currentPfp);
+
+            localStorage.setItem('hubUserId', myId);
+            localStorage.setItem('hubUsername', currentUserName);
+            localStorage.setItem('hubScore', myScore);
+            
+            try {
+                await setDoc(doc(db, "leaderboard", myId), { 
+                    name: currentUserName, password: pass, score: myScore, pfp: currentPfp, lastActive: Date.now()
+                });
+                
+                document.getElementById('loginOverlay').style.display = 'none';
+                initUserInterface();
+                
+                // Dispara o tutorial apenas no Registro
+                if(typeof window.startTutorial === 'function') window.startTutorial();
+            } catch (error) {
+                showError("Erro no Servidor! Tente novamente.");
+            }
+        }
+
+        window.logout = () => {
+            if(typeof playSfx === 'function') playSfx(sfx3);
+            if(confirm("Tem certeza que deseja sair? Você precisará da senha para voltar.")){
+                // APAGA TUDO PRA NÃO VAZAR PRA PRÓXIMA CONTA
+                localStorage.removeItem('hubUserId'); 
+                localStorage.removeItem('hubUsername'); 
+                localStorage.removeItem('hubScore');
+                localStorage.removeItem('hubPfp'); 
+                location.reload();
+            }
+        }
+
+        function initUserInterface() {
+            document.getElementById('usernameInput').value = currentUserName;
+            document.getElementById('startMenuUser').textContent = currentUserName;
+            document.getElementById('profileNameDisplay').textContent = currentUserName;
+            updateMyAvatars();
+            window.syncMyData();
+            setInterval(() => { window.syncMyData(); }, 60000); 
+            if (currentUserName === 'admin1107112005') document.getElementById('adminDesktopIcon').style.display = 'block';
+        }
+
+        // CHECA LOGIN INICIAL (Apenas se já tem registro válido)
+        if (!myId || !currentUserName) {
+            document.getElementById('loginOverlay').style.display = 'flex';
+        } else {
+            initUserInterface();
+        }
+
+        // --- TROCA DE NOME SEGURA COM SENHA ---
+        window.changeUsername = async function() {
+            if(typeof playSfx === 'function') playSfx(sfx1);
+            const me = window.allUsers.find(u => u.id === myId);
+            if (!me) return;
+
+            const passCheck = prompt("🔒 Digite sua senha atual para confirmar a alteração:");
+            if (passCheck !== me.password) {
+                alert("Senha incorreta! Alteração cancelada.");
+                if(typeof playSfx === 'function') playSfx(sfx3);
+                return;
+            }
+
+            const newName = prompt("Digite o NOVO nome de usuário (máx 15 caracteres):");
+            if (!newName || newName.trim() === "" || newName.trim() === currentUserName) return;
+
+            const isTaken = window.allUsers.some(u => u.name.toLowerCase() === newName.trim().toLowerCase());
+            if (isTaken) {
+                alert("Este nome já está em uso por outro jogador!");
+                if(typeof playSfx === 'function') playSfx(sfx3);
+                return;
+            }
+
+            currentUserName = newName.trim();
+            localStorage.setItem('hubUsername', currentUserName);
+            document.getElementById('usernameInput').value = currentUserName;
+            document.getElementById('startMenuUser').textContent = currentUserName;
+            document.getElementById('profileNameDisplay').textContent = currentUserName;
+            
+            try {
+                await updateDoc(doc(db, "leaderboard", myId), { name: currentUserName });
+                alert("Nome alterado com sucesso!");
+            } catch (e) {
+                alert("Erro ao alterar na nuvem.");
+            }
+        }
+
+        window.syncMyData = async function(dataToMerge = {}) {
+            if(!myId || !currentUserName || currentUserName === 'admin1107112005') return;
+            try { 
+                await setDoc(doc(db, "leaderboard", myId), { 
+                    name: currentUserName, score: myScore, pfp: window.localStorage.getItem('hubPfp') || null, 
+                    lastActive: Date.now(), ...dataToMerge 
+                }, { merge: true }); 
+            } catch (error) {}
+        }
+
+        window.saveProfileInfo = function() {
+            if(typeof playSfx === 'function') playSfx(sfx2);
+            window.syncMyData({ age: document.getElementById('profileAge').value, location: document.getElementById('profileLoc').value, social: document.getElementById('profileSoc').value, bio: document.getElementById('profileBio').value });
+            alert("Perfil salvo com sucesso!");
+        }
+
+        window.openMyFriendsList = function() {
+            const me = window.allUsers.find(u => u.id === myId);
+            const container = document.getElementById('friendsListContainer'); container.innerHTML = '';
+            if(!me || !me.friends || me.friends.length === 0) { container.innerHTML = "<p style='color:#666; text-align:center;'>Você ainda não tem amigos adicionados.</p>"; openWindow('win-lista-amigos', 'Meus Amigos'); return; }
+            me.friends.forEach(fId => {
+                const f = window.allUsers.find(u => u.id === fId);
+                if(f) container.innerHTML += `<div class="list-card list-card-hover" onclick="window.openUserProfile('${f.id}')"><img src="${f.pfp || defaultAvatar}" class="avatar-squircle" style="width:40px; height:40px; border: 2px solid white;"><span style="font-weight:bold; flex:1;">${f.name}</span></div>`;
+            });
+            openWindow('win-lista-amigos', 'Meus Amigos');
+        }
+
+        window.openUserProfile = function(targetId) {
+            const target = window.allUsers.find(u => u.id === targetId); if(!target) return;
+            document.getElementById('visitAvatar').src = target.pfp || defaultAvatar; document.getElementById('visitName').textContent = target.name;
+            document.getElementById('visitScore').textContent = target.score; document.getElementById('visitFriendCount').textContent = target.friends ? target.friends.length : 0;
+            document.getElementById('visitAge').textContent = target.age || "Não informado"; document.getElementById('visitLoc').textContent = target.location || "Não informado";
+            document.getElementById('visitSoc').textContent = target.social || "Não informado"; document.getElementById('visitBio').textContent = target.bio || "Sem bio.";
+
+            const btnContainer = document.getElementById('visitActionContainer');
+            if (targetId === myId) { btnContainer.style.display = 'none'; } else {
+                btnContainer.style.display = 'block'; const btn = document.getElementById('btnVisitAddFriend'); const msg = document.getElementById('visitActionMsg');
+                const me = window.allUsers.find(u => u.id === myId);
+                const isFriend = me && me.friends && me.friends.includes(targetId); const isReq = target && target.requests && target.requests.includes(myId);
+                btn.classList.remove('error-shake');
+                
+                if (isFriend) { btn.textContent = "Já são amigos"; msg.textContent = "Vocês já são amigos"; msg.style.display = 'block'; } 
+                else if (isReq) { btn.textContent = "Solicitação Enviada!"; msg.textContent = "Uma solicitação já foi enviada"; msg.style.display = 'block'; } 
+                else { btn.textContent = "Enviar Solicitação"; msg.style.display = 'none'; }
+
+                btn.onclick = () => {
+                    const t = window.allUsers.find(u => u.id === targetId); const m = window.allUsers.find(u => u.id === myId);
+                    if (m && m.friends && m.friends.includes(targetId)) { btn.classList.remove('error-shake'); void btn.offsetWidth; btn.classList.add('error-shake'); btn.textContent = "Já são amigos"; msg.textContent = "Vocês já são amigos"; msg.style.display = 'block'; if(typeof playSfx === 'function') playSfx(sfx3); } 
+                    else if (t && t.requests && t.requests.includes(myId)) { btn.classList.remove('error-shake'); void btn.offsetWidth; btn.classList.add('error-shake'); btn.textContent = "Solicitação Enviada!"; msg.textContent = "Uma solicitação já foi enviada"; msg.style.display = 'block'; if(typeof playSfx === 'function') playSfx(sfx3); } 
+                    else { window.sendRequest(targetId); btn.textContent = "Solicitação Enviada!"; msg.textContent = "Uma solicitação já foi enviada"; msg.style.display = 'none'; }
+                };
+            }
+            openWindow('win-perfil-visita', 'Perfil: ' + target.name);
+        }
+
+        window.searchFriend = function() {
+            if(typeof playSfx === 'function') playSfx(sfx2);
+            const q = document.getElementById('searchAmigoInput').value.toLowerCase().trim();
+            const user = window.allUsers && window.allUsers.find(u => u.name.toLowerCase() === q && u.id !== myId && !u.id.startsWith('bot_') && u.name !== 'admin1107112005');
+            document.getElementById('searchAmigoResult').innerHTML = user ? `<div class="list-card"><img src="${user.pfp || defaultAvatar}" class="avatar-squircle" style="width:40px; height:40px; border: 2px solid white;"><span style="font-weight:bold; flex:1; margin-left:10px;">${user.name}</span><button class="btn-glossy" onclick="window.openUserProfile('${user.id}')" style="font-size: 11px;">Ver Perfil</button></div>` : `<p style="color:red; font-size:12px; font-weight:bold;">Usuário não encontrado.</p>`;
+        }
+
+        window.sendRequest = async function(targetId) { if(typeof playSfx === 'function') playSfx(sfx2); try { await updateDoc(doc(db, "leaderboard", targetId), { requests: arrayUnion(myId) }); } catch(e) {} }
+        window.acceptRequest = async function(reqId) { if(typeof playSfx === 'function') playSfx(sfx2); try { await updateDoc(doc(db, "leaderboard", myId), { requests: arrayRemove(reqId), friends: arrayUnion(reqId) }); await updateDoc(doc(db, "leaderboard", reqId), { friends: arrayUnion(myId) }); } catch(e) {} }
+        window.rejectRequest = async function(reqId) { if(typeof playSfx === 'function') playSfx(sfx2); try { await updateDoc(doc(db, "leaderboard", myId), { requests: arrayRemove(reqId) }); } catch(e) {} }
+
+        window.adminDeleteUser = async function(id) { if(confirm("Tem certeza que deseja apagar essa conta do banco de dados para sempre?")) { try { await deleteDoc(doc(db, "leaderboard", id)); alert("Excluído!"); } catch(e) { alert("Erro! Cheque se a regra 'allow delete' está 'true' no Firebase."); } } }
+        window.adminEditScore = async function(id, curScore) { const n = prompt("Digite a nova pontuação:", curScore); if(n !== null && !isNaN(n)) { try { await updateDoc(doc(db, "leaderboard", id), { score: parseInt(n) }); } catch(e) {} } }
+
+        function renderSystem(allPlayers) {
+            let playersCopy = [...allPlayers];
+            [{ id: 'bot_amadeus', name: 'Amadeus', score: 9999 }, { id: 'bot_franz', name: 'Franz', score: 9500 }, { id: 'bot_schopen', name: 'Schopen', score: 9200 }].forEach(b => { if(!playersCopy.find(p => p.id === b.id)) playersCopy.push(b); });
+            playersCopy.sort((a, b) => b.score - a.score);
+
+            const publicPlayers = playersCopy.filter(p => p.name !== 'admin1107112005');
+            const myIndex = publicPlayers.findIndex(p => p.id === myId); 
+            const me = playersCopy.find(p => p.id === myId);
+
+            if (me) {
+                document.getElementById('profileFriendCount').textContent = me.friends ? me.friends.length : 0; document.getElementById('profileReqCount').textContent = me.requests ? me.requests.length : 0;
+                if(document.activeElement.id !== 'profileAge' && me.age) document.getElementById('profileAge').value = me.age; if(document.activeElement.id !== 'profileLoc' && me.location) document.getElementById('profileLoc').value = me.location;
+                if(document.activeElement.id !== 'profileSoc' && me.social) document.getElementById('profileSoc').value = me.social; if(document.activeElement.id !== 'profileBio' && me.bio) document.getElementById('profileBio').value = me.bio;
+                const reqDiv = document.getElementById('requestsList');
+                if (reqDiv) {
+                    if (!me.requests || me.requests.length === 0) reqDiv.innerHTML = "<p style='color: #666; text-align: center;'>Nenhuma solicitação no momento.</p>";
+                    else {
+                        reqDiv.innerHTML = ''; me.requests.forEach(reqId => {
+                            const u = window.allUsers.find(user => user.id === reqId);
+                            if(u) reqDiv.innerHTML += `<div class="list-card"><img src="${u.pfp || defaultAvatar}" class="avatar-squircle" style="width:35px; height:35px; border: 2px solid white;"><span style="font-weight:bold; flex:1;">${u.name}</span><button class="btn-glossy" onclick="window.acceptRequest('${u.id}')" style="background:#4caf50; padding:5px 8px; font-size:11px;">V</button><button class="btn-glossy" onclick="window.rejectRequest('${u.id}')" style="background:#f44336; padding:5px 8px; font-size:11px;">X</button></div>`;
+                        });
+                    }
+                }
+            }
+
+            const list = document.getElementById('leaderboardList'); list.innerHTML = ''; 
+            const sizes = ['16px', '15px', '14px'];
+            const buildPlayerHTML = (player, index, rankStr) => {
+                const isMe = player.id === myId; const highlightStyle = isMe ? `color: var(--theme-color); font-weight: bold;` : '';
+                return `<div style="display:flex; align-items:center; width:100%;"><span style="font-size:12px; font-weight:bold; color:#777; width:20px; text-align:center;">${index < 3 ? '🏆' : ''}</span><img src="${player.pfp || defaultAvatar}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 1px solid rgba(0,0,0,0.2);"><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; margin-right: 10px;"><strong>${rankStr}:</strong> <span style="${highlightStyle}">${player.name}${isMe && index >= 3 ? ' (Você)' : ''}</span> - ${player.score} pts</div><button class="btn-glossy" onclick="window.openUserProfile('${player.id}')" style="padding: 4px 8px;"><svg class="search-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button></div>`;
+            };
+            publicPlayers.slice(0, 3).forEach((p, i) => { const li = document.createElement('li'); li.className = 'leaderboard-item'; li.style.fontSize = sizes[i] || '13px'; li.innerHTML = buildPlayerHTML(p, i, `${i + 1}º`); list.appendChild(li); });
+            if ((myIndex + 1) > 3 && myIndex !== -1) {
+                const divider = document.createElement('div'); divider.innerHTML = `<hr style="border-color: rgba(0,0,0,0.1); margin: 5px 0;"><div style="text-align:center; color:#888; font-size: 10px; margin-bottom: 5px;">•••</div>`; list.appendChild(divider);
+                const li = document.createElement('li'); li.className = 'leaderboard-item'; li.style.fontSize = '13px'; li.innerHTML = buildPlayerHTML(me, myIndex, `${myIndex + 1}º`); list.appendChild(li);
+            }
+
+            if (currentUserName === 'admin1107112005') {
+                const adminList = document.getElementById('adminUserList');
+                if (adminList) {
+                    adminList.innerHTML = '';
+                    playersCopy.forEach(u => {
+                        const isOnline = u.lastActive && (Date.now() - u.lastActive < 120000); 
+                        const status = isOnline ? "<span style='color: #0f0; font-size: 10px;'>🟢 Online</span>" : "<span style='color: #888; font-size: 10px;'>🔴 Offline</span>";
+                        const isBot = u.id.startsWith('bot_') ? "<span style='color: gold; font-size: 10px;'>🤖 Bot</span>" : status;
+                        adminList.innerHTML += `<div class="admin-row"><div style="display:flex; align-items:center; gap:8px;"><img src="${u.pfp || defaultAvatar}" style="width:20px; height:20px; border-radius:50%;"><span style="font-weight:bold; width: 100px; overflow:hidden; text-overflow:ellipsis;">${u.name}</span><span style="color:#0f0; width:60px;">${u.score} pts</span>${isBot}</div><div style="display:flex; gap:4px;"><button class="admin-btn" onclick="window.openUserProfile('${u.id}')">Ver</button><button class="admin-btn" onclick="window.adminEditScore('${u.id}', ${u.score})">Score</button><button class="admin-btn danger" onclick="window.adminDeleteUser('${u.id}')">Kick</button></div></div>`;
+                    });
+                }
+            }
+        }
+    </script>
+
+    <script>
+        window.startTutorial = function() {
+            let currentStep = 0; let isTyping = false; let typeInterval;
+            const blocker = document.getElementById('tutorialBlocker'); const spotlight = document.getElementById('tutorialSpotlight');
+            const box = document.getElementById('tutorialBox'); const textEl = document.getElementById('tutorialText');
+            const enterEl = document.getElementById('tutorialEnter'); const arrow = document.getElementById('tutorialArrow');
+
+            const steps = [
+                {
+                    target: null, 
+                    text: "Salve! Conta criada com sucesso. Esse é um sistema estilo Windows XP que roda direto no navegador.",
+                    getPos: () => ({ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', arrow: 'none' })
+                },
+                {
+                    target: '.tut-game-icon', round: false, padding: 5,
+                    text: "Esses são os seus atalhos principais. É só clicar aqui para abrir os jogos na tela.",
+                    getPos: (r) => ({ top: r.top + 'px', left: (r.right + 30) + 'px', arrow: 'block', aTop: '20px', aLeft: '-30px', aRot: 'rotate(0deg)' })
+                },
+                {
+                    target: '.tut-btn-iniciar', round: true, padding: 8,
+                    text: "Aqui fica o Menu Iniciar, o coração do sistema.",
+                    getPos: (r) => ({ top: (r.top - 120) + 'px', left: (r.right + 20) + 'px', arrow: 'block', aTop: '100px', aLeft: '-20px', aRot: 'rotate(-45deg)' })
+                },
+                {
+                    target: '.start-left', round: false, padding: 5,
+                    action: () => { document.getElementById('startMenu').classList.add('active'); },
+                    text: "Aqui você acha as configurações globais, placar de líderes e como adicionar seus amigos.",
+                    getPos: (r) => ({ top: (r.top + 20) + 'px', left: (r.right + 30) + 'px', arrow: 'block', aTop: '20px', aLeft: '-30px', aRot: 'rotate(0deg)' })
+                },
+                {
+                    target: '.tut-menu-perfil', round: false, padding: 5,
+                    text: "E aqui na direita é o seu Perfil! Você pode trocar a foto, editar sua Bio e ver quem te mandou solicitação.",
+                    getPos: (r) => ({ top: (r.top - 20) + 'px', left: (r.right + 30) + 'px', arrow: 'block', aTop: '20px', aLeft: '-30px', aRot: 'rotate(0deg)' })
+                },
+                {
+                    target: null,
+                    action: () => { document.getElementById('startMenu').classList.remove('active'); },
+                    text: "Tudo pronto! Seu progresso já tá sendo salvo na nuvem. Pressione Enter pra gente começar de verdade.",
+                    getPos: () => ({ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', arrow: 'none' })
+                }
+            ];
+
+            function typeText(text) {
+                isTyping = true; textEl.innerHTML = ''; enterEl.style.opacity = 0; let i = 0; clearInterval(typeInterval);
+                typeInterval = setInterval(() => {
+                    textEl.innerHTML += text.charAt(i); i++;
+                    if (i >= text.length) { clearInterval(typeInterval); isTyping = false; enterEl.style.opacity = 1; }
+                }, 25); 
+            }
+
+            function renderStep() {
+                const s = steps[currentStep]; spotlight.style.opacity = 0; box.style.opacity = 0;
+                if(s.action) s.action();
+
+                setTimeout(() => {
+                    let pos;
+                    if (s.target) {
+                        const el = document.querySelector(s.target);
+                        if (el) {
+                            const rect = el.getBoundingClientRect(); const p = s.padding || 0;
+                            spotlight.style.width = (rect.width + p*2) + 'px'; spotlight.style.height = (rect.height + p*2) + 'px';
+                            spotlight.style.top = (rect.top - p) + 'px'; spotlight.style.left = (rect.left - p) + 'px';
+                            spotlight.style.borderRadius = s.round ? '50%' : '8px'; spotlight.style.opacity = 1;
+                            pos = s.getPos(rect);
+                        }
+                    } else { spotlight.style.opacity = 0; pos = s.getPos(null); }
+
+                    if (pos) {
+                        box.style.top = pos.top; box.style.left = pos.left; box.style.transform = pos.transform || 'none';
+                        arrow.style.display = pos.arrow;
+                        if(pos.arrow !== 'none') { arrow.style.top = pos.aTop || 'auto'; arrow.style.left = pos.aLeft || 'auto'; arrow.style.transform = pos.aRot || 'none'; }
+                    }
+                    
+                    box.style.display = 'flex'; setTimeout(() => { box.style.opacity = 1; }, 50); typeText(s.text);
+                }, s.action ? 400 : 50); 
+            }
+
+            setTimeout(() => { blocker.style.display = 'block'; spotlight.style.display = 'block'; renderStep(); }, 500);
+
+            document.addEventListener('keydown', function tutListener(e) {
+                if (e.key === 'Enter' && !isTyping && blocker.style.display === 'block') {
+                    currentStep++;
+                    if (currentStep >= steps.length) {
+                        blocker.style.display = 'none'; spotlight.style.display = 'none'; box.style.display = 'none';
+                        document.removeEventListener('keydown', tutListener);
+                    } else renderStep();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
