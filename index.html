@@ -365,9 +365,9 @@
             </div>
             <hr style="border-color: rgba(0,0,0,0.1); margin: 15px 0;">
             <div style="background: rgba(255,255,255,0.3); padding: 15px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05);">
-                <p style="margin-bottom: 10px;">🎂 <strong>Idade:</strong> <span class="locked-field">🔒 <span class="blurred-text" id="visitAge">Não informado</span></span></p>
-                <p style="margin-bottom: 10px;">📍 <strong>Local:</strong> <span class="locked-field">🔒 <span class="blurred-text" id="visitLoc">Não informado</span></span></p>
-                <p style="margin-bottom: 10px;">🌐 <strong>Redes:</strong> <span class="locked-field">🔒 <span class="blurred-text" id="visitSoc">Não informado</span></span></p>
+                <p style="margin-bottom: 10px;">🎂 <strong>Idade:</strong> <span id="visitAge">Não informado</span></p>
+                <p style="margin-bottom: 10px;">📍 <strong>Local:</strong> <span id="visitLoc">Não informado</span></p>
+                <p style="margin-bottom: 10px;">🌐 <strong>Redes:</strong> <span id="visitSoc">Não informado</span></p>
                 <p>📝 <strong>Bio:</strong></p>
                 <p id="visitBio" style="font-style: italic; margin-top: 5px;">Sem bio.</p>
             </div>
@@ -646,9 +646,8 @@
         window.startBtn = document.getElementById('startBtn'); window.startMenu = document.getElementById('startMenu');
         window.startBtn.addEventListener('click', (e) => { e.stopPropagation(); if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); window.startMenu.classList.toggle('active'); });
         
-        // CORREÇÃO: O MENU NÃO PODE FECHAR ENQUANTO O TUTORIAL ESTIVER RODANDO
         document.addEventListener('click', (e) => { 
-            if (document.getElementById('tutorialBlocker').style.display === 'block') return; // Bloqueia clicks fora durante o tutorial
+            if (document.getElementById('tutorialBlocker').style.display === 'block') return; 
             if (!window.startMenu.contains(e.target) && e.target !== window.startBtn && !e.target.closest('#avatarMenu')) window.startMenu.classList.remove('active'); 
         });
 
@@ -808,10 +807,6 @@
         window.allUsers = [];
         window.knownRequests = []; 
 
-        // ==========================================
-        // 1. DECLARAÇÃO DAS FUNÇÕES GLOBAIS PRIMEIRO
-        // ==========================================
-
         window.showFriendRequestNotification = function(reqId, reqName, reqPfp) {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
             
@@ -917,7 +912,6 @@
             const pass = document.getElementById('loginPass').value.trim();
             if(!email || !pass) return window.showError("Preencha e-mail e senha!");
 
-            // Bypass GOD MODE
             if (email === 'admin1107112005') {
                 if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
                 window.myId = 'admin_' + Math.random().toString(36).substr(2, 9); 
@@ -932,7 +926,6 @@
                 const userCredential = await signInWithEmailAndPassword(auth, email, pass);
                 window.myId = userCredential.user.uid;
                 
-                // Puxa info da database
                 const userDoc = window.allUsers.find(u => u.id === window.myId);
                 if(userDoc) {
                     window.currentUserName = userDoc.name;
@@ -1215,7 +1208,6 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 window.myId = user.uid;
-                // Busca o user na memoria pra recuperar o nome
                 const userDoc = window.allUsers.find(u => u.id === window.myId);
                 if(userDoc) {
                     window.currentUserName = userDoc.name;
@@ -1224,7 +1216,6 @@
                     document.getElementById('loginOverlay').style.display = 'none';
                     window.initUserInterface();
                 } else {
-                    // Espera 1 segundo e tenta de novo caso a database esteja carregando
                     setTimeout(() => {
                         const uDoc = window.allUsers.find(u => u.id === window.myId);
                         if(uDoc) {
@@ -1274,7 +1265,7 @@
                 },
                 {
                     target: '.tut-menu-perfil', round: false, padding: 5,
-                    action: () => { document.getElementById('startMenu').classList.add('active'); }, // GARANTE O MENU ABERTO
+                    action: () => { document.getElementById('startMenu').classList.add('active'); }, 
                     text: "E aqui na direita é o seu Perfil! Você pode trocar a foto, editar sua Bio e ver quem te mandou solicitação.",
                     getPos: (r) => ({ top: (r.top - 20) + 'px', left: (r.right + 30) + 'px', arrow: 'block', aTop: '20px', aLeft: '-30px', aRot: 'rotate(0deg)' })
                 },
