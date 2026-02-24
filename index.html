@@ -1360,6 +1360,11 @@
                 if(document.activeElement.id !== 'profileSoc' && me.social) document.getElementById('profileSoc').value = me.social; 
                 if(document.activeElement.id !== 'profileBio' && me.bio) document.getElementById('profileBio').value = me.bio;
 
+                if(me.pfp && me.pfp !== window.currentPfp) {
+                    window.currentPfp = me.pfp;
+                    localStorage.setItem('hubPfp', me.pfp);
+                    if(typeof window.updateMyAvatars === 'function') window.updateMyAvatars();
+                }
                 if(me.theme && me.theme !== document.getElementById('themePicker').value) {
                     document.documentElement.style.setProperty('--theme-color', me.theme);
                     document.getElementById('themePicker').value = me.theme;
@@ -1613,7 +1618,7 @@
             box.addEventListener('click', advanceTutorial);
         }
 
-        // --- SISTEMA DE INSTALAÇÃO FORÇADA ---
+        // --- SISTEMA DE INSTALAÇÃO HÍBRIDO (DOWNLOAD DIRETO NO PC) ---
         window.deferredPrompt = null;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -1622,15 +1627,34 @@
 
         window.forceInstallPWA = async () => {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
-            if (window.deferredPrompt) {
-                window.deferredPrompt.prompt();
-                const { outcome } = await window.deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    document.getElementById('installBtn').style.display = 'none';
+            
+            // Verifica se o usuário tá no celular
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+            if (isMobile) {
+                // Se for celular, tenta instalar o App normal (PWA)
+                if (window.deferredPrompt) {
+                    window.deferredPrompt.prompt();
+                    const { outcome } = await window.deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        document.getElementById('installBtn').style.display = 'none';
+                    }
+                    window.deferredPrompt = null;
+                } else {
+                    alert("📱 No Celular: Toque nos 3 pontinhos do navegador e escolha 'Adicionar à tela inicial'.");
                 }
-                window.deferredPrompt = null;
             } else {
-                alert("Seu navegador atual está bloqueando a instalação automática.\n\n🎮 No PC: Use Chrome, Edge ou baixe o instalador (.exe) no repositório.\n📱 No Celular: Toque nos 3 pontinhos do Chrome e escolha 'Adicionar à tela inicial'.");
+                // SE FOR PC: FORÇA O DOWNLOAD DIRETO DO .EXE (Puxando do GitHub Releases)
+                alert("Baixando o programa oficial para o seu PC! Instale e jogue direto do Windows.");
+                const link = document.createElement('a');
+                
+                // COLOQUEI O LINK EXATO DO GITHUB RELEASES AQUI
+                link.href = 'https://github.com/leomstna/WXP/releases/download/v1.0.0/hub-setup.exe'; 
+                
+                link.download = 'hub-setup.exe';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             }
         };
 
