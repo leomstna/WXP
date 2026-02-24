@@ -80,7 +80,7 @@
         input:checked + .slider { background-color: var(--theme-color); border-color: transparent; }
         input:checked + .slider:before { transform: translateX(26px); }
 
-        /* --- MODO ESCURO --- */
+        /* --- MODO ESCURO GERAL --- */
         body.dark-mode { color: #eee; color-scheme: dark; }
         body.dark-mode .window, body.dark-mode #avatarMenu, body.dark-mode .login-box {
             background: rgba(30, 30, 30, 0.6) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 2px 10px rgba(255,255,255,0.05) !important;
@@ -105,6 +105,24 @@
         body.dark-mode .start-menu .menu-item[style*="var(--theme-color)"] .aero-icon { fill: var(--theme-color) !important; }
         body.dark-mode .list-card { background: rgba(60, 60, 60, 0.6) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: #eee !important; }
         body.dark-mode .list-card-hover:hover { background: rgba(80, 80, 80, 0.8) !important; }
+
+        /* --- MODO DESEMPENHO --- */
+        body.perf-mode .window, body.perf-mode .start-menu, body.perf-mode #avatarMenu, body.perf-mode .login-box { background: #e0e0e0 !important; backdrop-filter: none !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.5) !important; border: 1px solid #999 !important; }
+        body.perf-mode #loginOverlay { backdrop-filter: none !important; background: rgba(0,0,0,0.8); }
+        body.perf-mode .taskbar { background: #cccccc !important; backdrop-filter: none !important; border-top: 1px solid #999 !important; }
+        body.perf-mode .title-bar { background: var(--theme-color) !important; color: #fff !important; border-bottom: 1px solid #222 !important; text-shadow: none !important; }
+        body.perf-mode .start-btn { background: var(--theme-color) !important; box-shadow: inset 0 0 5px rgba(255,255,255,0.5) !important; background-image: none !important; }
+        body.perf-mode .window-content { background: #f5f5f5 !important; color: #111 !important; }
+        body.perf-mode label, body.perf-mode p { color: #111 !important; }
+
+        /* --- MODO DESEMPENHO + MODO ESCURO JUNTOS (CORREÇÃO) --- */
+        body.perf-mode.dark-mode .window, body.perf-mode.dark-mode .start-menu, body.perf-mode.dark-mode #avatarMenu, body.perf-mode.dark-mode .login-box { background: #2a2a2a !important; border: 1px solid #444 !important; }
+        body.perf-mode.dark-mode .window-content { background: #1e1e1e !important; color: #eee !important; }
+        body.perf-mode.dark-mode .taskbar { background: #222 !important; border-top: 1px solid #444 !important; }
+        body.perf-mode.dark-mode .title-bar { background: #111 !important; border-bottom: 1px solid var(--theme-color) !important; color: #fff !important; }
+        body.perf-mode.dark-mode label, body.perf-mode.dark-mode p { color: #eee !important; }
+        body.perf-mode.dark-mode .list-card { background: #333 !important; border-color: #555 !important; color: #eee !important; }
+
         .window, .window-content, .title-bar, .start-menu, .start-left, .start-right, .taskbar, .taskbar-tab, input, select, textarea, .menu-item, p, label, h1, h2, h3, span, div { transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
 
         /* --- DESKTOP --- */
@@ -117,15 +135,6 @@
 
         /* --- JANELAS --- */
         .window { position: absolute; width: 350px; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(20px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.7); border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.2), inset 0 2px 10px rgba(255,255,255,0.5); display: none; flex-direction: column; overflow: hidden; z-index: 10; }
-        
-        /* MODO DESEMPENHO */
-        body.perf-mode .window, body.perf-mode .start-menu, body.perf-mode #avatarMenu, body.perf-mode .login-box { background: #e0e0e0 !important; backdrop-filter: none !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.5) !important; border: 1px solid #999 !important; }
-        body.perf-mode #loginOverlay { backdrop-filter: none !important; background: rgba(0,0,0,0.8); }
-        body.perf-mode .taskbar { background: #cccccc !important; backdrop-filter: none !important; border-top: 1px solid #999 !important; }
-        body.perf-mode .title-bar { background: var(--theme-color) !important; color: #fff !important; border-bottom: 1px solid #222 !important; text-shadow: none !important; }
-        body.perf-mode .start-btn { background: var(--theme-color) !important; box-shadow: inset 0 0 5px rgba(255,255,255,0.5) !important; background-image: none !important; }
-        body.perf-mode .window-content { background: #f5f5f5 !important; color: #111 !important; }
-        body.perf-mode label, body.perf-mode p { color: #111 !important; }
 
         @keyframes popElastic { 0% { transform: scale(0.6); opacity: 0; } 50% { transform: scale(1.05); opacity: 1; } 75% { transform: scale(0.98); } 100% { transform: scale(1); opacity: 1; } }
         @keyframes zoomOut { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.5); opacity: 0; } }
@@ -261,7 +270,7 @@
             </h2>
             <p id="loginSubtitle">Faça login com seu perfil para continuar.</p>
             
-            <input type="text" id="loginName" class="login-input" maxlength="15" placeholder="Nome de Usuário" style="display: none;">
+            <input type="text" id="loginName" class="login-input" minlength="3" maxlength="15" placeholder="Nome de Usuário" style="display: none;">
             <input type="email" id="loginEmail" class="login-input" placeholder="Seu E-mail">
             <input type="password" id="loginPass" class="login-input" placeholder="Sua Senha">
             <input type="password" id="loginConfirmPass" class="login-input" placeholder="Confirmar Senha" style="display: none;">
@@ -505,6 +514,10 @@
                     <option value="alto">Alto (Aero Glass Ativo)</option>
                     <option value="desempenho">Desempenho (Sólido/Sem Blur)</option>
                 </select>
+
+                <hr style="border-color: rgba(0,0,0,0.1); margin: 20px 0 15px 0;">
+                <button class="btn-glossy" style="background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(0,0,0,0.1) 100%), #f44336; width: 100%; font-size: 13px;" onclick="window.deleteMyAccount()">🗑️ Excluir Minha Conta</button>
+
             </div>
         </div>
 
@@ -608,7 +621,9 @@
         document.getElementById('visualSelect').value = window.savedVisual;
         if (window.savedVisual === 'desempenho') document.body.classList.add('perf-mode');
         
-        document.getElementById('darkModeToggle').checked = false;
+        document.getElementById('darkModeToggle').checked = localStorage.getItem('hubDarkMode') === 'true';
+        if(document.getElementById('darkModeToggle').checked) document.body.classList.add('dark-mode');
+
         document.getElementById('darkModeToggle').addEventListener('change', (e) => {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
             if(e.target.checked) { document.body.classList.add('dark-mode'); localStorage.setItem('hubDarkMode', 'true'); } 
@@ -882,7 +897,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, doc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        
+        // ADICIONEI O MOTOR DE EXCLUIR CONTA AQUI NO IMPORT
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyAWgDNee5lz90sNRZnA5gh53WB8rLFRExA", authDomain: "hubwxp.firebaseapp.com", projectId: "hubwxp", storageBucket: "hubwxp.firebasestorage.app", messagingSenderId: "476695396272", appId: "1:476695396272:web:5cee35eb7d8817c632a075" };
         const app = initializeApp(firebaseConfig); 
@@ -1036,7 +1053,12 @@
             const conf = document.getElementById('loginConfirmPass').value.trim();
             
             if(!name || !email || !pass || !conf) return window.showError("Preencha todos os campos!");
-            if(name.length < 3) return window.showError("Nome muito curto!");
+            
+            // TRAVA DO NOME
+            if(name.length < 3 || name.length > 15) return window.showError("O nome deve ter entre 3 e 15 letras!");
+            const regexNome = /^[a-zA-Z0-9_]+$/; // Só permite letras, números e underline (sem espaço e especial)
+            if(!regexNome.test(name)) return window.showError("O nome não pode ter espaços ou caracteres especiais!");
+            
             if(pass.length < 8) return window.showError("A senha deve ter no mínimo 8 dígitos!");
             if(pass !== conf) return window.showError("As senhas não coincidem!");
 
@@ -1080,12 +1102,54 @@
             }
         }
 
+        // SISTEMA DE EXCLUIR CONTA
+        window.deleteMyAccount = async function() {
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx3);
+            if(window.currentUserName === 'admin1107112005') return alert("O Admin não pode ser excluído por aqui.");
+            
+            const confirm1 = confirm("TEM CERTEZA ABSOLUTA? Todos os seus dados, pontuações e amigos serão apagados para sempre. Essa ação não tem volta.");
+            if(!confirm1) return;
+            
+            const pass = prompt("Para prosseguir, digite sua senha de login:");
+            if(!pass) return;
+
+            const user = auth.currentUser;
+            if(!user) return;
+
+            try {
+                // Pede pro Firebase validar a senha que o cara digitou
+                const credential = EmailAuthProvider.credential(user.email, pass);
+                await reauthenticateWithCredential(user, credential);
+                
+                // Exclui do banco de dados (placar/amigos)
+                await deleteDoc(doc(db, "leaderboard", window.myId));
+                // Exclui a conta de login oficial
+                await deleteUser(user);
+                
+                alert("Conta excluída com sucesso. Adeus!");
+                localStorage.removeItem('hubPfp');
+                location.reload();
+            } catch(error) {
+                console.error(error);
+                if(error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+                    alert("Senha incorreta! Exclusão cancelada.");
+                } else {
+                    alert("Erro ao excluir conta. Tente novamente mais tarde.");
+                }
+            }
+        }
+
         window.changeUsername = async function() {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
             if (!window.myId) return;
 
-            const newName = prompt("Digite o NOVO nome de usuário (máx 15 caracteres):");
+            const newName = prompt("Digite o NOVO nome de usuário (min 3, máx 15 caracteres):");
             if (!newName || newName.trim() === "" || newName.trim() === window.currentUserName) return;
+
+            // TRAVA DO NOME NA HORA DE MUDAR
+            if(newName.length < 3 || newName.length > 15) { alert("O nome deve ter entre 3 e 15 letras!"); if(typeof window.playSfx === 'function') window.playSfx(window.sfx3); return; }
+            const regexNome = /^[a-zA-Z0-9_]+$/;
+            if(!regexNome.test(newName)) { alert("O nome não pode ter espaços ou caracteres especiais!"); if(typeof window.playSfx === 'function') window.playSfx(window.sfx3); return; }
 
             const isTaken = window.allUsers.some(u => u.name.toLowerCase() === newName.trim().toLowerCase());
             if (isTaken) {
@@ -1129,7 +1193,8 @@
             if(!me || !me.friends || me.friends.length === 0) { container.innerHTML = "<p style='color:#666; text-align:center;'>Você ainda não tem amigos adicionados.</p>"; window.openWindow('win-lista-amigos', 'Meus Amigos'); return; }
             me.friends.forEach(fId => {
                 const f = window.allUsers.find(u => u.id === fId);
-                if(f) container.innerHTML += `<div class="list-card list-card-hover" onclick="window.openUserProfile('${f.id}')"><img src="${f.pfp || window.defaultAvatar}" class="avatar-squircle" style="width:40px; height:40px; border: 2px solid white;"><span style="font-weight:bold; flex:1;">${f.name}</span></div>`;
+                // AQUI FOI ADICIONADO O window.closeWindow('win-lista-amigos') PARA FECHAR A LISTA AUTOMATICAMENTE
+                if(f) container.innerHTML += `<div class="list-card list-card-hover" onclick="window.openUserProfile('${f.id}'); window.closeWindow('win-lista-amigos');"><img src="${f.pfp || window.defaultAvatar}" class="avatar-squircle" style="width:40px; height:40px; border: 2px solid white;"><span style="font-weight:bold; flex:1;">${f.name}</span></div>`;
             });
             window.openWindow('win-lista-amigos', 'Meus Amigos');
         }
@@ -1152,16 +1217,27 @@
                 const isFriend = me && me.friends && me.friends.includes(targetId); const isReq = target && target.requests && target.requests.includes(window.myId);
                 btn.classList.remove('error-shake');
                 
-                if (isFriend) { btn.textContent = "Já são amigos"; msg.textContent = "Vocês já são amigos"; msg.style.display = 'block'; } 
-                else if (isReq) { btn.textContent = "Solicitação Enviada!"; msg.textContent = "Uma solicitação já foi enviada"; msg.style.display = 'block'; } 
-                else { btn.textContent = "Enviar Solicitação"; msg.style.display = 'none'; }
+                // Reseta a cor do botão antes do check
+                btn.style.background = '';
 
-                btn.onclick = () => {
-                    const t = window.allUsers.find(u => u.id === targetId); const m = window.allUsers.find(u => u.id === window.myId);
-                    if (m && m.friends && m.friends.includes(targetId)) { btn.classList.remove('error-shake'); void btn.offsetWidth; btn.classList.add('error-shake'); btn.textContent = "Já são amigos"; msg.textContent = "Vocês já são amigos"; msg.style.display = 'block'; if(typeof window.playSfx === 'function') window.playSfx(window.sfx3); } 
-                    else if (t && t.requests && t.requests.includes(window.myId)) { btn.classList.remove('error-shake'); void btn.offsetWidth; btn.classList.add('error-shake'); btn.textContent = "Solicitação Enviada!"; msg.textContent = "Uma solicitação já foi enviada"; msg.style.display = 'block'; if(typeof window.playSfx === 'function') window.playSfx(window.sfx3); } 
-                    else { window.sendRequest(targetId); btn.textContent = "Solicitação Enviada!"; msg.textContent = "Uma solicitação já foi enviada"; msg.style.display = 'none'; }
-                };
+                if (isFriend) { 
+                    // BOTÃO DE DESFAZER AMIZADE
+                    btn.textContent = "💔 Desfazer Amizade"; 
+                    btn.style.background = "linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(0,0,0,0.1) 100%), #f44336";
+                    msg.style.display = 'none'; 
+                    btn.onclick = () => { window.removeFriend(targetId); };
+                } 
+                else if (isReq) { 
+                    btn.textContent = "Solicitação Enviada!"; 
+                    msg.textContent = "Uma solicitação já foi enviada"; 
+                    msg.style.display = 'block'; 
+                    btn.onclick = () => { btn.classList.remove('error-shake'); void btn.offsetWidth; btn.classList.add('error-shake'); if(typeof window.playSfx === 'function') window.playSfx(window.sfx3); };
+                } 
+                else { 
+                    btn.textContent = "Enviar Solicitação"; 
+                    msg.style.display = 'none'; 
+                    btn.onclick = () => { window.sendRequest(targetId); btn.textContent = "Solicitação Enviada!"; };
+                }
             }
             window.openWindow('win-perfil-visita', 'Perfil: ' + target.name);
         }
@@ -1188,6 +1264,18 @@
             try { 
                 await updateDoc(doc(db, "leaderboard", window.myId), { requests: arrayRemove(reqId) }); 
             } catch(e) { console.error(e); } 
+        }
+
+        // NOVO: SISTEMA DE DESFAZER AMIZADE NO BANCO
+        window.removeFriend = async function(targetId) {
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx3);
+            if(confirm("Tem certeza que deseja desfazer a amizade?")) {
+                try {
+                    await updateDoc(doc(db, "leaderboard", window.myId), { friends: arrayRemove(targetId) });
+                    await updateDoc(doc(db, "leaderboard", targetId), { friends: arrayRemove(window.myId) });
+                    window.closeWindow('win-perfil-visita');
+                } catch(e) { console.error(e); }
+            }
         }
 
         window.adminDeleteUser = async function(id) { if(confirm("Tem certeza que deseja apagar essa conta do banco de dados para sempre?")) { try { await deleteDoc(doc(db, "leaderboard", id)); alert("Excluído!"); } catch(e) { alert("Erro! Cheque se a regra 'allow delete' está 'true' no Firebase."); } } }
@@ -1416,33 +1504,24 @@
         // --- SISTEMA DO BOTÃO DE INSTALAÇÃO (PWA) ---
         window.deferredPrompt = null;
 
-        // O navegador avisa quando o app tá pronto pra instalar
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Impede o Chrome de soltar aquele pop-up feio automático
             e.preventDefault();
-            // Guarda o evento pra gente usar no nosso botão
             window.deferredPrompt = e;
-            // Faz o nosso botão ninja aparecer lá no Menu Iniciar
             const btn = document.getElementById('installBtn');
             if(btn) btn.style.display = 'flex'; 
         });
 
-        // Quando você clicar no nosso botão ninja
         window.installPWA = async () => {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
             if (!window.deferredPrompt) return;
-            // Abre a tela bonitona de instalar do sistema
             window.deferredPrompt.prompt();
-            // Espera o usuário clicar "Sim" ou "Não"
             const { outcome } = await window.deferredPrompt.userChoice;
             if (outcome === 'accepted') {
-                // Se ele instalou, esconde o botão pra não ficar sobrando
                 document.getElementById('installBtn').style.display = 'none';
             }
             window.deferredPrompt = null;
         };
 
-        // Registrar o motor do App Instalável (Service Worker)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
