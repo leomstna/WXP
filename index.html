@@ -115,7 +115,7 @@
         body.perf-mode .window-content { background: #f5f5f5 !important; color: #111 !important; }
         body.perf-mode label, body.perf-mode p { color: #111 !important; }
 
-        /* --- MODO DESEMPENHO + MODO ESCURO JUNTOS (CORREÇÃO) --- */
+        /* --- MODO DESEMPENHO + MODO ESCURO JUNTOS --- */
         body.perf-mode.dark-mode .window, body.perf-mode.dark-mode .start-menu, body.perf-mode.dark-mode #avatarMenu, body.perf-mode.dark-mode .login-box { background: #2a2a2a !important; border: 1px solid #444 !important; }
         body.perf-mode.dark-mode .window-content { background: #1e1e1e !important; color: #eee !important; }
         body.perf-mode.dark-mode .taskbar { background: #222 !important; border-top: 1px solid #444 !important; }
@@ -631,10 +631,19 @@
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
             if(e.target.checked) { document.body.classList.add('dark-mode'); localStorage.setItem('hubDarkMode', 'true'); } 
             else { document.body.classList.remove('dark-mode'); localStorage.setItem('hubDarkMode', 'false'); }
+            if(typeof window.syncMyData === 'function') window.syncMyData();
         });
 
         document.getElementById('themePicker').addEventListener('input', (e) => { document.documentElement.style.setProperty('--theme-color', e.target.value); localStorage.setItem('hubTheme', e.target.value); });
-        document.getElementById('visualSelect').addEventListener('change', (e) => { if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); if (e.target.value === 'desempenho') document.body.classList.add('perf-mode'); else document.body.classList.remove('perf-mode'); localStorage.setItem('hubVisual', e.target.value); });
+        document.getElementById('themePicker').addEventListener('change', (e) => { if(typeof window.syncMyData === 'function') window.syncMyData(); });
+
+        document.getElementById('visualSelect').addEventListener('change', (e) => { 
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); 
+            if (e.target.value === 'desempenho') document.body.classList.add('perf-mode'); 
+            else document.body.classList.remove('perf-mode'); 
+            localStorage.setItem('hubVisual', e.target.value); 
+            if(typeof window.syncMyData === 'function') window.syncMyData();
+        });
 
         window.taskbarIcons = {
             'win-sobre': '<svg viewBox="0 0 24 24" fill="#00e5ff"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>',
@@ -741,7 +750,17 @@
         window.sfx2 = new Audio('sfx 02.MP3'); 
         window.sfx3 = new Audio('sfx 03.MP3'); 
         window.sfx4 = new Audio('sfx 04.MP3'); 
-        window.currentSfxVolume = 0.8;
+        
+        window.savedSfxVol = localStorage.getItem('hubSfxVol') || '80';
+        window.currentSfxVolume = parseInt(window.savedSfxVol) / 100;
+        document.getElementById('sfxVolInput').value = window.savedSfxVol;
+
+        window.savedMusicVol = localStorage.getItem('hubMusicVol') || '30';
+        window.currentMusicIndex = 0;
+        window.musicList = ['musica01.mp3', 'musica02.mp3', 'musica03.mp3'];
+        window.bgMusic = new Audio(window.musicList[window.currentMusicIndex]);
+        window.bgMusic.volume = parseInt(window.savedMusicVol) / 100;
+        document.getElementById('musicVolInput').value = window.savedMusicVol;
         
         window.playSfx = function(audioObj) {
             if (!audioObj) return;
@@ -758,10 +777,6 @@
             }
         }
         
-        window.musicList = ['musica01.mp3', 'musica02.mp3', 'musica03.mp3'];
-        window.currentMusicIndex = 0;
-        window.bgMusic = new Audio(window.musicList[window.currentMusicIndex]);
-        window.bgMusic.volume = 0.3; 
         window.bgMusic.addEventListener('ended', () => {
             window.currentMusicIndex = (window.currentMusicIndex + 1) % window.musicList.length;
             window.bgMusic.src = window.musicList[window.currentMusicIndex];
@@ -776,8 +791,22 @@
             }
         }, { once: true }); 
         
-        document.getElementById('musicVolInput').addEventListener('input', (e) => { window.bgMusic.volume = e.target.value / 100; });
-        document.getElementById('sfxVolInput').addEventListener('input', (e) => { window.currentSfxVolume = e.target.value / 100; window.playSfx(window.sfx2); });
+        document.getElementById('musicVolInput').addEventListener('input', (e) => { 
+            window.bgMusic.volume = e.target.value / 100; 
+            localStorage.setItem('hubMusicVol', e.target.value);
+        });
+        document.getElementById('musicVolInput').addEventListener('change', (e) => { 
+            if(typeof window.syncMyData === 'function') window.syncMyData();
+        });
+
+        document.getElementById('sfxVolInput').addEventListener('input', (e) => { 
+            window.currentSfxVolume = e.target.value / 100; 
+            localStorage.setItem('hubSfxVol', e.target.value);
+            window.playSfx(window.sfx2); 
+        });
+        document.getElementById('sfxVolInput').addEventListener('change', (e) => { 
+            if(typeof window.syncMyData === 'function') window.syncMyData();
+        });
 
         window.defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
         window.currentPfp = localStorage.getItem('hubPfp') || window.defaultAvatar;
@@ -1169,8 +1198,16 @@
             if(!window.myId || !window.currentUserName || window.currentUserName === 'admin1107112005') return;
             try { 
                 await setDoc(doc(db, "leaderboard", window.myId), { 
-                    name: window.currentUserName, score: window.myScore, pfp: window.localStorage.getItem('hubPfp') || null, 
-                    lastActive: Date.now(), ...dataToMerge 
+                    name: window.currentUserName, 
+                    score: window.myScore, 
+                    pfp: window.localStorage.getItem('hubPfp') || null, 
+                    theme: localStorage.getItem('hubTheme') || '#0088ff',
+                    darkMode: localStorage.getItem('hubDarkMode') === 'true',
+                    visual: localStorage.getItem('hubVisual') || 'alto',
+                    musicVol: localStorage.getItem('hubMusicVol') || '30',
+                    sfxVol: localStorage.getItem('hubSfxVol') || '80',
+                    lastActive: Date.now(), 
+                    ...dataToMerge 
                 }, { merge: true }); 
             } catch (error) {}
         }
@@ -1187,13 +1224,12 @@
             if(!me || !me.friends || me.friends.length === 0) { container.innerHTML = "<p style='color:#666; text-align:center;'>Você ainda não tem amigos adicionados.</p>"; window.openWindow('win-lista-amigos', 'Meus Amigos'); return; }
             me.friends.forEach(fId => {
                 const f = window.allUsers.find(u => u.id === fId);
-                if(f) container.innerHTML += `<div class="list-card list-card-hover" onclick="window.openUserProfile('${f.id}')"><img src="${f.pfp || window.defaultAvatar}" class="avatar-squircle" style="width:40px; height:40px; border: 2px solid white;"><span style="font-weight:bold; flex:1;">${f.name}</span></div>`;
+                if(f) container.innerHTML += `<div class="list-card list-card-hover" onclick="window.openUserProfile('${f.id}');"><img src="${f.pfp || window.defaultAvatar}" class="avatar-squircle" style="width:40px; height:40px; border: 2px solid white;"><span style="font-weight:bold; flex:1;">${f.name}</span></div>`;
             });
             window.openWindow('win-lista-amigos', 'Meus Amigos');
         }
 
         window.openUserProfile = function(targetId) {
-            // FECHAMENTO MESTRE: Destrói janelas secundárias na hora que abre um perfil
             window.closeWindow('win-lista-amigos');
             window.closeWindow('win-solicitacoes');
             window.closeWindow('win-add-amigo');
@@ -1303,6 +1339,33 @@
                 if(document.activeElement.id !== 'profileLoc' && me.location) document.getElementById('profileLoc').value = me.location;
                 if(document.activeElement.id !== 'profileSoc' && me.social) document.getElementById('profileSoc').value = me.social; 
                 if(document.activeElement.id !== 'profileBio' && me.bio) document.getElementById('profileBio').value = me.bio;
+
+                // PUXA AS CONFIGURAÇÕES DA NUVEM (Se logar em outro PC, puxa as cores salvas)
+                if(me.theme && me.theme !== localStorage.getItem('hubTheme')) {
+                    document.documentElement.style.setProperty('--theme-color', me.theme);
+                    document.getElementById('themePicker').value = me.theme;
+                    localStorage.setItem('hubTheme', me.theme);
+                }
+                if(me.darkMode !== undefined && String(me.darkMode) !== localStorage.getItem('hubDarkMode')) {
+                    document.getElementById('darkModeToggle').checked = me.darkMode;
+                    if(me.darkMode) document.body.classList.add('dark-mode'); else document.body.classList.remove('dark-mode');
+                    localStorage.setItem('hubDarkMode', me.darkMode ? 'true' : 'false');
+                }
+                if(me.visual && me.visual !== localStorage.getItem('hubVisual')) {
+                    document.getElementById('visualSelect').value = me.visual;
+                    if(me.visual === 'desempenho') document.body.classList.add('perf-mode'); else document.body.classList.remove('perf-mode');
+                    localStorage.setItem('hubVisual', me.visual);
+                }
+                if(me.musicVol && me.musicVol !== localStorage.getItem('hubMusicVol')) {
+                    document.getElementById('musicVolInput').value = me.musicVol;
+                    window.bgMusic.volume = parseInt(me.musicVol) / 100;
+                    localStorage.setItem('hubMusicVol', me.musicVol);
+                }
+                if(me.sfxVol && me.sfxVol !== localStorage.getItem('hubSfxVol')) {
+                    document.getElementById('sfxVolInput').value = me.sfxVol;
+                    window.currentSfxVolume = parseInt(me.sfxVol) / 100;
+                    localStorage.setItem('hubSfxVol', me.sfxVol);
+                }
                 
                 const reqDiv = document.getElementById('requestsList');
                 if (reqDiv) {
