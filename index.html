@@ -3,374 +3,413 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Dream Setup - Versão do Leo (V5)</title>
+    <title>Hub de Jogos - Hyo</title>
+    
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0088ff">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #1a1a1a;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        /* --- SUAS VARIÁVEIS E BASE --- */
+        :root { --theme-color: #0088ff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { 
+            position: fixed; inset: 0; overflow: hidden; display: flex; 
+            flex-direction: column; background-color: #000; 
         }
 
-        /* Menu Lateral */
-        #ui-panel {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 250px;
-            height: 100vh;
-            background-color: #2a2a2a;
-            border-right: 2px solid #333;
-            padding: 20px;
-            box-sizing: border-box;
-            z-index: 10;
-            color: white;
-            box-shadow: 2px 0 15px rgba(0,0,0,0.5);
+        /* --- CROSSFADE DOS WALLPAPERS --- */
+        .bg-layer {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-size: cover; background-position: center center;
+            z-index: -10; transition: opacity 0.8s ease-in-out; pointer-events: none; 
         }
+        #bg-day { background-image: url('wallpaper01.jpeg'); opacity: 1; }
+        #bg-night { background-image: url('wallpaper02.jpg'); opacity: 0; }
+        body.dark-mode #bg-day { opacity: 0; }
+        body.dark-mode #bg-night { opacity: 1; }
 
-        h2 {
-            margin-top: 0;
-            font-size: 1.2rem;
-            text-align: center;
-            border-bottom: 1px solid #444;
-            padding-bottom: 10px;
+        /* --- TELA DE LOGIN / REGISTRO --- */
+        #loginOverlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(25px);
+            z-index: 20000; display: none; justify-content: center; align-items: center;
         }
+        .login-box {
+            width: 360px; background: linear-gradient(135deg, rgba(255, 255, 255, 0.75), rgba(200, 230, 255, 0.4));
+            backdrop-filter: blur(20px) saturate(150%); border: 1px solid rgba(255,255,255,0.9); border-radius: 16px; padding: 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 2px 15px rgba(255,255,255,0.8);
+            text-align: center; color: #111; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .login-box h2 {
+            margin-bottom: 5px; color: var(--theme-color); text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+            display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 24px;
+        }
+        .login-box p { font-size: 13px; color: #444; margin-bottom: 20px; font-weight: 500; }
+        
+        .login-input {
+            width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.8);
+            outline: none; margin-bottom: 12px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 14px; font-weight: bold; color: #333; text-align: center;
+            background: rgba(255,255,255,0.9); transition: all 0.3s ease;
+        }
+        .login-input:focus { border-color: var(--theme-color); box-shadow: 0 0 8px var(--theme-color); }
+        
+        .btn-login-action {
+            width: 100%; padding: 12px; border-radius: 8px; font-size: 15px; letter-spacing: 0.5px; margin-top: 5px; cursor: pointer; border: none; font-weight: bold;
+        }
+        .btn-green {
+            background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(0,0,0,0.1) 100%), #4caf50 !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.5);
+            color: white !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
+        }
+        .login-toggle-link {
+            display: inline-block; margin-top: 15px; font-size: 13px; color: var(--theme-color);
+            font-weight: bold; text-decoration: none; cursor: pointer; transition: filter 0.2s;
+        }
+        .login-toggle-link:hover { filter: brightness(0.8); text-decoration: underline; }
 
-        .btn-movel {
-            width: 100%;
-            background-color: #444;
-            color: white;
-            border: none;
-            padding: 15px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 1rem;
-            transition: background 0.2s;
-            font-weight: bold;
-        }
+        /* --- TOGGLE SWITCH --- */
+        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.2); transition: .3s; border-radius: 24px; border: 2px solid rgba(255,255,255,0.5); }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+        input:checked + .slider { background-color: var(--theme-color); border-color: transparent; }
+        input:checked + .slider:before { transform: translateX(26px); }
 
-        .btn-movel:hover {
-            background-color: #555;
-        }
+        /* --- O RESTO DO SEU CSS DE UI (Minificado visualmente pra poupar espaço) --- */
+        body.dark-mode { color: #eee; color-scheme: dark; }
+        body.dark-mode .window, body.dark-mode #avatarMenu, body.dark-mode .login-box { background: rgba(30, 30, 30, 0.6) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 2px 10px rgba(255,255,255,0.05) !important; }
+        body.dark-mode .title-bar { background: linear-gradient(180deg, rgba(50, 50, 50, 0.8) 0%, rgba(30, 30, 30, 0.8) 100%) !important; color: #fff !important; text-shadow: 0 1px 1px rgba(0,0,0,0.8) !important; }
+        body.dark-mode .window-content { background: rgba(40, 40, 40, 0.7) !important; color: #eee !important; }
+        body.dark-mode .window-content h3, body.dark-mode #profileNameDisplay, body.dark-mode #visitName, body.dark-mode .start-left .menu-item:hover:not(.locked-item), body.dark-mode .login-box h2 { color: var(--theme-color) !important; text-shadow: none !important; }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: rgba(60, 60, 60, 0.8) !important; border: 1px solid #555 !important; color: #fff !important; }
+        body.dark-mode .start-menu { background: linear-gradient(135deg, rgba(40, 40, 40, 0.9), rgba(20, 20, 30, 0.8)) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
+        body.dark-mode .taskbar { background: linear-gradient(to bottom, rgba(40, 40, 40, 0.8) 0%, rgba(20, 20, 30, 0.8) 100%) !important; border-top: 1px solid rgba(255, 255, 255, 0.1) !important; }
+        
+        .desktop { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 15px; position: relative; flex-wrap: wrap; align-content: flex-start; }
+        .desktop-icon { width: 70px; text-align: center; color: white; text-shadow: 1px 1px 2px black; cursor: pointer; padding: 8px; border-radius: 5px; transition: all 0.25s ease; }
+        .desktop-icon:hover { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.4); transform: translateY(-2px); }
+        .desktop-icon .icon { font-size: 32px; margin-bottom: 5px; filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.4)); transition: transform 0.2s ease; }
+        .desktop-icon:hover .icon { transform: scale(1.1); }
+        .desktop-icon span { font-size: 12px; }
 
-        /* Container do Jogo */
-        #game-container {
-            flex-grow: 1;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #000;
-        }
+        .window { position: absolute; width: 350px; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(20px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.7); border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.2), inset 0 2px 10px rgba(255,255,255,0.5); display: none; flex-direction: column; overflow: hidden; z-index: 10; }
+        .window.active { display: flex; animation: popElastic 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
+        .window.closing { animation: zoomOut 0.25s ease-in forwards !important; }
+        .window.minimized { display: none !important; }
 
-        canvas {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            cursor: grab;
-        }
+        @keyframes popElastic { 0% { transform: scale(0.6); opacity: 0; } 50% { transform: scale(1.05); opacity: 1; } 75% { transform: scale(0.98); } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes zoomOut { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.5); opacity: 0; } }
+        @keyframes shakeError { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+        
+        .error-shake { animation: shakeError 0.4s ease; background: #8b0000 !important; background-image: none !important; border-color: #4a0000 !important; color: #ffffff !important; text-shadow: none !important; box-shadow: none !important; }
 
-        canvas:active {
-            cursor: grabbing;
-        }
+        .title-bar { background: linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.2) 100%); border-bottom: 2px solid var(--theme-color); color: #111; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 13px; text-shadow: 0 1px 1px rgba(255,255,255,0.8); cursor: grab; }
+        .close-btn { background: rgba(232, 17, 35, 0.8); border: 1px solid rgba(255,255,255,0.6); color: white; border-radius: 6px; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 12px; cursor: pointer; transition: background 0.2s; }
+        .close-btn:hover { background: #ff2a3c; }
+        .window-content { padding: 20px; color: #111; font-size: 14px; background: rgba(255,255,255,0.5); flex: 1; overflow-y: auto; max-height: 400px; }
+        
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 4px; outline: none; margin: 10px 0; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--theme-color); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        input[type="text"], input[type="email"], input[type="color"], input[type="number"], select, textarea, input[type="password"] { width: 100%; padding: 8px; margin: 5px 0 15px 0; border-radius: 5px; border: 1px solid #ccc; outline: none; background: rgba(255,255,255,0.9); transition: all 0.2s; }
+        
+        .taskbar { height: 50px; width: 100%; background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, rgba(200, 220, 255, 0.3) 100%); backdrop-filter: blur(15px); border-top: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 -2px 10px rgba(0,0,0,0.2); display: flex; align-items: center; padding: 0 10px; position: relative; z-index: 100; }
+        .taskbar-items { display: flex; gap: 8px; flex: 1; margin-left: 15px; overflow-x: auto; }
+        .taskbar-tab { background: rgba(255, 255, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.6); width: 38px; height: 38px; border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s ease; }
+        .taskbar-tab:hover { background: rgba(255, 255, 255, 0.6); transform: translateY(-2px); }
+        .taskbar-tab.active-tab { background: rgba(255, 255, 255, 0.8); box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); border: 2px solid var(--theme-color); }
+        
+        .start-btn { height: 40px; width: 40px; border-radius: 50%; background-color: var(--theme-color); background-image: radial-gradient(circle at center, rgba(255,255,255,0.5) 0%, transparent 70%); border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 0 10px var(--theme-color), inset 0 0 8px rgba(255,255,255,0.6); cursor: pointer; display: flex; justify-content: center; align-items: center; font-weight: bold; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .start-btn:hover { transform: scale(1.1); filter: brightness(1.15); }
+
+        .start-menu { position: absolute; bottom: 60px; left: 10px; width: 380px; height: 450px; border-radius: 10px; background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(200, 230, 255, 0.3)); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.7); box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: row; overflow: hidden; z-index: 1000; opacity: 0; visibility: hidden; transform: translateY(15px) scale(0.98); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); transform-origin: bottom left; }
+        .start-menu.active { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+        .start-left { width: 60%; background: rgba(255, 255, 255, 0.7); padding: 10px; display: flex; flex-direction: column; gap: 5px; }
+        .start-right { width: 40%; background: rgba(0, 20, 50, 0.5); padding: 10px; display: flex; flex-direction: column; gap: 5px; }
+        .menu-item { padding: 10px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .start-left .menu-item:hover { background: rgba(255, 255, 255, 0.9); box-shadow: 0 2px 5px rgba(0,0,0,0.1); transform: translateX(3px); border-left: 3px solid var(--theme-color); }
+        .start-right .menu-item { color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.5); }
+        .start-right .menu-item:hover:not(.locked-item) { background: rgba(255, 255, 255, 0.2); transform: translateX(3px); }
+
+        .btn-glossy { background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(0,0,0,0.1) 100%), var(--theme-color); color: white !important; border: 1px solid rgba(255,255,255,0.6); border-radius: 6px; padding: 8px 12px; cursor: pointer; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-glossy:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+        .user-avatar { border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.8); cursor: pointer; transition: transform 0.2s; }
+        .user-avatar:hover { transform: scale(1.1); box-shadow: 0 0 5px rgba(255,255,255,0.5); }
+        
+        #notification-container { position: absolute; bottom: 65px; right: 15px; display: flex; flex-direction: column; gap: 10px; z-index: 25000; pointer-events: none; }
+        .toast-notification { width: 320px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3), inset 0 2px 10px rgba(255,255,255,0.5); padding: 12px; display: flex; align-items: center; gap: 12px; transform: translateX(120%); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: auto; cursor: pointer; color: #111; }
+        .toast-notification.show { transform: translateX(0); opacity: 1; }
     </style>
 </head>
 <body>
 
-<div id="ui-panel">
-    <h2>Catálogo 2D</h2>
-    <button class="btn-movel" onclick="addMovel('mesa')">Mesa de PC</button>
-    <button class="btn-movel" onclick="addMovel('cadeira')">Cadeira Gamer</button>
-    <button class="btn-movel" onclick="addMovel('cama')">Cama</button>
-    <p style="font-size: 0.8rem; color: #888; margin-top: 20px;">
-        - Arraste móveis para mover.<br>
-        - Arraste o fundo para mover a câmera.<br>
-        - Use scroll para zoom.
-    </p>
-</div>
+    <div id="notification-container"></div>
+    <div id="bg-day" class="bg-layer"></div>
+    <div id="bg-night" class="bg-layer"></div>
 
-<div id="game-container">
-    <canvas id="gameCanvas" width="1920" height="1080"></canvas>
-</div>
-
-<script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-
-    // Configurações do Mundo
-    const gridSize = 10;
-    const baseTileW = 128;
-    const baseTileH = 64; 
-    const wallHeight = baseTileH * 4;
-
-    // Variáveis de Câmera
-    let camScale = 1.0;
-    let camOffsetX = canvas.width / 2;
-    let camOffsetY = canvas.height / 2;
-
-    // Estado do Jogo
-    let moveis = [];
-    let movelArrastado = null;
-    let arrastandoCamera = false;
-    let lastMouseX = 0;
-    let lastMouseY = 0;
-
-    // --- SISTEMA DE IMAGENS (PRELOAD) ---
-    const imagensProntas = {};
-    const fontes = {
-        'mesa': './assets/mesa.png',
-        'cadeira': './assets/cadeira.png',
-        'cama': './assets/cama.png'
-    };
-
-    for (let tipo in fontes) {
-        let img = new Image();
-        img.src = fontes[tipo];
-        imagensProntas[tipo] = img;
-    }
-    // ------------------------------------
-
-    function toIso(x, y, z = 0) {
-        const tileW = baseTileW * camScale;
-        const tileH = baseTileH * camScale;
-        const isoX = (x - y) * (tileW / 2);
-        const isoY = (x + y) * (tileH / 2) - (z * tileH);
-        return { x: isoX + camOffsetX, y: isoY + camOffsetY };
-    }
-
-    function toGrid(screenX, screenY) {
-        const tileW = baseTileW * camScale;
-        const tileH = baseTileH * camScale;
-        const adjX = screenX - camOffsetX;
-        const adjY = screenY - camOffsetY;
-        const gridX = Math.round((adjX / (tileW / 2) + adjY / (tileH / 2)) / 2);
-        const gridY = Math.round((adjY / (tileH / 2) - adjX / (tileW / 2)) / 2);
-        return { x: gridX, y: gridY };
-    }
-
-    function getMousePos(e) {
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        return {
-            x: (e.clientX - rect.left) * scaleX,
-            y: (e.clientY - rect.top) * scaleY
-        };
-    }
-
-    window.addMovel = function(tipo) {
-        moveis.push({
-            tipo: tipo,
-            mapX: 4,
-            mapY: 4,
-            isDragging: false,
-            dragScreenX: 0,
-            dragScreenY: 0,
-            offsetX: 0, 
-            offsetY: 0  
-        });
-    }
-
-    function drawPoly(points, color) {
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.moveTo(points[0].x, points[0].y);
-        for (let i = 1; i < points.length; i++) {
-            ctx.lineTo(points[i].x, points[i].y);
-        }
-        ctx.closePath();
-        ctx.fill();
-    }
-
-    function drawRoom() {
-        const p_far = toIso(0, 0);
-        const p_right = toIso(gridSize, 0);
-        const p_near = toIso(gridSize, gridSize);
-        const p_left = toIso(0, gridSize);
-
-        // Chão
-        drawPoly([p_far, p_right, p_near, p_left], '#3a3a3a');
-
-        // Parede Esquerda
-        const p_far_top = toIso(0, 0, 4);
-        const p_left_top = toIso(0, gridSize, 4);
-        drawPoly([p_left, p_far, p_far_top, p_left_top], '#555555');
-
-        // Parede Direita
-        const p_right_top = toIso(gridSize, 0, 4);
-        drawPoly([p_far, p_right, p_right_top, p_far_top], '#4a4a4a');
-
-        // Grade no chão
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-        ctx.lineWidth = 1 * camScale;
-        for (let x = 0; x <= gridSize; x++) {
-            const pStart = toIso(x, 0);
-            const pEnd = toIso(x, gridSize);
-            ctx.beginPath(); ctx.moveTo(pStart.x, pStart.y); ctx.lineTo(pEnd.x, pEnd.y); ctx.stroke();
-        }
-        for (let y = 0; y <= gridSize; y++) {
-            const pStart = toIso(0, y);
-            const pEnd = toIso(gridSize, y);
-            ctx.beginPath(); ctx.moveTo(pStart.x, pStart.y); ctx.lineTo(pEnd.x, pEnd.y); ctx.stroke();
-        }
-    }
-
-    function drawMovel(movel) {
-        let base = movel.isDragging 
-            ? { x: movel.dragScreenX, y: movel.dragScreenY } 
-            : toIso(movel.mapX, movel.mapY);
-
-        let img = imagensProntas[movel.tipo];
-
-        if (img && img.complete && img.naturalWidth !== 0) {
-            const drawWidth = img.width * camScale;
-            const drawHeight = img.height * camScale;
-            const tileH = baseTileH * camScale;
-
-            let drawX = base.x - (drawWidth / 2);
-            let drawY = base.y - drawHeight + (tileH / 2);
-
-            ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
-
-            if (movel.isDragging) {
-                ctx.strokeStyle = 'lime';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(drawX, drawY, drawWidth, drawHeight);
-            }
-        } else {
-            const size = 30 * camScale;
-            ctx.fillStyle = '#ef4444';
-            ctx.fillRect(base.x - size/2, base.y - size, size, size);
-        }
-    }
-
-    function render() {
-        ctx.fillStyle = '#000';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        drawRoom();
-
-        let moveisOrdenados = [...moveis].sort((a, b) => {
-            let baseA_Y = a.isDragging ? a.dragScreenY : toIso(a.mapX, a.mapY).y;
-            let baseB_Y = b.isDragging ? b.dragScreenY : toIso(b.mapX, b.mapY).y;
-            return baseA_Y - baseB_Y;
-        });
-
-        for (let movel of moveisOrdenados) {
-            drawMovel(movel);
-        }
-
-        requestAnimationFrame(render);
-    }
-
-    // --- EVENTOS DE MOUSE E CÂMERA ---
-
-    canvas.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        const zoomFactor = 1.1;
-        if (e.deltaY < 0) {
-            camScale *= zoomFactor;
-        } else {
-            camScale /= zoomFactor;
-        }
-        camScale = Math.min(Math.max(0.5, camScale), 3.0);
-    });
-
-    canvas.addEventListener('mousedown', (e) => {
-        const mouse = getMousePos(e);
-        lastMouseX = mouse.x;
-        lastMouseY = mouse.y;
-        
-        let pegouMovel = false;
-        
-        for (let i = moveis.length - 1; i >= 0; i--) {
-            let movel = moveis[i];
-            let objBase = toIso(movel.mapX, movel.mapY);
-            let img = imagensProntas[movel.tipo];
+    <div id="loginOverlay">
+        <div class="login-box" id="loginBoxDiv">
+            <h2 id="loginTitle">Entrar no Hub</h2>
+            <p id="loginSubtitle">Faça login com seu perfil para continuar.</p>
             
-            let acertou = false;
+            <form id="authForm">
+                <input type="text" id="loginName" class="login-input" minlength="3" maxlength="15" placeholder="Nome de Usuário" style="display: none;">
+                <input type="email" id="loginEmail" class="login-input" placeholder="Seu E-mail" required>
+                <input type="password" id="loginPass" class="login-input" placeholder="Sua Senha" required>
+                <input type="password" id="loginConfirmPass" class="login-input" placeholder="Confirmar Senha" style="display: none;">
+                
+                <div id="loginErrorMsg" style="display:none; color:red; font-size:13px; font-weight:bold; margin-bottom: 10px;">Erro!</div>
+                
+                <button type="submit" id="loginMainBtn" class="btn-glossy login-btn">Entrar no Sistema</button>
+            </form>
+            <a id="loginToggleLink" class="login-toggle-link">Novo por aqui? Criar conta</a>
+        </div>
+    </div>
 
-            if (img && img.complete && img.naturalWidth !== 0) {
-                const drawWidth = img.width * camScale;
-                const drawHeight = img.height * camScale;
-                const tileH = baseTileH * camScale;
+    <div class="desktop" id="desktop">
+        <div class="desktop-icon" id="iconGame1" data-window="win-jogo">
+            <div class="icon">🕹️</div>
+            <span>Jogo 1</span>
+        </div>
+        <div class="desktop-icon" id="iconGame2">
+            <div class="icon">🏎️</div>
+            <span>Jogo 2</span>
+        </div>
 
-                let drawX = objBase.x - (drawWidth / 2);
-                let drawY = objBase.y - drawHeight + (tileH / 2);
+        <div class="window" id="win-config" style="top: 40px; left: 10px;">
+            <div class="title-bar">
+                <div class="title-info">Configurações</div>
+                <div class="close-btn" data-close="win-config">X</div>
+            </div>
+            <div class="window-content">
+                <h3>Opções do Sistema</h3>
+                
+                <label>👤 Perfil Atual:</label>
+                <div style="display: flex; align-items: center; gap: 10px; margin: 5px 0 15px 0;">
+                    <img class="user-avatar" id="configAvatar" src="" style="width: 35px; height: 35px;">
+                    <input type="text" id="usernameInput" maxlength="15" readonly style="margin: 0; flex: 1; background: rgba(0,0,0,0.05); color: #888;">
+                    <button class="btn-glossy" id="btnChangeName" style="padding: 8px 12px; font-size: 12px;">✏️ Alterar</button>
+                </div>
 
-                if (mouse.x >= drawX && mouse.x <= drawX + drawWidth &&
-                    mouse.y >= drawY && mouse.y <= drawY + drawHeight) {
-                    acertou = true;
+                <label style="display:block; margin-top:15px;">🎨 Cor Tema:</label>
+                <input type="color" id="themePicker" value="#0088ff" style="height: 35px; width: 100%;">
+
+                <div style="display: flex; justify-content: space-between; margin: 15px 0; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 8px;">
+                    <label for="darkModeToggle" style="margin:0; font-weight:bold;">🌙 Modo Escuro</label>
+                    <label class="switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <hr style="border-color: rgba(0,0,0,0.1); margin: 20px 0 15px 0;">
+                <button class="btn-glossy" id="btnDeleteAccount" style="background: #f44336; width: 100%;">🗑️ Excluir Minha Conta</button>
+            </div>
+        </div>
+        
+        </div>
+
+    <div class="taskbar">
+        <div class="start-btn" id="startBtn">W</div>
+        <div class="taskbar-items" id="taskbarItems"></div>
+        <div class="system-tray">
+            <div class="time" id="clockTime">--:--</div>
+            <div class="date" id="clockDate">--/--/----</div>
+        </div>
+    </div>
+
+    <div class="start-menu" id="startMenu">
+        <div class="start-left">
+            <div class="menu-item tut-hub-title" style="font-weight: bold; font-size: 16px; cursor: default;">Hub de Jogos</div>
+            <div class="menu-item op-window" data-window="win-config">Configurações</div>
+            <hr style="border-color: rgba(0,0,0,0.1); margin: 5px 0;">
+            <div class="menu-item" id="installBtn" style="display: none; color: #ff8800; font-weight: bold;">Instalar Aplicativo</div>
+        </div>
+        
+        <div class="start-right">
+            <div class="menu-item op-window" data-window="win-perfil" style="padding-bottom: 10px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                <img class="user-avatar" id="startMenuAvatar" src="" style="width: 36px; height: 36px;">
+                <span id="startMenuUser" style="font-weight: bold; font-size: 14px;">Carregando...</span>
+            </div>
+            <div class="menu-item locked-item">🔒 Meus Projetos</div>
+            <div class="menu-item" id="btnLogout" style="margin-top: auto; color: #ff6b6b; font-weight: bold;">🚪 Sair da Conta</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, updateDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+        // Configuração Firebase
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAWgDNee5lz90sNRZnA5gh53WB8rLFRExA", 
+            authDomain: "hubwxp.firebaseapp.com", 
+            projectId: "hubwxp", 
+            storageBucket: "hubwxp.firebasestorage.app", 
+            messagingSenderId: "476695396272", 
+            appId: "1:476695396272:web:5cee35eb7d8817c632a075" 
+        };
+        const app = initializeApp(firebaseConfig); 
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Estado Global Isolado (Não usa window.)
+        const state = {
+            myId: null,
+            currentUserName: null,
+            myScore: 1000,
+            allUsers: [],
+            isRegisterMode: false,
+            zIndexCounter: 10
+        };
+
+        // UI Helpers
+        const ui = {
+            showError: (msg) => {
+                const err = document.getElementById('loginErrorMsg');
+                const box = document.getElementById('loginBoxDiv');
+                err.textContent = msg; 
+                err.style.display = 'block';
+                box.classList.remove('error-shake'); 
+                void box.offsetWidth; 
+                box.classList.add('error-shake');
+            },
+            toggleLoginMode: () => {
+                state.isRegisterMode = !state.isRegisterMode;
+                document.getElementById('loginTitle').innerText = state.isRegisterMode ? "Criar Conta" : "Entrar no Hub";
+                document.getElementById('loginSubtitle').innerText = state.isRegisterMode ? "Registre-se para salvar na nuvem." : "Faça login com seu perfil para continuar.";
+                document.getElementById('loginName').style.display = state.isRegisterMode ? 'block' : 'none';
+                document.getElementById('loginConfirmPass').style.display = state.isRegisterMode ? 'block' : 'none';
+                document.getElementById('loginMainBtn').textContent = state.isRegisterMode ? "Registrar e Entrar" : "Entrar no Sistema";
+                document.getElementById('loginToggleLink').textContent = state.isRegisterMode ? "Já tem uma conta? Fazer Login" : "Novo por aqui? Criar conta";
+            },
+            openWindow: (id) => {
+                const win = document.getElementById(id); 
+                if(!win) return;
+                document.getElementById('startMenu').classList.remove('active');
+                win.classList.add('active'); 
+                win.classList.remove('closing', 'minimized'); 
+                ui.bringToFront(win);
+            },
+            closeWindow: (id) => {
+                const win = document.getElementById(id);
+                if(win) {
+                    win.classList.add('closing');
+                    setTimeout(() => win.classList.remove('active', 'closing'), 250);
+                }
+            },
+            bringToFront: (win) => {
+                state.zIndexCounter++; 
+                win.style.zIndex = state.zIndexCounter;
+            }
+        };
+
+        // Lógica de Autenticação Segura
+        const handleAuth = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            
+            if(state.isRegisterMode) {
+                const name = document.getElementById('loginName').value.trim();
+                const conf = document.getElementById('loginConfirmPass').value.trim();
+                
+                if(pass !== conf) return ui.showError("Senhas não coincidem!");
+                if(name.length < 3) return ui.showError("Nome muito curto!");
+                
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                    state.myId = userCredential.user.uid;
+                    state.currentUserName = name;
+                    
+                    await setDoc(doc(db, "leaderboard", state.myId), { 
+                        name: state.currentUserName, score: 1000, lastActive: Date.now()
+                    });
+                    
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    initSystem();
+                } catch (error) {
+                    ui.showError(error.message);
                 }
             } else {
-                const size = 30 * camScale;
-                let drawX = objBase.x - size / 2;
-                let drawY = objBase.y - size;
-
-                if (mouse.x >= drawX && mouse.x <= drawX + size &&
-                    mouse.y >= drawY && mouse.y <= drawY + size) {
-                    acertou = true;
+                try {
+                    const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+                    state.myId = userCredential.user.uid;
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    initSystem();
+                } catch (error) {
+                    ui.showError("Credenciais inválidas!");
                 }
             }
+        };
 
-            if (acertou) { 
-                movel.isDragging = true;
-                
-                movel.offsetX = objBase.x - mouse.x;
-                movel.offsetY = objBase.y - mouse.y;
-
-                movel.dragScreenX = mouse.x + movel.offsetX;
-                movel.dragScreenY = mouse.y + movel.offsetY;
-
-                movelArrastado = movel;
-                pegouMovel = true;
-                
-                moveis.push(moveis.splice(i, 1)[0]);
-                break; 
+        const handleLogout = async () => {
+            if(confirm("Tem certeza que deseja sair?")) {
+                await signOut(auth);
+                location.reload();
             }
-        }
+        };
 
-        if (!pegouMovel) {
-            arrastandoCamera = true;
-        }
-    });
+        const initSystem = () => {
+            // Sincroniza dados com UI
+            document.getElementById('startMenuUser').textContent = state.currentUserName || "Usuário";
+            document.getElementById('usernameInput').value = state.currentUserName || "";
+        };
 
-    window.addEventListener('mousemove', (e) => {
-        const mouse = getMousePos(e);
+        // Listeners e Eventos Baseados no DOM (O jeito Sênior)
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Eventos de Login
+            document.getElementById('authForm').addEventListener('submit', handleAuth);
+            document.getElementById('loginToggleLink').addEventListener('click', ui.toggleLoginMode);
+            
+            // Relógio
+            setInterval(() => {
+                const now = new Date(); 
+                document.getElementById('clockTime').textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`; 
+                document.getElementById('clockDate').textContent = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+            }, 1000);
 
-        if (movelArrastado) {
-            movelArrastado.dragScreenX = mouse.x + movelArrastado.offsetX;
-            movelArrastado.dragScreenY = mouse.y + movelArrastado.offsetY;
-        } else if (arrastandoCamera) {
-            const dx = mouse.x - lastMouseX;
-            const dy = mouse.y - lastMouseY;
-            camOffsetX += dx;
-            camOffsetY += dy;
-            lastMouseX = mouse.x;
-            lastMouseY = mouse.y;
-        }
-    });
+            // Menu Iniciar
+            const startBtn = document.getElementById('startBtn');
+            const startMenu = document.getElementById('startMenu');
+            startBtn.addEventListener('click', (e) => { 
+                e.stopPropagation(); 
+                startMenu.classList.toggle('active'); 
+            });
+            document.addEventListener('click', (e) => { 
+                if (!startMenu.contains(e.target) && e.target !== startBtn) {
+                    startMenu.classList.remove('active'); 
+                }
+            });
 
-    window.addEventListener('mouseup', (e) => {
-        if (movelArrastado) {
-            const snappedGrid = toGrid(movelArrastado.dragScreenX, movelArrastado.dragScreenY);
+            // Gerenciador de Janelas Automático
+            document.querySelectorAll('[data-window]').forEach(el => {
+                el.addEventListener('click', () => ui.openWindow(el.getAttribute('data-window')));
+            });
 
-            if (snappedGrid.x >= 0 && snappedGrid.x < gridSize && 
-                snappedGrid.y >= 0 && snappedGrid.y < gridSize) {
-                movelArrastado.mapX = snappedGrid.x;
-                movelArrastado.mapY = snappedGrid.y;
-            }
-            movelArrastado.isDragging = false;
-            movelArrastado = null;
-        }
-        arrastandoCamera = false;
-    });
+            document.querySelectorAll('[data-close]').forEach(el => {
+                el.addEventListener('click', () => ui.closeWindow(el.getAttribute('data-close')));
+            });
 
-    render();
-</script>
+            // Logout
+            document.getElementById('btnLogout').addEventListener('click', handleLogout);
+
+            // Ouvinte do Firebase
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    state.myId = user.uid;
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    // Aqui você puxa os dados reais do userDoc do Firebase
+                    initSystem();
+                } else {
+                    document.getElementById('loginOverlay').style.display = 'flex';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
