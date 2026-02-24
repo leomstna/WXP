@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hub de Jogos - Hyo</title>
+    
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0088ff">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
     <style>
         :root { --theme-color: #0088ff; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -229,7 +234,6 @@
         @media (max-width: 768px) {
             .login-box { width: 90%; padding: 20px; }
             
-            /* DESTRAVEI AS JANELAS AQUI - Agora elas só abrem grandes, mas podem ser movidas */
             .window { width: 95% !important; max-height: 85vh !important; border-radius: 12px !important; }
             
             .start-menu {
@@ -1409,6 +1413,15 @@
                         document.removeEventListener('keydown', tutListener);
                     } else renderStep();
                 }
+            });
+        }
+
+        // Registrar o motor do App Instalável (Service Worker)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => console.log('App pronto para instalar!', reg.scope))
+                    .catch((err) => console.log('Erro no App:', err));
             });
         }
     </script>
