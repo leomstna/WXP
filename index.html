@@ -233,16 +233,10 @@
            ========================================= */
         @media (max-width: 768px) {
             .login-box { width: 90%; padding: 20px; }
-            
             .window { width: 95% !important; max-height: 85vh !important; border-radius: 12px !important; }
-            
-            .start-menu {
-                width: 95%; left: 2.5%; bottom: 60px;
-                flex-direction: column; height: auto; max-height: 80vh; overflow-y: auto;
-            }
+            .start-menu { width: 95%; left: 2.5%; bottom: 60px; flex-direction: column; height: auto; max-height: 80vh; overflow-y: auto; }
             .start-left, .start-right { width: 100%; }
             .start-right { border-top: 1px solid rgba(255,255,255,0.2); }
-            
             .system-tray { display: none; }
             #notification-container { right: auto; left: 5%; width: 90%; bottom: 70px; }
             .toast-notification { width: 100%; }
@@ -576,6 +570,12 @@
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="var(--theme-color)"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                 Adicionar Amigos
             </div>
+            
+            <div class="menu-item" id="installBtn" style="display: none; color: #ff8800; font-weight: bold;" onclick="window.installPWA()">
+                <svg class="aero-icon" viewBox="0 0 24 24" fill="#ff8800"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                Instalar Aplicativo
+            </div>
+
         </div>
         
         <div class="start-right">
@@ -667,7 +667,6 @@
             const activeTab = document.getElementById('tab-' + win.id); if(activeTab) activeTab.classList.add('active-tab');
         }
 
-        /* CORREÇÃO MESTRE: Suporte a TOUCH (celular) e MOUSE (PC) para arrastar as janelas */
         document.querySelectorAll('.window').forEach(win => {
             const titleBar = win.querySelector('.title-bar'); 
             let isDragging = false, startX, startY, initialLeft, initialTop;
@@ -726,7 +725,6 @@
         window.sfx4 = new Audio('sfx 04.MP3'); 
         window.currentSfxVolume = 0.8;
         
-        /* CORREÇÃO MESTRE: O 'Despertador' que liga a música caso o celular pauser ela */
         window.playSfx = function(audioObj) {
             if (!audioObj) return;
             audioObj.volume = window.currentSfxVolume;
@@ -819,7 +817,6 @@
 
         window.isDraggingCrop = false; window.isResizingCrop = false; window.startCropX = 0; window.startCropY = 0; window.initialCropLeft = 0; window.initialCropTop = 0; window.initialCropSize = 0;
 
-        /* Suporte Touch pro Crop Tool (Cortador de foto) */
         const cropStartDrag = (e) => {
             if (e.target === window.cropResizeHandle) return;
             window.isDraggingCrop = true; 
@@ -1416,12 +1413,41 @@
             });
         }
 
+        // --- SISTEMA DO BOTÃO DE INSTALAÇÃO (PWA) ---
+        window.deferredPrompt = null;
+
+        // O navegador avisa quando o app tá pronto pra instalar
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Impede o Chrome de soltar aquele pop-up feio automático
+            e.preventDefault();
+            // Guarda o evento pra gente usar no nosso botão
+            window.deferredPrompt = e;
+            // Faz o nosso botão ninja aparecer lá no Menu Iniciar
+            const btn = document.getElementById('installBtn');
+            if(btn) btn.style.display = 'flex'; 
+        });
+
+        // Quando você clicar no nosso botão ninja
+        window.installPWA = async () => {
+            if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
+            if (!window.deferredPrompt) return;
+            // Abre a tela bonitona de instalar do sistema
+            window.deferredPrompt.prompt();
+            // Espera o usuário clicar "Sim" ou "Não"
+            const { outcome } = await window.deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                // Se ele instalou, esconde o botão pra não ficar sobrando
+                document.getElementById('installBtn').style.display = 'none';
+            }
+            window.deferredPrompt = null;
+        };
+
         // Registrar o motor do App Instalável (Service Worker)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then((reg) => console.log('App pronto para instalar!', reg.scope))
-                    .catch((err) => console.log('Erro no App:', err));
+                    .then((reg) => console.log('Motor do App ativado!', reg.scope))
+                    .catch((err) => console.log('Erro no Motor do App:', err));
             });
         }
     </script>
