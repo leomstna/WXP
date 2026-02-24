@@ -1,6 +1,6 @@
 {
-  "name": "Hub de Jogos Hyo",
-  "short_name": "Hub Hyo",
+  "name": "WindowsXp GameHub",
+  "short_name": "WXP Hub",
   "description": "Meu sistema operacional e hub de jogos",
   "start_url": "./index.html",
   "display": "standalone",
