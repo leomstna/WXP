@@ -22,14 +22,14 @@
             background-color: #000; 
         }
 
-        /* --- CROSSFADE DOS WALLPAPERS --- */
+        /* --- CROSSFADE DOS WALLPAPERS (ATUALIZADO PARA PASTA wallpapers/) --- */
         .bg-layer {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background-size: cover; background-position: center center;
             z-index: -10; transition: opacity 0.8s ease-in-out; pointer-events: none; 
         }
-        #bg-day { background-image: url('wallpaper01.jpeg'); opacity: 1; }
-        #bg-night { background-image: url('wallpaper02.jpg'); opacity: 0; }
+        #bg-day { background-image: url('wallpapers/wallpaper01.jpeg'); opacity: 1; }
+        #bg-night { background-image: url('wallpapers/wallpaper02.jpg'); opacity: 0; }
         body.dark-mode #bg-day { opacity: 0; }
         body.dark-mode #bg-night { opacity: 1; }
 
@@ -746,21 +746,21 @@
     </script>
 
     <script>
-        window.sfx1 = new Audio('sfx 01.MP3'); 
-        window.sfx2 = new Audio('sfx 02.MP3'); 
-        window.sfx3 = new Audio('sfx 03.MP3'); 
-        window.sfx4 = new Audio('sfx 04.MP3'); 
+        // --- CAMINHOS ATUALIZADOS PARA A PASTA sfx/ ---
+        window.sfx1 = new Audio('sfx/sfx 01.MP3'); 
+        window.sfx2 = new Audio('sfx/sfx 02.MP3'); 
+        window.sfx3 = new Audio('sfx/sfx 03.MP3'); 
+        window.sfx4 = new Audio('sfx/sfx 04.MP3'); 
         
         window.savedSfxVol = localStorage.getItem('hubSfxVol') || '80';
         window.currentSfxVolume = parseInt(window.savedSfxVol) / 100;
         document.getElementById('sfxVolInput').value = window.savedSfxVol;
 
+        // --- SISTEMA MESTRE DE MÚSICA SEQUENCIAL (PASTA musicas/) ---
         window.savedMusicVol = localStorage.getItem('hubMusicVol') || '30';
-        window.currentMusicIndex = 0;
-        window.musicList = ['musica01.mp3', 'musica02.mp3', 'musica03.mp3'];
-        window.bgMusic = new Audio(window.musicList[window.currentMusicIndex]);
+        window.currentMusicTrack = 1; // Começa tocando a 1.mp3
+        window.bgMusic = new Audio(`musicas/${window.currentMusicTrack}.mp3`);
         window.bgMusic.volume = parseInt(window.savedMusicVol) / 100;
-        document.getElementById('musicVolInput').value = window.savedMusicVol;
         
         window.playSfx = function(audioObj) {
             if (!audioObj) return;
@@ -777,10 +777,23 @@
             }
         }
         
+        // Quando uma música acabar, tenta carregar e tocar a próxima
         window.bgMusic.addEventListener('ended', () => {
-            window.currentMusicIndex = (window.currentMusicIndex + 1) % window.musicList.length;
-            window.bgMusic.src = window.musicList[window.currentMusicIndex];
-            window.bgMusic.play();
+            window.currentMusicTrack++;
+            window.bgMusic.src = `musicas/${window.currentMusicTrack}.mp3`;
+            window.bgMusic.play().catch(e => console.log('Erro ao tentar tocar a próxima:', e));
+        });
+
+        // Se der erro ao tentar tocar (ex: chegou na música 5 e não existe), volta pro 1
+        window.bgMusic.addEventListener('error', () => {
+            console.log(`A música musicas/${window.currentMusicTrack}.mp3 não foi encontrada. Voltando para o início da playlist.`);
+            if (window.currentMusicTrack !== 1) {
+                window.currentMusicTrack = 1;
+                window.bgMusic.src = `musicas/${window.currentMusicTrack}.mp3`;
+                if(window.musicStarted) {
+                    window.bgMusic.play().catch(e => console.log(e));
+                }
+            }
         });
         
         window.musicStarted = false;
@@ -1340,7 +1353,6 @@
                 if(document.activeElement.id !== 'profileSoc' && me.social) document.getElementById('profileSoc').value = me.social; 
                 if(document.activeElement.id !== 'profileBio' && me.bio) document.getElementById('profileBio').value = me.bio;
 
-                // PUXA AS CONFIGURAÇÕES DA NUVEM (Se logar em outro PC, puxa as cores salvas)
                 if(me.theme && me.theme !== localStorage.getItem('hubTheme')) {
                     document.documentElement.style.setProperty('--theme-color', me.theme);
                     document.getElementById('themePicker').value = me.theme;
