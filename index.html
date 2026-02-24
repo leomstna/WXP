@@ -7,7 +7,16 @@
     <style>
         :root { --theme-color: #0088ff; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { height: 100vh; overflow: hidden; display: flex; flex-direction: column; background-color: #000; }
+        
+        /* CORREÇÃO MESTRE: Ancora o site nas bordas pra barra de tarefas não sumir no celular */
+        body { 
+            position: fixed; 
+            inset: 0; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            background-color: #000; 
+        }
 
         /* --- CROSSFADE DOS WALLPAPERS --- */
         .bg-layer {
@@ -177,9 +186,6 @@
         .list-card-hover { cursor: pointer; transition: all 0.2s ease; }
         .list-card-hover:hover { filter: brightness(1.05); transform: translateX(2px); background: rgba(255,255,255,0.8); }
 
-        .locked-item { cursor: not-allowed; opacity: 0.7; }
-        .blurred-text { filter: blur(3px); user-select: none; transition: filter 0.3s; }
-
         /* --- GOD MODE STYLES --- */
         .admin-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 8px; padding: 8px; border-radius: 6px; }
         .admin-btn { background: #444; color: white; border: 1px solid #777; border-radius: 4px; padding: 4px 8px; font-size: 11px; cursor: pointer; transition: 0.2s; }
@@ -225,34 +231,29 @@
             /* Tela de Login */
             .login-box { width: 90%; padding: 20px; }
             
-            /* Janelas do Sistema (Força a ocupar quase a tela toda e trava o arraste visualmente) */
+            /* Janelas do Sistema */
             .window {
-                width: 95% !important;
-                height: auto !important;
-                max-height: 85vh !important;
-                left: 2.5% !important;
-                top: 5% !important; 
-                transform: none !important;
-                border-radius: 12px !important;
+                width: 95% !important; height: auto !important; max-height: 85vh !important;
+                left: 2.5% !important; top: 5% !important; 
+                transform: none !important; border-radius: 12px !important;
             }
             
-            /* Menu Iniciar empilhado verticalmente */
+            /* Menu Iniciar */
             .start-menu {
                 width: 95%; left: 2.5%; bottom: 60px;
-                flex-direction: column; height: auto; max-height: 80vh;
-                overflow-y: auto;
+                flex-direction: column; height: auto; max-height: 80vh; overflow-y: auto;
             }
             .start-left, .start-right { width: 100%; }
             .start-right { border-top: 1px solid rgba(255,255,255,0.2); }
             
-            /* Barra de Tarefas (Esconde o relógio pra caber as abas dos jogos/janelas) */
+            /* Esconde o relógio pra caber os icones na barra */
             .system-tray { display: none; }
             
-            /* Notificações (Ocupam a largura do celular) */
+            /* Notificações */
             #notification-container { right: auto; left: 5%; width: 90%; bottom: 70px; }
             .toast-notification { width: 100%; }
 
-            /* Ajuste do Tutorial pra não quebrar a tela */
+            /* Ajuste do Tutorial */
             #tutorialBox { width: 90%; left: 5% !important; transform: none !important; }
             
             /* Ajuste da ferramenta de cortar foto */
