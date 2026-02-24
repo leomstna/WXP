@@ -218,6 +218,47 @@
         body.perf-mode .toast-notification { background: #e0e0e0 !important; backdrop-filter: none !important; }
         body.perf-mode.dark-mode .toast-notification { background: #222 !important; }
 
+        /* =========================================
+           --- RESPONSIVIDADE (MOBILE / CELULAR) --- 
+           ========================================= */
+        @media (max-width: 768px) {
+            /* Tela de Login */
+            .login-box { width: 90%; padding: 20px; }
+            
+            /* Janelas do Sistema (Força a ocupar quase a tela toda e trava o arraste visualmente) */
+            .window {
+                width: 95% !important;
+                height: auto !important;
+                max-height: 85vh !important;
+                left: 2.5% !important;
+                top: 5% !important; 
+                transform: none !important;
+                border-radius: 12px !important;
+            }
+            
+            /* Menu Iniciar empilhado verticalmente */
+            .start-menu {
+                width: 95%; left: 2.5%; bottom: 60px;
+                flex-direction: column; height: auto; max-height: 80vh;
+                overflow-y: auto;
+            }
+            .start-left, .start-right { width: 100%; }
+            .start-right { border-top: 1px solid rgba(255,255,255,0.2); }
+            
+            /* Barra de Tarefas (Esconde o relógio pra caber as abas dos jogos/janelas) */
+            .system-tray { display: none; }
+            
+            /* Notificações (Ocupam a largura do celular) */
+            #notification-container { right: auto; left: 5%; width: 90%; bottom: 70px; }
+            .toast-notification { width: 100%; }
+
+            /* Ajuste do Tutorial pra não quebrar a tela */
+            #tutorialBox { width: 90%; left: 5% !important; transform: none !important; }
+            
+            /* Ajuste da ferramenta de cortar foto */
+            #cropContainer { width: 100% !important; max-width: 300px; height: 300px !important; margin: 0 auto; }
+        }
+
     </style>
 </head>
 <body>
