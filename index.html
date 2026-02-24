@@ -22,7 +22,7 @@
             background-color: #000; 
         }
 
-        /* --- CROSSFADE DOS WALLPAPERS (ATUALIZADO PARA PASTA wallpapers/) --- */
+        /* --- CROSSFADE DOS WALLPAPERS --- */
         .bg-layer {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background-size: cover; background-position: center center;
@@ -256,10 +256,10 @@
                 width: 90% !important; 
                 left: 5% !important; 
                 top: auto !important; 
-                bottom: 80px !important; /* Crava a caixa no chão, mas acima da barra de tarefas */
+                bottom: 80px !important; 
                 transform: none !important; 
             }
-            #tutorialArrow { display: none !important; } /* Esconde a seta pra não bugar a tela */
+            #tutorialArrow { display: none !important; } 
         }
 
     </style>
@@ -941,10 +941,17 @@
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
             const canvas = document.createElement('canvas'); canvas.width = 150; canvas.height = 150;
             canvas.getContext('2d').drawImage(window.cropImage, (parseFloat(window.cropBox.style.left) / window.currentScale), (parseFloat(window.cropBox.style.top) / window.currentScale), (parseFloat(window.cropBox.style.width) / window.currentScale), (parseFloat(window.cropBox.style.width) / window.currentScale), 0, 0, 150, 150);
+            
+            // ATUALIZA A VARIÁVEL NA MEMÓRIA E SALVA LOCALMENTE
             window.currentPfp = canvas.toDataURL('image/jpeg', 0.8);
             localStorage.setItem('hubPfp', window.currentPfp);
-            window.updateMyAvatars(); window.closeWindow('win-crop');
-            if(typeof window.syncMyData === 'function') window.syncMyData({ pfp: window.currentPfp });
+            
+            // ATUALIZA O VISUAL NA MESMA HORA
+            window.updateMyAvatars(); 
+            window.closeWindow('win-crop');
+            
+            // MANDA PRA NUVEM
+            if(typeof window.syncMyData === 'function') window.syncMyData();
         });
     </script>
 
@@ -1222,12 +1229,12 @@
                 await setDoc(doc(db, "leaderboard", window.myId), { 
                     name: window.currentUserName, 
                     score: window.myScore, 
-                    pfp: window.localStorage.getItem('hubPfp') || null, 
-                    theme: localStorage.getItem('hubTheme') || '#0088ff',
-                    darkMode: localStorage.getItem('hubDarkMode') === 'true',
-                    visual: localStorage.getItem('hubVisual') || 'alto',
-                    musicVol: localStorage.getItem('hubMusicVol') || '30',
-                    sfxVol: localStorage.getItem('hubSfxVol') || '80',
+                    pfp: window.currentPfp, // CORREÇÃO MESTRA: MANDA A VARIÁVEL DA RAM, NÃO O CACHÊ VELHO
+                    theme: document.getElementById('themePicker').value,
+                    darkMode: document.getElementById('darkModeToggle').checked,
+                    visual: document.getElementById('visualSelect').value,
+                    musicVol: document.getElementById('musicVolInput').value,
+                    sfxVol: document.getElementById('sfxVolInput').value,
                     lastActive: Date.now(), 
                     ...dataToMerge 
                 }, { merge: true }); 
@@ -1362,27 +1369,33 @@
                 if(document.activeElement.id !== 'profileSoc' && me.social) document.getElementById('profileSoc').value = me.social; 
                 if(document.activeElement.id !== 'profileBio' && me.bio) document.getElementById('profileBio').value = me.bio;
 
-                if(me.theme && me.theme !== localStorage.getItem('hubTheme')) {
+                // --- SISTEMA DE CLOUD PRIORITY PARA CONFIGURAÇÕES E FOTO ---
+                if(me.pfp && me.pfp !== window.currentPfp) {
+                    window.currentPfp = me.pfp;
+                    localStorage.setItem('hubPfp', me.pfp);
+                    if(typeof window.updateMyAvatars === 'function') window.updateMyAvatars();
+                }
+                if(me.theme && me.theme !== document.getElementById('themePicker').value) {
                     document.documentElement.style.setProperty('--theme-color', me.theme);
                     document.getElementById('themePicker').value = me.theme;
                     localStorage.setItem('hubTheme', me.theme);
                 }
-                if(me.darkMode !== undefined && String(me.darkMode) !== localStorage.getItem('hubDarkMode')) {
+                if(me.darkMode !== undefined && me.darkMode !== document.getElementById('darkModeToggle').checked) {
                     document.getElementById('darkModeToggle').checked = me.darkMode;
                     if(me.darkMode) document.body.classList.add('dark-mode'); else document.body.classList.remove('dark-mode');
                     localStorage.setItem('hubDarkMode', me.darkMode ? 'true' : 'false');
                 }
-                if(me.visual && me.visual !== localStorage.getItem('hubVisual')) {
+                if(me.visual && me.visual !== document.getElementById('visualSelect').value) {
                     document.getElementById('visualSelect').value = me.visual;
                     if(me.visual === 'desempenho') document.body.classList.add('perf-mode'); else document.body.classList.remove('perf-mode');
                     localStorage.setItem('hubVisual', me.visual);
                 }
-                if(me.musicVol && me.musicVol !== localStorage.getItem('hubMusicVol')) {
+                if(me.musicVol && me.musicVol !== document.getElementById('musicVolInput').value) {
                     document.getElementById('musicVolInput').value = me.musicVol;
                     window.bgMusic.volume = parseInt(me.musicVol) / 100;
                     localStorage.setItem('hubMusicVol', me.musicVol);
                 }
-                if(me.sfxVol && me.sfxVol !== localStorage.getItem('hubSfxVol')) {
+                if(me.sfxVol && me.sfxVol !== document.getElementById('sfxVolInput').value) {
                     document.getElementById('sfxVolInput').value = me.sfxVol;
                     window.currentSfxVolume = parseInt(me.sfxVol) / 100;
                     localStorage.setItem('hubSfxVol', me.sfxVol);
@@ -1471,7 +1484,15 @@
                 if(userDoc) {
                     window.currentUserName = userDoc.name;
                     window.myScore = userDoc.score || 1000;
-                    window.currentPfp = userDoc.pfp || window.defaultAvatar;
+                    
+                    // Atualiza a memória baseada no banco ANTES de iniciar a UI
+                    if(userDoc.pfp) {
+                        window.currentPfp = userDoc.pfp;
+                        localStorage.setItem('hubPfp', userDoc.pfp);
+                    } else {
+                        window.currentPfp = window.defaultAvatar;
+                    }
+
                     document.getElementById('loginOverlay').style.display = 'none';
                     window.initUserInterface();
                 } else {
@@ -1480,7 +1501,14 @@
                         if(uDoc) {
                             window.currentUserName = uDoc.name;
                             window.myScore = uDoc.score || 1000;
-                            window.currentPfp = uDoc.pfp || window.defaultAvatar;
+                            
+                            if(uDoc.pfp) {
+                                window.currentPfp = uDoc.pfp;
+                                localStorage.setItem('hubPfp', uDoc.pfp);
+                            } else {
+                                window.currentPfp = window.defaultAvatar;
+                            }
+
                             document.getElementById('loginOverlay').style.display = 'none';
                             window.initUserInterface();
                         }
@@ -1571,22 +1599,17 @@
                 }, s.action ? 400 : 50); 
             }
 
-            // FUNÇÃO MESTRE QUE AVANÇA O TUTORIAL POR CLIQUE OU ENTER
             function advanceTutorial(e) {
-                // Se for teclado, só aceita o Enter. Se for clique/toque, passa direto.
                 if (e && e.type === 'keydown' && e.key !== 'Enter') return;
-                // Se o tutorial estiver desligado ou o texto estiver sendo digitado, não faz nada
                 if (isTyping || blocker.style.display !== 'block') return;
                 
-                if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); // Barulhinho de clique
+                if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); 
 
                 currentStep++;
                 if (currentStep >= steps.length) {
-                    // Acabou o tutorial
                     blocker.style.display = 'none'; 
                     spotlight.style.display = 'none'; 
                     box.style.display = 'none';
-                    // Remove os gatilhos pra não bugar o site depois
                     document.removeEventListener('keydown', advanceTutorial);
                     blocker.removeEventListener('click', advanceTutorial);
                     box.removeEventListener('click', advanceTutorial);
@@ -1601,7 +1624,6 @@
                 renderStep(); 
             }, 500);
 
-            // Adiciona os sensores de clique, toque e teclado
             document.addEventListener('keydown', advanceTutorial);
             blocker.addEventListener('click', advanceTutorial);
             box.addEventListener('click', advanceTutorial);
