@@ -8,7 +8,6 @@
         :root { --theme-color: #0088ff; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        /* CORREÇÃO MESTRE: Ancora o site nas bordas pra barra de tarefas não sumir no celular */
         body { 
             position: fixed; 
             inset: 0; 
@@ -112,7 +111,7 @@
         .desktop-icon span { font-size: 12px; }
 
         /* --- JANELAS --- */
-        .window { position: absolute; width: 350px; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(20px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.7); border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.2), inset 0 2px 10px rgba(255,255,255,0.5); display: none; flex-direction: column; overflow: hidden; z-index: 10; }
+        .window { position: absolute; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(20px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.7); border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.2), inset 0 2px 10px rgba(255,255,255,0.5); display: none; flex-direction: column; overflow: hidden; z-index: 10; }
         
         /* MODO DESEMPENHO */
         body.perf-mode .window, body.perf-mode .start-menu, body.perf-mode #avatarMenu, body.perf-mode .login-box { background: #e0e0e0 !important; backdrop-filter: none !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.5) !important; border: 1px solid #999 !important; }
@@ -228,17 +227,11 @@
            --- RESPONSIVIDADE (MOBILE / CELULAR) --- 
            ========================================= */
         @media (max-width: 768px) {
-            /* Tela de Login */
             .login-box { width: 90%; padding: 20px; }
             
-            /* Janelas do Sistema */
-            .window {
-                width: 95% !important; height: auto !important; max-height: 85vh !important;
-                left: 2.5% !important; top: 5% !important; 
-                transform: none !important; border-radius: 12px !important;
-            }
+            /* DESTRAVEI AS JANELAS AQUI - Agora elas só abrem grandes, mas podem ser movidas */
+            .window { width: 95% !important; max-height: 85vh !important; border-radius: 12px !important; }
             
-            /* Menu Iniciar */
             .start-menu {
                 width: 95%; left: 2.5%; bottom: 60px;
                 flex-direction: column; height: auto; max-height: 80vh; overflow-y: auto;
@@ -246,17 +239,10 @@
             .start-left, .start-right { width: 100%; }
             .start-right { border-top: 1px solid rgba(255,255,255,0.2); }
             
-            /* Esconde o relógio pra caber os icones na barra */
             .system-tray { display: none; }
-            
-            /* Notificações */
             #notification-container { right: auto; left: 5%; width: 90%; bottom: 70px; }
             .toast-notification { width: 100%; }
-
-            /* Ajuste do Tutorial */
             #tutorialBox { width: 90%; left: 5% !important; transform: none !important; }
-            
-            /* Ajuste da ferramenta de cortar foto */
             #cropContainer { width: 100% !important; max-width: 300px; height: 300px !important; margin: 0 auto; }
         }
 
@@ -304,7 +290,7 @@
         </div>
     </div>
 
-    <div class="window" id="win-crop" style="width: 400px; z-index: 10001; top: 10%; left: 30%;">
+    <div class="window" id="win-crop" style="width: 400px; z-index: 10001; top: 10px; left: 10px;">
         <div class="title-bar">
             <div class="title-info"><div style="font-size:16px;">✂️</div> Recortar Foto</div>
             <div class="close-btn" onclick="window.closeWindow('win-crop')">X</div>
@@ -325,7 +311,7 @@
         </div>
     </div>
 
-    <div class="window" id="win-admin" style="top: 50px; left: 150px; width: 500px; z-index: 10050;">
+    <div class="window" id="win-admin" style="top: 20px; left: 10px; width: 500px; z-index: 10050;">
         <div class="title-bar" style="background: linear-gradient(180deg, #333 0%, #000 100%); border-bottom: 2px solid gold;">
             <div class="title-info" style="color: gold; text-shadow: 0 0 5px red;">👁️‍🗨️ SYSTEM GOD MODE</div>
             <div class="close-btn" onclick="window.closeWindow('win-admin')">X</div>
@@ -337,7 +323,7 @@
         </div>
     </div>
 
-    <div class="window" id="win-perfil" style="top: 80px; left: 120px; width: 400px;">
+    <div class="window" id="win-perfil" style="top: 30px; left: 10px; width: 400px;">
         <div class="title-bar">
             <div class="title-info">
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> 
@@ -370,7 +356,7 @@
         </div>
     </div>
 
-    <div class="window" id="win-lista-amigos" style="top: 100px; left: 150px; width: 300px;">
+    <div class="window" id="win-lista-amigos" style="top: 40px; left: 10px; width: 300px;">
         <div class="title-bar">
             <div class="title-info">
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="white"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
@@ -381,7 +367,7 @@
         <div class="window-content" id="friendsListContainer"></div>
     </div>
 
-    <div class="window" id="win-perfil-visita" style="top: 90px; left: 130px; width: 400px; z-index: 10010;">
+    <div class="window" id="win-perfil-visita" style="top: 50px; left: 10px; width: 400px; z-index: 10010;">
         <div class="title-bar">
             <div class="title-info">
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> 
@@ -416,7 +402,7 @@
         </div>
     </div>
 
-    <div class="window" id="win-add-amigo" style="top: 150px; left: 200px;">
+    <div class="window" id="win-add-amigo" style="top: 40px; left: 10px;">
         <div class="title-bar">
             <div class="title-info">
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="white"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
@@ -436,7 +422,7 @@
         </div>
     </div>
 
-    <div class="window" id="win-solicitacoes" style="top: 120px; left: 180px;">
+    <div class="window" id="win-solicitacoes" style="top: 50px; left: 10px;">
         <div class="title-bar">
             <div class="title-info">
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="white"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
@@ -466,7 +452,7 @@
             <span>Jogo 2</span>
         </div>
 
-        <div class="window" id="win-sobre" style="top: 100px; left: 100px;">
+        <div class="window" id="win-sobre" style="top: 30px; left: 10px;">
             <div class="title-bar">
                 <div class="title-info">
                     <svg class="aero-icon" viewBox="0 0 24 24" fill="#00e5ff"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
@@ -481,7 +467,7 @@
             </div>
         </div>
 
-        <div class="window" id="win-config" style="top: 130px; left: 150px;">
+        <div class="window" id="win-config" style="top: 40px; left: 10px;">
             <div class="title-bar">
                 <div class="title-info">
                     <svg class="aero-icon" viewBox="0 0 24 24" fill="#aaaaaa"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
@@ -524,7 +510,7 @@
             </div>
         </div>
 
-        <div class="window" id="win-contato" style="top: 160px; left: 200px;">
+        <div class="window" id="win-contato" style="top: 50px; left: 10px;">
             <div class="title-bar">
                 <div class="title-info">
                     <svg class="aero-icon" viewBox="0 0 24 24" fill="#ff5252"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
@@ -542,7 +528,7 @@
             </div>
         </div>
 
-        <div class="window" id="win-placar" style="top: 190px; left: 250px;">
+        <div class="window" id="win-placar" style="top: 60px; left: 10px;">
             <div class="title-bar">
                 <div class="title-info">
                     <svg class="aero-icon" viewBox="0 0 24 24" fill="#ffd700"><path d="M19 3h-2V1h-2v2H9V1H7v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V9h14v10z"/></svg>
@@ -677,12 +663,42 @@
             const activeTab = document.getElementById('tab-' + win.id); if(activeTab) activeTab.classList.add('active-tab');
         }
 
+        /* CORREÇÃO MESTRE: Suporte a TOUCH (celular) e MOUSE (PC) para arrastar as janelas */
         document.querySelectorAll('.window').forEach(win => {
-            const titleBar = win.querySelector('.title-bar'); let isDragging = false, startX, startY, initialLeft, initialTop;
+            const titleBar = win.querySelector('.title-bar'); 
+            let isDragging = false, startX, startY, initialLeft, initialTop;
+            
             win.addEventListener('mousedown', () => window.bringToFront(win));
-            titleBar.addEventListener("mousedown", (e) => { if (e.target.classList.contains('close-btn')) return; isDragging = true; startX = e.clientX; startY = e.clientY; initialLeft = win.offsetLeft; initialTop = win.offsetTop; });
-            document.addEventListener("mouseup", () => isDragging = false);
-            document.addEventListener("mousemove", (e) => { if (!isDragging) return; e.preventDefault(); win.style.left = `${initialLeft + (e.clientX - startX)}px`; win.style.top = `${initialTop + (e.clientY - startY)}px`; });
+            win.addEventListener('touchstart', () => window.bringToFront(win), {passive: true});
+
+            const startDrag = (e) => { 
+                if (e.target.classList.contains('close-btn')) return; 
+                isDragging = true; 
+                startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX; 
+                startY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY; 
+                initialLeft = win.offsetLeft; 
+                initialTop = win.offsetTop; 
+            };
+
+            const moveDrag = (e) => { 
+                if (!isDragging) return; 
+                e.preventDefault(); 
+                let currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                let currentY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+                win.style.left = `${initialLeft + (currentX - startX)}px`; 
+                win.style.top = `${initialTop + (currentY - startY)}px`; 
+            };
+
+            const stopDrag = () => { isDragging = false; };
+
+            titleBar.addEventListener("mousedown", startDrag);
+            titleBar.addEventListener("touchstart", startDrag, {passive: false});
+            
+            document.addEventListener("mousemove", moveDrag);
+            document.addEventListener("touchmove", moveDrag, {passive: false});
+            
+            document.addEventListener("mouseup", stopDrag);
+            document.addEventListener("touchend", stopDrag);
         });
 
         window.startBtn = document.getElementById('startBtn'); window.startMenu = document.getElementById('startMenu');
@@ -706,11 +722,20 @@
         window.sfx4 = new Audio('sfx 04.MP3'); 
         window.currentSfxVolume = 0.8;
         
+        /* CORREÇÃO MESTRE: O 'Despertador' que liga a música caso o celular pauser ela */
         window.playSfx = function(audioObj) {
             if (!audioObj) return;
             audioObj.volume = window.currentSfxVolume;
             audioObj.currentTime = 0; 
-            audioObj.play().catch(e => console.log('Áudio bloqueado.'));
+            
+            let playPromise = audioObj.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    if (window.musicStarted && window.bgMusic.paused) {
+                        window.bgMusic.play().catch(e => console.log('Silenciado pelo navegador'));
+                    }
+                }).catch(e => console.log('Áudio bloqueado.'));
+            }
         }
         
         window.musicList = ['musica01.mp3', 'musica02.mp3', 'musica03.mp3'];
@@ -790,37 +815,57 @@
 
         window.isDraggingCrop = false; window.isResizingCrop = false; window.startCropX = 0; window.startCropY = 0; window.initialCropLeft = 0; window.initialCropTop = 0; window.initialCropSize = 0;
 
-        window.cropBox.addEventListener('mousedown', (e) => {
+        /* Suporte Touch pro Crop Tool (Cortador de foto) */
+        const cropStartDrag = (e) => {
             if (e.target === window.cropResizeHandle) return;
-            window.isDraggingCrop = true; window.startCropX = e.clientX; window.startCropY = e.clientY;
-            window.initialCropLeft = parseFloat(window.cropBox.style.left) || 0; window.initialCropTop = parseFloat(window.cropBox.style.top) || 0;
+            window.isDraggingCrop = true; 
+            window.startCropX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX; 
+            window.startCropY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+            window.initialCropLeft = parseFloat(window.cropBox.style.left) || 0; 
+            window.initialCropTop = parseFloat(window.cropBox.style.top) || 0;
             e.stopPropagation();
-        });
+        };
 
-        window.cropResizeHandle.addEventListener('mousedown', (e) => {
-            window.isResizingCrop = true; window.startCropX = e.clientX; window.startCropY = e.clientY;
+        const cropStartResize = (e) => {
+            window.isResizingCrop = true; 
+            window.startCropX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX; 
+            window.startCropY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
             window.initialCropSize = parseFloat(window.cropBox.style.width) || 100;
             e.stopPropagation();
-        });
+        };
 
-        document.addEventListener('mousemove', (e) => {
+        window.cropBox.addEventListener('mousedown', cropStartDrag);
+        window.cropBox.addEventListener('touchstart', cropStartDrag, {passive: false});
+
+        window.cropResizeHandle.addEventListener('mousedown', cropStartResize);
+        window.cropResizeHandle.addEventListener('touchstart', cropStartResize, {passive: false});
+
+        const cropMove = (e) => {
+            let currentX = e.type.includes('mouse') ? e.clientX : (e.touches ? e.touches[0].clientX : 0);
+            let currentY = e.type.includes('mouse') ? e.clientY : (e.touches ? e.touches[0].clientY : 0);
+            
             if (window.isDraggingCrop) {
                 e.preventDefault();
-                let newLeft = window.initialCropLeft + (e.clientX - window.startCropX);
-                let newTop = window.initialCropTop + (e.clientY - window.startCropY);
+                let newLeft = window.initialCropLeft + (currentX - window.startCropX);
+                let newTop = window.initialCropTop + (currentY - window.startCropY);
                 newLeft = Math.max(0, Math.min(newLeft, window.cropWrapper.offsetWidth - window.cropBox.offsetWidth));
                 newTop = Math.max(0, Math.min(newTop, window.cropWrapper.offsetHeight - window.cropBox.offsetHeight));
                 window.cropBox.style.left = newLeft + 'px'; window.cropBox.style.top = newTop + 'px';
             } else if (window.isResizingCrop) {
                 e.preventDefault();
-                let newSize = window.initialCropSize + Math.max(e.clientX - window.startCropX, e.clientY - window.startCropY);
+                let newSize = window.initialCropSize + Math.max(currentX - window.startCropX, currentY - window.startCropY);
                 const maxAllowedSize = Math.min(window.cropWrapper.offsetWidth - (parseFloat(window.cropBox.style.left)||0), window.cropWrapper.offsetHeight - (parseFloat(window.cropBox.style.top)||0));
                 window.cropBox.style.width = Math.max(50, Math.min(newSize, maxAllowedSize)) + 'px';
                 window.cropBox.style.height = Math.max(50, Math.min(newSize, maxAllowedSize)) + 'px';
             }
-        });
+        };
 
-        document.addEventListener('mouseup', () => { window.isDraggingCrop = false; window.isResizingCrop = false; });
+        document.addEventListener('mousemove', cropMove);
+        document.addEventListener('touchmove', cropMove, {passive: false});
+
+        const cropEnd = () => { window.isDraggingCrop = false; window.isResizingCrop = false; };
+        document.addEventListener('mouseup', cropEnd);
+        document.addEventListener('touchend', cropEnd);
 
         document.getElementById('btnSaveCrop').addEventListener('click', () => {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
