@@ -249,8 +249,17 @@
             .system-tray { display: none; }
             #notification-container { right: auto; left: 5%; width: 90%; bottom: 70px; }
             .toast-notification { width: 100%; }
-            #tutorialBox { width: 90%; left: 5% !important; transform: none !important; }
             #cropContainer { width: 100% !important; max-width: 300px; height: 300px !important; margin: 0 auto; }
+            
+            /* CORREÇÃO MESTRE DO TUTORIAL NO CELULAR */
+            #tutorialBox { 
+                width: 90% !important; 
+                left: 5% !important; 
+                top: auto !important; 
+                bottom: 80px !important; /* Crava a caixa no chão, mas acima da barra de tarefas */
+                transform: none !important; 
+            }
+            #tutorialArrow { display: none !important; } /* Esconde a seta pra não bugar a tela */
         }
 
     </style>
@@ -287,7 +296,7 @@
     <div id="tutorialBox">
         <div id="tutorialArrow"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
         <p id="tutorialText"></p>
-        <div id="tutorialEnter">Pressione [Enter] ↵</div>
+        <div id="tutorialEnter">Toque na tela ou [Enter] ↵</div>
     </div>
 
     <input type="file" id="pfpUpload" accept="image/*" style="display: none;">
@@ -1562,17 +1571,40 @@
                 }, s.action ? 400 : 50); 
             }
 
-            setTimeout(() => { blocker.style.display = 'block'; spotlight.style.display = 'block'; renderStep(); }, 500);
+            // FUNÇÃO MESTRE QUE AVANÇA O TUTORIAL POR CLIQUE OU ENTER
+            function advanceTutorial(e) {
+                // Se for teclado, só aceita o Enter. Se for clique/toque, passa direto.
+                if (e && e.type === 'keydown' && e.key !== 'Enter') return;
+                // Se o tutorial estiver desligado ou o texto estiver sendo digitado, não faz nada
+                if (isTyping || blocker.style.display !== 'block') return;
+                
+                if(typeof window.playSfx === 'function') window.playSfx(window.sfx2); // Barulhinho de clique
 
-            document.addEventListener('keydown', function tutListener(e) {
-                if (e.key === 'Enter' && !isTyping && blocker.style.display === 'block') {
-                    currentStep++;
-                    if (currentStep >= steps.length) {
-                        blocker.style.display = 'none'; spotlight.style.display = 'none'; box.style.display = 'none';
-                        document.removeEventListener('keydown', tutListener);
-                    } else renderStep();
+                currentStep++;
+                if (currentStep >= steps.length) {
+                    // Acabou o tutorial
+                    blocker.style.display = 'none'; 
+                    spotlight.style.display = 'none'; 
+                    box.style.display = 'none';
+                    // Remove os gatilhos pra não bugar o site depois
+                    document.removeEventListener('keydown', advanceTutorial);
+                    blocker.removeEventListener('click', advanceTutorial);
+                    box.removeEventListener('click', advanceTutorial);
+                } else {
+                    renderStep();
                 }
-            });
+            }
+
+            setTimeout(() => { 
+                blocker.style.display = 'block'; 
+                spotlight.style.display = 'block'; 
+                renderStep(); 
+            }, 500);
+
+            // Adiciona os sensores de clique, toque e teclado
+            document.addEventListener('keydown', advanceTutorial);
+            blocker.addEventListener('click', advanceTutorial);
+            box.addEventListener('click', advanceTutorial);
         }
 
         window.deferredPrompt = null;
