@@ -251,7 +251,6 @@
             .toast-notification { width: 100%; }
             #cropContainer { width: 100% !important; max-width: 300px; height: 300px !important; margin: 0 auto; }
             
-            /* CORREÇÃO MESTRE DO TUTORIAL NO CELULAR */
             #tutorialBox { 
                 width: 90% !important; 
                 left: 5% !important; 
@@ -267,7 +266,6 @@
 <body>
 
     <div id="notification-container"></div>
-
     <div id="bg-day" class="bg-layer"></div>
     <div id="bg-night" class="bg-layer"></div>
 
@@ -596,7 +594,7 @@
                 Adicionar Amigos
             </div>
             
-            <div class="menu-item" id="installBtn" style="display: none; color: #ff8800; font-weight: bold;" onclick="window.installPWA()">
+            <div class="menu-item" id="installBtn" style="color: #ff8800; font-weight: bold;" onclick="window.forceInstallPWA()">
                 <svg class="aero-icon" viewBox="0 0 24 24" fill="#ff8800"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                 Instalar Aplicativo
             </div>
@@ -755,7 +753,6 @@
     </script>
 
     <script>
-        // --- CAMINHOS ATUALIZADOS PARA A PASTA sfx/ ---
         window.sfx1 = new Audio('sfx/sfx 01.MP3'); 
         window.sfx2 = new Audio('sfx/sfx 02.MP3'); 
         window.sfx3 = new Audio('sfx/sfx 03.MP3'); 
@@ -765,9 +762,8 @@
         window.currentSfxVolume = parseInt(window.savedSfxVol) / 100;
         document.getElementById('sfxVolInput').value = window.savedSfxVol;
 
-        // --- SISTEMA MESTRE DE MÚSICA SEQUENCIAL (PASTA musicas/) ---
         window.savedMusicVol = localStorage.getItem('hubMusicVol') || '30';
-        window.currentMusicTrack = 1; // Começa tocando a 1.mp3
+        window.currentMusicTrack = 1; 
         window.bgMusic = new Audio(`musicas/${window.currentMusicTrack}.mp3`);
         window.bgMusic.volume = parseInt(window.savedMusicVol) / 100;
         
@@ -786,14 +782,12 @@
             }
         }
         
-        // Quando uma música acabar, tenta carregar e tocar a próxima
         window.bgMusic.addEventListener('ended', () => {
             window.currentMusicTrack++;
             window.bgMusic.src = `musicas/${window.currentMusicTrack}.mp3`;
             window.bgMusic.play().catch(e => console.log('Erro ao tentar tocar a próxima:', e));
         });
 
-        // Se der erro ao tentar tocar (ex: chegou na música 5 e não existe), volta pro 1
         window.bgMusic.addEventListener('error', () => {
             console.log(`A música musicas/${window.currentMusicTrack}.mp3 não foi encontrada. Voltando para o início da playlist.`);
             if (window.currentMusicTrack !== 1) {
@@ -942,15 +936,12 @@
             const canvas = document.createElement('canvas'); canvas.width = 150; canvas.height = 150;
             canvas.getContext('2d').drawImage(window.cropImage, (parseFloat(window.cropBox.style.left) / window.currentScale), (parseFloat(window.cropBox.style.top) / window.currentScale), (parseFloat(window.cropBox.style.width) / window.currentScale), (parseFloat(window.cropBox.style.width) / window.currentScale), 0, 0, 150, 150);
             
-            // ATUALIZA A VARIÁVEL NA MEMÓRIA E SALVA LOCALMENTE
             window.currentPfp = canvas.toDataURL('image/jpeg', 0.8);
             localStorage.setItem('hubPfp', window.currentPfp);
             
-            // ATUALIZA O VISUAL NA MESMA HORA
             window.updateMyAvatars(); 
             window.closeWindow('win-crop');
             
-            // MANDA PRA NUVEM
             if(typeof window.syncMyData === 'function') window.syncMyData();
         });
     </script>
@@ -1229,7 +1220,7 @@
                 await setDoc(doc(db, "leaderboard", window.myId), { 
                     name: window.currentUserName, 
                     score: window.myScore, 
-                    pfp: window.currentPfp, // CORREÇÃO MESTRA: MANDA A VARIÁVEL DA RAM, NÃO O CACHÊ VELHO
+                    pfp: window.currentPfp, 
                     theme: document.getElementById('themePicker').value,
                     darkMode: document.getElementById('darkModeToggle').checked,
                     visual: document.getElementById('visualSelect').value,
@@ -1369,12 +1360,6 @@
                 if(document.activeElement.id !== 'profileSoc' && me.social) document.getElementById('profileSoc').value = me.social; 
                 if(document.activeElement.id !== 'profileBio' && me.bio) document.getElementById('profileBio').value = me.bio;
 
-                // --- SISTEMA DE CLOUD PRIORITY PARA CONFIGURAÇÕES E FOTO ---
-                if(me.pfp && me.pfp !== window.currentPfp) {
-                    window.currentPfp = me.pfp;
-                    localStorage.setItem('hubPfp', me.pfp);
-                    if(typeof window.updateMyAvatars === 'function') window.updateMyAvatars();
-                }
                 if(me.theme && me.theme !== document.getElementById('themePicker').value) {
                     document.documentElement.style.setProperty('--theme-color', me.theme);
                     document.getElementById('themePicker').value = me.theme;
@@ -1485,7 +1470,6 @@
                     window.currentUserName = userDoc.name;
                     window.myScore = userDoc.score || 1000;
                     
-                    // Atualiza a memória baseada no banco ANTES de iniciar a UI
                     if(userDoc.pfp) {
                         window.currentPfp = userDoc.pfp;
                         localStorage.setItem('hubPfp', userDoc.pfp);
@@ -1629,23 +1613,25 @@
             box.addEventListener('click', advanceTutorial);
         }
 
+        // --- SISTEMA DE INSTALAÇÃO FORÇADA ---
         window.deferredPrompt = null;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             window.deferredPrompt = e;
-            const btn = document.getElementById('installBtn');
-            if(btn) btn.style.display = 'flex'; 
         });
 
-        window.installPWA = async () => {
+        window.forceInstallPWA = async () => {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
-            if (!window.deferredPrompt) return;
-            window.deferredPrompt.prompt();
-            const { outcome } = await window.deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                document.getElementById('installBtn').style.display = 'none';
+            if (window.deferredPrompt) {
+                window.deferredPrompt.prompt();
+                const { outcome } = await window.deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.getElementById('installBtn').style.display = 'none';
+                }
+                window.deferredPrompt = null;
+            } else {
+                alert("Seu navegador atual está bloqueando a instalação automática.\n\n🎮 No PC: Use Chrome, Edge ou baixe o instalador (.exe) no repositório.\n📱 No Celular: Toque nos 3 pontinhos do Chrome e escolha 'Adicionar à tela inicial'.");
             }
-            window.deferredPrompt = null;
         };
 
         if ('serviceWorker' in navigator) {
