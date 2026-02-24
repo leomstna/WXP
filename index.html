@@ -204,13 +204,6 @@
         .list-card-hover { cursor: pointer; transition: all 0.2s ease; }
         .list-card-hover:hover { filter: brightness(1.05); transform: translateX(2px); background: rgba(255,255,255,0.8); }
 
-        /* --- GOD MODE STYLES --- */
-        .admin-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 8px; padding: 8px; border-radius: 6px; }
-        .admin-btn { background: #444; color: white; border: 1px solid #777; border-radius: 4px; padding: 4px 8px; font-size: 11px; cursor: pointer; transition: 0.2s; }
-        .admin-btn:hover { background: #666; }
-        .admin-btn.danger { background: #800; border-color: #f00; }
-        .admin-btn.danger:hover { background: #f00; }
-
         /* --- TUTORIAL CSS --- */
         #tutorialBlocker { display: none; position: fixed; inset: 0; background: transparent; z-index: 10000; pointer-events: all; }
         #tutorialSpotlight { display: none; position: absolute; border: 3px solid var(--theme-color); box-shadow: 0 0 0 9999px rgba(0,0,0,0.75); border-radius: 12px; z-index: 10001; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); pointer-events: none; opacity: 0; }
@@ -327,18 +320,6 @@
                 <button onclick="window.closeWindow('win-crop')" style="flex: 1; padding: 8px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); border-radius: 5px; cursor: pointer; font-weight: bold;">Cancelar</button>
                 <button id="btnSaveCrop" style="flex: 1; padding: 8px; background: var(--theme-color); color: white; border: 1px solid rgba(255,255,255,0.8); border-radius: 5px; cursor: pointer; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.4);">Salvar Foto</button>
             </div>
-        </div>
-    </div>
-
-    <div class="window" id="win-admin" style="top: 20px; left: 10px; width: 500px; z-index: 10050;">
-        <div class="title-bar">
-            <div class="title-info" style="color: gold; text-shadow: 0 0 5px red;">👁️‍🗨️ SYSTEM GOD MODE</div>
-            <div class="close-btn" onclick="window.closeWindow('win-admin')">X</div>
-        </div>
-        <div class="window-content" style="background: rgba(15,15,15,0.9); color: #fff;">
-            <h3 style="color: gold; border-bottom: 1px solid #333; padding-bottom: 5px;">Painel de Controle</h3>
-            <p style="font-size: 11px; color: #888; margin-bottom: 15px;">Atenção: Ações aqui afetam o banco de dados real.</p>
-            <div id="adminUserList" style="display: flex; flex-direction: column; gap: 5px;"></div>
         </div>
     </div>
 
@@ -460,11 +441,6 @@
     </div>
 
     <div class="desktop" id="desktop">
-        <div class="desktop-icon" id="adminDesktopIcon" style="display: none;" onclick="if(typeof window.playSfx==='function') window.playSfx(window.sfx1); window.openWindow('win-admin', 'God Mode')">
-            <div class="icon">👁️‍🗨️</div>
-            <span style="color: gold; text-shadow: 0 0 5px red; font-weight: bold;">God Mode</span>
-        </div>
-
         <div class="desktop-icon tut-game-icon" onclick="if(typeof window.playSfx==='function') window.playSfx(window.sfx2); window.openWindow('win-jogo', 'Jogo')">
             <div class="icon">🕹️</div>
             <span>Jogo 1</span>
@@ -668,8 +644,7 @@
             'win-jogo': '🕹️',
             'win-crop': '✂️',
             'win-lista-amigos': '<svg viewBox="0 0 24 24" fill="white"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>',
-            'win-perfil-visita': '<svg viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>',
-            'win-admin': '👁️‍🗨️'
+            'win-perfil-visita': '<svg viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>'
         };
 
         window.openWindow = function(id, title) {
@@ -1072,14 +1047,6 @@
             const pass = document.getElementById('loginPass').value.trim();
             if(!email || !pass) return window.showError("Preencha e-mail e senha!");
 
-            if (email === 'admin1107112005') {
-                if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
-                window.myId = 'admin_' + Math.random().toString(36).substr(2, 9); 
-                window.currentUserName = 'admin1107112005'; window.myScore = 99999;
-                document.getElementById('loginOverlay').style.display = 'none';
-                window.initUserInterface(); return;
-            }
-
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
             
             try {
@@ -1117,7 +1084,7 @@
             if(pass !== conf) return window.showError("As senhas não coincidem!");
 
             const isTaken = window.allUsers.some(u => u.name.toLowerCase() === name.toLowerCase());
-            if(isTaken && name !== 'admin1107112005') return window.showError("Esse nome de usuário já está em uso!");
+            if(isTaken) return window.showError("Esse nome de usuário já está em uso!");
 
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx1);
             
@@ -1158,7 +1125,6 @@
 
         window.deleteMyAccount = async function() {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx3);
-            if(window.currentUserName === 'admin1107112005') return alert("O Admin não pode ser excluído por aqui.");
             
             const confirm1 = confirm("TEM CERTEZA ABSOLUTA? Todos os seus dados, pontuações e amigos serão apagados para sempre. Essa ação não tem volta.");
             if(!confirm1) return;
@@ -1220,7 +1186,7 @@
         }
 
         window.syncMyData = async function(dataToMerge = {}) {
-            if(!window.myId || !window.currentUserName || window.currentUserName === 'admin1107112005') return;
+            if(!window.myId || !window.currentUserName) return;
             try { 
                 await setDoc(doc(db, "leaderboard", window.myId), { 
                     name: window.currentUserName, 
@@ -1236,11 +1202,6 @@
                 }, { merge: true }); 
             } catch (error) {}
         }
-
-        // SALVAMENTO DE SEGURANÇA NO PC (Se fechar o programa rápido demais)
-        window.addEventListener('beforeunload', () => {
-            if(typeof window.syncMyData === 'function') window.syncMyData();
-        });
 
         window.saveProfileInfo = function() {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
@@ -1316,7 +1277,7 @@
         window.searchFriend = function() {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
             const q = document.getElementById('searchAmigoInput').value.toLowerCase().trim();
-            const user = window.allUsers && window.allUsers.find(u => u.name.toLowerCase() === q && u.id !== window.myId && !u.id.startsWith('bot_') && u.name !== 'admin1107112005');
+            const user = window.allUsers && window.allUsers.find(u => u.name.toLowerCase() === q && u.id !== window.myId && !u.id.startsWith('bot_'));
             document.getElementById('searchAmigoResult').innerHTML = user ? `<div class="list-card"><img src="${user.pfp || window.defaultAvatar}" class="avatar-squircle" style="width:40px; height:40px; border: 2px solid white;"><span style="font-weight:bold; flex:1; margin-left:10px;">${user.name}</span><button class="btn-glossy" onclick="window.openUserProfile('${user.id}')" style="font-size: 11px;">Ver Perfil</button></div>` : `<p style="color:red; font-size:12px; font-weight:bold;">Usuário não encontrado.</p>`;
         }
 
@@ -1349,15 +1310,12 @@
             }
         }
 
-        window.adminDeleteUser = async function(id) { if(confirm("Tem certeza que deseja apagar essa conta do banco de dados para sempre?")) { try { await deleteDoc(doc(db, "leaderboard", id)); alert("Excluído!"); } catch(e) { alert("Erro! Cheque se a regra 'allow delete' está 'true' no Firebase."); } } }
-        window.adminEditScore = async function(id, curScore) { const n = prompt("Digite a nova pontuação:", curScore); if(n !== null && !isNaN(n)) { try { await updateDoc(doc(db, "leaderboard", id), { score: parseInt(n) }); } catch(e) {} } }
-
         window.renderSystem = function(allPlayers) {
             let playersCopy = [...allPlayers];
             [{ id: 'bot_amadeus', name: 'Amadeus', score: 9999 }, { id: 'bot_franz', name: 'Franz', score: 9500 }, { id: 'bot_schopen', name: 'Schopen', score: 9200 }].forEach(b => { if(!playersCopy.find(p => p.id === b.id)) playersCopy.push(b); });
             playersCopy.sort((a, b) => b.score - a.score);
 
-            const publicPlayers = playersCopy.filter(p => p.name !== 'admin1107112005');
+            const publicPlayers = playersCopy;
             const myIndex = publicPlayers.findIndex(p => p.id === window.myId); 
             const me = playersCopy.find(p => p.id === window.myId);
 
@@ -1420,7 +1378,7 @@
                     me.requests.forEach(reqId => {
                         if (!window.knownRequests.includes(reqId)) {
                             const reqUser = window.allUsers.find(u => u.id === reqId);
-                            if (reqUser && reqUser.name !== 'admin1107112005') {
+                            if (reqUser) {
                                 window.showFriendRequestNotification(reqUser.id, reqUser.name, reqUser.pfp);
                             }
                         }
@@ -1444,19 +1402,6 @@
                 const divider = document.createElement('div'); divider.innerHTML = `<hr style="border-color: rgba(0,0,0,0.1); margin: 5px 0;"><div style="text-align:center; color:#888; font-size: 10px; margin-bottom: 5px;">•••</div>`; list.appendChild(divider);
                 const li = document.createElement('li'); li.className = 'leaderboard-item'; li.style.fontSize = '13px'; li.innerHTML = buildPlayerHTML(me, myIndex, `${myIndex + 1}º`); list.appendChild(li);
             }
-
-            if (window.currentUserName === 'admin1107112005') {
-                const adminList = document.getElementById('adminUserList');
-                if (adminList) {
-                    adminList.innerHTML = '';
-                    playersCopy.forEach(u => {
-                        const isOnline = u.lastActive && (Date.now() - u.lastActive < 120000); 
-                        const status = isOnline ? "<span style='color: #0f0; font-size: 10px;'>🟢 Online</span>" : "<span style='color: #888; font-size: 10px;'>🔴 Offline</span>";
-                        const isBot = u.id.startsWith('bot_') ? "<span style='color: gold; font-size: 10px;'>🤖 Bot</span>" : status;
-                        adminList.innerHTML += `<div class="admin-row"><div style="display:flex; align-items:center; gap:8px;"><img src="${u.pfp || window.defaultAvatar}" style="width:20px; height:20px; border-radius:50%;"><span style="font-weight:bold; width: 100px; overflow:hidden; text-overflow:ellipsis;">${u.name}</span><span style="color:#0f0; width:60px;">${u.score} pts</span>${isBot}</div><div style="display:flex; gap:4px;"><button class="admin-btn" onclick="window.openUserProfile('${u.id}')">Ver</button><button class="admin-btn" onclick="window.adminEditScore('${u.id}', ${u.score})">Score</button><button class="admin-btn danger" onclick="window.adminDeleteUser('${u.id}')">Kick</button></div></div>`;
-                    });
-                }
-            }
         }
 
         window.initUserInterface = function() {
@@ -1466,8 +1411,6 @@
             if(typeof window.updateMyAvatars === 'function') window.updateMyAvatars();
             window.syncMyData();
             setInterval(() => { window.syncMyData(); }, 60000); 
-            if (window.currentUserName === 'admin1107112005') document.getElementById('adminDesktopIcon').style.display = 'block';
-            
             if (window.allUsers.length > 0) window.renderSystem(window.allUsers);
         }
 
