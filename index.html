@@ -1229,6 +1229,7 @@
             window.closeWindow('win-lista-amigos');
             window.closeWindow('win-solicitacoes');
             window.closeWindow('win-add-amigo');
+            // AGORA SIM, O PLACAR TÁ SALVO.
 
             const target = window.allUsers.find(u => u.id === targetId); if(!target) return;
             document.getElementById('visitAvatar').src = target.pfp || window.defaultAvatar; 
