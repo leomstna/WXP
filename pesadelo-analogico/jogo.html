@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sobrevivência Analógica</title>
     <style>
+        * { box-sizing: border-box; }
+        
         body {
             margin: 0;
             background-color: #050505;
@@ -13,7 +15,8 @@
             display: flex;
             justify-content: center;
             height: 100vh;
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
             text-shadow: 0px 0px 5px #00ff00;
         }
 
@@ -28,6 +31,7 @@
             align-items: center;
             text-align: center;
             padding: 20px;
+            overflow-y: auto;
         }
 
         .diff-title {
@@ -42,6 +46,7 @@
             flex-direction: column;
             gap: 20px;
             max-width: 500px;
+            width: 100%;
         }
 
         .diff-item {
@@ -76,7 +81,8 @@
             z-index: 1;
             display: flex;
             flex-direction: column;
-            display: none; /* Esconde o jogo até escolher a dificuldade */
+            display: none; 
+            height: 100%;
         }
         
         .status-bar {
@@ -86,6 +92,7 @@
             font-weight: bold;
             color: #ff3333;
             text-shadow: 0px 0px 5px #ff3333;
+            flex-shrink: 0;
         }
         
         #output {
@@ -101,6 +108,7 @@
         .input-area {
             display: flex;
             gap: 10px;
+            flex-shrink: 0;
         }
         
         input[type="text"] {
@@ -199,7 +207,7 @@
         for (let i = 0; i < text.length; i++) {
             p.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
             outputDiv.scrollTop = outputDiv.scrollHeight;
-            await new Promise(r => setTimeout(r, 20)); // Deixei um milissegundo mais rápido pra não enjoar textos maiores
+            await new Promise(r => setTimeout(r, 20));
         }
         
         audioTeclado.pause();
@@ -217,11 +225,22 @@
         audioRadio.currentTime = 0;
         audioRadio.play().catch(e => console.log("Erro no rádio:", e));
 
+        // AVISO INTELIGENTE DE COLD START DO RENDER
+        const avisoRender = document.createElement('div');
+        avisoRender.style.color = "#ff8800";
+        avisoRender.style.marginTop = "10px";
+        avisoRender.textContent = "[SISTEMA] Acordando o servidor da IA... Como é um plano gratuito no Render, isso pode levar de 30 a 50 segundos. Aguarde pacientemente...";
+        
+        const timeoutAviso = setTimeout(() => {
+            outputDiv.appendChild(avisoRender);
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+        }, 5000);
+
         try {
-            // Agora envia a dificuldade na URL da requisição
-            const response = await fetch
-('https://pesadelo-analogico-api.onrender.com/iniciar');
+            const response = await fetch('https://pesadelo-analogico-api.onrender.com/iniciar?dificuldade=' + dificuldade);
             const data = await response.json();
+            
+            clearTimeout(timeoutAviso); 
             
             audioRadio.pause();
             outputDiv.innerHTML = ""; 
@@ -231,9 +250,10 @@
             
             await typeWriter(data.narrativa);
         } catch (error) {
+            clearTimeout(timeoutAviso);
             audioRadio.pause();
             outputDiv.innerHTML = "";
-            typeWriter("Falha na conexão. Servidor Python tá rodando?", true);
+            typeWriter("Falha na conexão. O servidor Render pode estar desligado ou configurado errado.", true);
         }
     }
 
