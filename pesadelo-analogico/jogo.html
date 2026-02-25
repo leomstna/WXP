@@ -225,11 +225,12 @@
         audioRadio.currentTime = 0;
         audioRadio.play().catch(e => console.log("Erro no rádio:", e));
 
-        // AVISO INTELIGENTE DE COLD START DO RENDER
+        // MENSAGEM IMERSIVA (SÓ APARECE SE A CONEXÃO ESTIVER LENTA)
         const avisoRender = document.createElement('div');
-        avisoRender.style.color = "#ff8800";
-        avisoRender.style.marginTop = "10px";
-        avisoRender.textContent = "[SISTEMA] Acordando o servidor da IA... Como é um plano gratuito no Render, isso pode levar de 30 a 50 segundos. Aguarde pacientemente...";
+        avisoRender.style.color = "#aaaaaa";
+        avisoRender.style.marginTop = "15px";
+        avisoRender.style.fontStyle = "italic";
+        avisoRender.textContent = "[!] Anomalia de sinal detectada. Estabelecendo ponte neural... (A descriptografia pode demorar até 50 segundos. Não quebre o contato).";
         
         const timeoutAviso = setTimeout(() => {
             outputDiv.appendChild(avisoRender);
@@ -253,7 +254,7 @@
             clearTimeout(timeoutAviso);
             audioRadio.pause();
             outputDiv.innerHTML = "";
-            typeWriter("Falha na conexão. O servidor Render pode estar desligado ou configurado errado.", true);
+            typeWriter("Sinal perdido. A conexão foi corrompida pela entidade. Atualize a tela.", true);
         }
     }
 
