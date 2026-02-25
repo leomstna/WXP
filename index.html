@@ -1281,7 +1281,7 @@
         window.searchFriend = function() {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
             const q = document.getElementById('searchAmigoInput').value.toLowerCase().trim();
-            const user = window.allUsers && window.allUsers.find(u => u.name.toLowerCase() === q && u.id !== window.myId && !u.id.startsWith('bot_'));
+            const user = window.allUsers && window.allUsers.find(u => u.name.toLowerCase() === q && u.id !== window.myId);
             document.getElementById('searchAmigoResult').innerHTML = user ? `<div class="list-card"><img src="${user.pfp || window.defaultAvatar}" class="avatar-squircle" style="width:40px; height:40px; border: 2px solid white;"><span style="font-weight:bold; flex:1; margin-left:10px;">${user.name}</span><button class="btn-glossy" onclick="window.openUserProfile('${user.id}')" style="font-size: 11px;">Ver Perfil</button></div>` : `<p style="color:red; font-size:12px; font-weight:bold;">Usuário não encontrado.</p>`;
         }
 
@@ -1316,7 +1316,6 @@
 
         window.renderSystem = function(allPlayers) {
             let playersCopy = [...allPlayers];
-            // Removemos os bots amadeus/franz para deixar só pessoas reais
             playersCopy.sort((a, b) => (b.score || 0) - (a.score || 0));
 
             const publicPlayers = playersCopy;
@@ -1564,6 +1563,7 @@
             box.addEventListener('click', advanceTutorial);
         }
 
+        // --- SISTEMA DE INSTALAÇÃO HÍBRIDO ---
         window.deferredPrompt = null;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
