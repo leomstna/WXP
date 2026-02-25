@@ -185,6 +185,10 @@
 
     let state = {};
 
+    // PRÉ-AQUECIMENTO SILENCIOSO: Enquanto o jogador lê as opções, 
+    // nós damos um toque na IA pra ela ligar o motor, sem travar a tela depois.
+    fetch('https://pesadelo-analogico-api.onrender.com/ping').catch(()=>console.log("Ping inicial."));
+
     function startGame(dificuldade) {
         startScreen.style.display = 'none';
         gameContainer.style.display = 'flex';
@@ -207,7 +211,7 @@
         for (let i = 0; i < text.length; i++) {
             p.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
             outputDiv.scrollTop = outputDiv.scrollHeight;
-            await new Promise(r => setTimeout(r, 20));
+            await new Promise(r => setTimeout(r, 15));
         }
         
         audioTeclado.pause();
@@ -219,29 +223,20 @@
     async function initGame(dificuldade) {
         const p = document.createElement('div');
         p.textContent = "Sintonizando frequências de outras realidades...\n";
+        p.style.fontStyle = "italic";
+        p.style.color = "#888";
         outputDiv.appendChild(p);
         inputField.disabled = true;
 
         audioRadio.currentTime = 0;
         audioRadio.play().catch(e => console.log("Erro no rádio:", e));
 
-        // MENSAGEM IMERSIVA (SÓ APARECE SE A CONEXÃO ESTIVER LENTA)
-        const avisoRender = document.createElement('div');
-        avisoRender.style.color = "#aaaaaa";
-        avisoRender.style.marginTop = "15px";
-        avisoRender.style.fontStyle = "italic";
-        avisoRender.textContent = "[!] Anomalia de sinal detectada. Estabelecendo ponte neural... (A descriptografia pode demorar até 50 segundos. Não quebre o contato).";
-        
-        const timeoutAviso = setTimeout(() => {
-            outputDiv.appendChild(avisoRender);
-            outputDiv.scrollTop = outputDiv.scrollHeight;
-        }, 5000);
-
         try {
             const response = await fetch('https://pesadelo-analogico-api.onrender.com/iniciar?dificuldade=' + dificuldade);
-            const data = await response.json();
             
-            clearTimeout(timeoutAviso); 
+            if (!response.ok) throw new Error("Erro no servidor");
+
+            const data = await response.json();
             
             audioRadio.pause();
             outputDiv.innerHTML = ""; 
@@ -251,10 +246,9 @@
             
             await typeWriter(data.narrativa);
         } catch (error) {
-            clearTimeout(timeoutAviso);
             audioRadio.pause();
             outputDiv.innerHTML = "";
-            typeWriter("Sinal perdido. A conexão foi corrompida pela entidade. Atualize a tela.", true);
+            typeWriter("Sinal perdido. Conexão corrompida. O servidor do jogo está reiniciando ou falhou. Tente novamente mais tarde.", true);
         }
     }
 
@@ -263,7 +257,7 @@
         
         const loadingMsg = document.createElement('div');
         loadingMsg.textContent = "Processando...";
-        loadingMsg.style.color = "#888";
+        loadingMsg.style.color = "#555";
         outputDiv.appendChild(loadingMsg);
         outputDiv.scrollTop = outputDiv.scrollHeight;
 
@@ -273,6 +267,8 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ comando: cmd, estado_atual: state })
             });
+
+            if (!response.ok) throw new Error("Erro no servidor");
 
             const data = await response.json();
             
@@ -285,13 +281,13 @@
 
             if (state.gameOver) {
                 setTimeout(() => {
-                    const finalMsg = state.venceu ? "\n=== VOCÊ VENCEU! ===" : "\n=== FIM DE JOGO ===";
+                    const finalMsg = state.venceu ? "\n=== VOCÊ VENCEU E ESCAPOU ===" : "\n=== FIM DE JOGO ===";
                     typeWriter(finalMsg, !state.venceu);
                 }, 500);
             }
         } catch (error) {
             outputDiv.removeChild(loadingMsg);
-            typeWriter("A conexão com o pesadelo falhou.", true);
+            typeWriter("A conexão com o pesadelo falhou. A entidade corrompeu seu comando.", true);
         }
     }
 
