@@ -1203,6 +1203,11 @@
             } catch (error) {}
         }
 
+        // SALVAMENTO DE SEGURANÇA NO PC (Se fechar o programa rápido demais)
+        window.addEventListener('beforeunload', () => {
+            if(typeof window.syncMyData === 'function') window.syncMyData();
+        });
+
         window.saveProfileInfo = function() {
             if(typeof window.playSfx === 'function') window.playSfx(window.sfx2);
             window.syncMyData({ age: document.getElementById('profileAge').value, location: document.getElementById('profileLoc').value, social: document.getElementById('profileSoc').value, bio: document.getElementById('profileBio').value });
@@ -1312,8 +1317,8 @@
 
         window.renderSystem = function(allPlayers) {
             let playersCopy = [...allPlayers];
-            [{ id: 'bot_amadeus', name: 'Amadeus', score: 9999 }, { id: 'bot_franz', name: 'Franz', score: 9500 }, { id: 'bot_schopen', name: 'Schopen', score: 9200 }].forEach(b => { if(!playersCopy.find(p => p.id === b.id)) playersCopy.push(b); });
-            playersCopy.sort((a, b) => b.score - a.score);
+            // Removemos os bots amadeus/franz para deixar só pessoas reais
+            playersCopy.sort((a, b) => (b.score || 0) - (a.score || 0));
 
             const publicPlayers = playersCopy;
             const myIndex = publicPlayers.findIndex(p => p.id === window.myId); 
@@ -1323,10 +1328,10 @@
                 document.getElementById('profileFriendCount').textContent = me.friends ? me.friends.length : 0; 
                 document.getElementById('profileReqCount').textContent = me.requests ? me.requests.length : 0;
                 
-                if(document.activeElement.id !== 'profileAge' && me.age) document.getElementById('profileAge').value = me.age; 
-                if(document.activeElement.id !== 'profileLoc' && me.location) document.getElementById('profileLoc').value = me.location;
-                if(document.activeElement.id !== 'profileSoc' && me.social) document.getElementById('profileSoc').value = me.social; 
-                if(document.activeElement.id !== 'profileBio' && me.bio) document.getElementById('profileBio').value = me.bio;
+                if(document.activeElement.id !== 'profileAge') document.getElementById('profileAge').value = me.age || ''; 
+                if(document.activeElement.id !== 'profileLoc') document.getElementById('profileLoc').value = me.location || '';
+                if(document.activeElement.id !== 'profileSoc') document.getElementById('profileSoc').value = me.social || ''; 
+                if(document.activeElement.id !== 'profileBio') document.getElementById('profileBio').value = me.bio || '';
 
                 if(me.pfp && me.pfp !== window.currentPfp) {
                     window.currentPfp = me.pfp;
@@ -1393,7 +1398,7 @@
             const sizes = ['16px', '15px', '14px'];
             const buildPlayerHTML = (player, index, rankStr) => {
                 const isMe = player.id === window.myId; const highlightStyle = isMe ? `color: var(--theme-color); font-weight: bold;` : '';
-                return `<div style="display:flex; align-items:center; width:100%;"><span style="font-size:12px; font-weight:bold; color:#777; width:20px; text-align:center;">${index < 3 ? '🏆' : ''}</span><img src="${player.pfp || window.defaultAvatar}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 1px solid rgba(0,0,0,0.2);"><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; margin-right: 10px;"><strong>${rankStr}:</strong> <span style="${highlightStyle}">${player.name}${isMe && index >= 3 ? ' (Você)' : ''}</span> - ${player.score} pts</div><button class="btn-glossy" onclick="window.openUserProfile('${player.id}')" style="padding: 4px 8px;"><svg class="search-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button></div>`;
+                return `<div style="display:flex; align-items:center; width:100%;"><span style="font-size:12px; font-weight:bold; color:#777; width:20px; text-align:center;">${index < 3 ? '🏆' : ''}</span><img src="${player.pfp || window.defaultAvatar}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 1px solid rgba(0,0,0,0.2);"><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; margin-right: 10px;"><strong>${rankStr}:</strong> <span style="${highlightStyle}">${player.name}${isMe && index >= 3 ? ' (Você)' : ''}</span> - ${player.score || 0} pts</div><button class="btn-glossy" onclick="window.openUserProfile('${player.id}')" style="padding: 4px 8px;"><svg class="search-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button></div>`;
             };
             
             publicPlayers.slice(0, 3).forEach((p, i) => { const li = document.createElement('li'); li.className = 'leaderboard-item'; li.style.fontSize = sizes[i] || '13px'; li.innerHTML = buildPlayerHTML(p, i, `${i + 1}º`); list.appendChild(li); });
@@ -1409,15 +1414,30 @@
             document.getElementById('startMenuUser').textContent = window.currentUserName;
             document.getElementById('profileNameDisplay').textContent = window.currentUserName;
             if(typeof window.updateMyAvatars === 'function') window.updateMyAvatars();
-            window.syncMyData();
+            
             setInterval(() => { window.syncMyData(); }, 60000); 
+            
             if (window.allUsers.length > 0) window.renderSystem(window.allUsers);
         }
 
         onSnapshot(collection(db, "leaderboard"), (snapshot) => {
-            let onlinePlayers = []; snapshot.forEach((doc) => { onlinePlayers.push({ id: doc.id, ...doc.data() }); }); 
+            let onlinePlayers = []; 
+            snapshot.forEach((doc) => { onlinePlayers.push({ id: doc.id, ...doc.data() }); }); 
             window.allUsers = onlinePlayers;
-            if(window.myId && window.currentUserName) window.renderSystem(onlinePlayers);
+            
+            // CORREÇÃO DA CORRIDA DE CARREGAMENTO (RACE CONDITION)
+            if (window.myId && !window.currentUserName) {
+                const me = window.allUsers.find(u => u.id === window.myId);
+                if (me) {
+                    window.currentUserName = me.name;
+                    window.myScore = me.score || 1000;
+                    window.currentPfp = me.pfp || window.defaultAvatar;
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    window.initUserInterface();
+                }
+            } else if (window.myId && window.currentUserName) {
+                window.renderSystem(onlinePlayers);
+            }
         });
 
         onAuthStateChanged(auth, (user) => {
@@ -1427,35 +1447,11 @@
                 if(userDoc) {
                     window.currentUserName = userDoc.name;
                     window.myScore = userDoc.score || 1000;
-                    
-                    if(userDoc.pfp) {
-                        window.currentPfp = userDoc.pfp;
-                        localStorage.setItem('hubPfp', userDoc.pfp);
-                    } else {
-                        window.currentPfp = window.defaultAvatar;
-                    }
-
+                    window.currentPfp = userDoc.pfp || window.defaultAvatar;
                     document.getElementById('loginOverlay').style.display = 'none';
                     window.initUserInterface();
-                } else {
-                    setTimeout(() => {
-                        const uDoc = window.allUsers.find(u => u.id === window.myId);
-                        if(uDoc) {
-                            window.currentUserName = uDoc.name;
-                            window.myScore = uDoc.score || 1000;
-                            
-                            if(uDoc.pfp) {
-                                window.currentPfp = uDoc.pfp;
-                                localStorage.setItem('hubPfp', uDoc.pfp);
-                            } else {
-                                window.currentPfp = window.defaultAvatar;
-                            }
-
-                            document.getElementById('loginOverlay').style.display = 'none';
-                            window.initUserInterface();
-                        }
-                    }, 1500);
-                }
+                } 
+                // Se não achar, o onSnapshot acima vai pegar e inicializar quando os dados baixarem
             } else {
                 document.getElementById('loginOverlay').style.display = 'flex';
             }
@@ -1571,14 +1567,12 @@
             box.addEventListener('click', advanceTutorial);
         }
 
-        // --- SISTEMA DE INSTALAÇÃO HÍBRIDO ---
         window.deferredPrompt = null;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             window.deferredPrompt = e;
         });
 
-        // Tenta esconder via JS também (Garantia dupla caso o CSS falhe)
         if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
             const btn = document.getElementById('installBtn');
             if(btn) btn.style.display = 'none';
