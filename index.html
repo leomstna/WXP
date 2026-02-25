@@ -1229,7 +1229,6 @@
             window.closeWindow('win-lista-amigos');
             window.closeWindow('win-solicitacoes');
             window.closeWindow('win-add-amigo');
-            window.closeWindow('win-placar');
 
             const target = window.allUsers.find(u => u.id === targetId); if(!target) return;
             document.getElementById('visitAvatar').src = target.pfp || window.defaultAvatar; 
@@ -1425,7 +1424,6 @@
             snapshot.forEach((doc) => { onlinePlayers.push({ id: doc.id, ...doc.data() }); }); 
             window.allUsers = onlinePlayers;
             
-            // CORREÇÃO DA CORRIDA DE CARREGAMENTO (RACE CONDITION)
             if (window.myId && !window.currentUserName) {
                 const me = window.allUsers.find(u => u.id === window.myId);
                 if (me) {
@@ -1451,7 +1449,6 @@
                     document.getElementById('loginOverlay').style.display = 'none';
                     window.initUserInterface();
                 } 
-                // Se não achar, o onSnapshot acima vai pegar e inicializar quando os dados baixarem
             } else {
                 document.getElementById('loginOverlay').style.display = 'flex';
             }
