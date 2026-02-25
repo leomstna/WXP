@@ -441,7 +441,7 @@
     </div>
 
     <div class="desktop" id="desktop">
-        <div class="desktop-icon tut-game-icon" onclick="if(typeof window.playSfx==='function') window.playSfx(window.sfx2); window.bgMusic.pause(); window.openWindow('win-jogo-1', 'Pesadelo Analógico')">
+        <div class="desktop-icon tut-game-icon" onclick="if(typeof window.playSfx==='function') window.playSfx(window.sfx2); window.bgMusic.pause(); document.getElementById('iframe-jogo-1').src='pesadelo-analogico/jogo.html'; window.openWindow('win-jogo-1', 'Pesadelo Analógico')">
             <div class="icon">🕹️</div>
             <span style="color: #0f0; font-weight: bold; text-shadow: 0 0 5px #0f0;">Pesadelo</span>
         </div>
@@ -451,10 +451,10 @@
                 <div class="title-info">
                     🕹️ Pesadelo Analógico
                 </div>
-                <div class="close-btn" onclick="window.closeWindow('win-jogo-1'); window.bgMusic.play();" style="background: #222; border: 1px solid #0f0; color: #0f0;">X</div>
+                <div class="close-btn" onclick="window.closeWindow('win-jogo-1'); window.bgMusic.play(); document.getElementById('iframe-jogo-1').src='';" style="background: #222; border: 1px solid #0f0; color: #0f0;">X</div>
             </div>
             <div class="window-content" style="padding: 0; background: #000; overflow: hidden; display: flex; flex-direction: column; max-height: none !important;">
-                <iframe src="pesadelo-analogico/jogo.html" style="width: 100%; height: 100%; border: none; flex-grow: 1;"></iframe>
+                <iframe id="iframe-jogo-1" src="" style="width: 100%; height: 100%; border: none; flex-grow: 1;"></iframe>
             </div>
         </div>
 
