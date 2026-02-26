@@ -12,7 +12,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# O Arsenal chumbado direto no código (CUIDADO SE O GITHUB FOR PÚBLICO)
+# O Arsenal chumbado direto no código
 lista_chaves = [
     "AIzaSyBvUYpI80CdGqRpOpxy-fsi-j7UmpnzrYQ",
     "AIzaSyBIdIAbXELSEpTWgHZXkmASvJAZ6w9C1JI",
@@ -36,13 +36,6 @@ def limpar_json(texto):
         return json.loads(texto_limpo)
     except Exception as e:
         return {}
-
-config_seguranca = [
-    types.SafetySetting(category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold=types.HarmBlockThreshold.BLOCK_NONE),
-    types.SafetySetting(category=types.HarmCategory.HARM_CATEGORY_HARASSMENT, threshold=types.HarmBlockThreshold.BLOCK_NONE),
-    types.SafetySetting(category=types.HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold=types.HarmBlockThreshold.BLOCK_NONE),
-    types.SafetySetting(category=types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold=types.HarmBlockThreshold.BLOCK_NONE)
-]
 
 @app.route('/ping', methods=['GET'])
 def ping():
@@ -86,7 +79,7 @@ def iniciar():
         resposta = client.models.generate_content(
             model='gemini-2.0-flash', 
             contents=prompt,
-            config=types.GenerateContentConfig(response_mime_type="application/json", safety_settings=config_seguranca)
+            config=types.GenerateContentConfig(response_mime_type="application/json")
         )
         dados = limpar_json(resposta.text)
         
@@ -135,7 +128,7 @@ def jogar():
         resposta = client.models.generate_content(
             model='gemini-2.0-flash', 
             contents=prompt,
-            config=types.GenerateContentConfig(response_mime_type="application/json", safety_settings=config_seguranca)
+            config=types.GenerateContentConfig(response_mime_type="application/json")
         )
         dados_ia = limpar_json(resposta.text)
         
