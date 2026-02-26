@@ -4,6 +4,7 @@ import random
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,7 +12,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# O Arsenal: Puxa as chaves secretas lá do painel do Render
+# O Arsenal invisível: Puxa as chaves secretas SÓ do painel do Render (SEM CHUMBAR NO CÓDIGO)
 chaves_env = os.environ.get("GEMINI_API_KEYS", "")
 lista_chaves = [k.strip() for k in chaves_env.split(',')] if chaves_env else []
 
@@ -35,13 +36,13 @@ def limpar_json(texto):
 
 @app.route('/ping', methods=['GET'])
 def ping():
-    return jsonify({"status": f"Servidor rodando liso com {len(lista_chaves)} chaves ativas"}), 200
+    return jsonify({"status": f"Servidor rodando liso com {len(lista_chaves)} chaves ativas no cofre"}), 200
 
 @app.route('/iniciar', methods=['GET'])
 def iniciar():
     client = get_cliente_gemini()
     if not client:
-        return jsonify({"narrativa": "[ERRO FATAL] Nenhuma chave encontrada no Render. Coloque na variável GEMINI_API_KEYS.", "novo_estado": {"urgency": 0, "gameOver": True}}), 200
+        return jsonify({"narrativa": "[ERRO FATAL] Nenhuma chave encontrada. Coloque na variável GEMINI_API_KEYS no Render.", "novo_estado": {"urgency": 0, "gameOver": True}}), 200
 
     dificuldade = request.args.get('dificuldade', 'medio')
     
