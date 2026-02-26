@@ -12,14 +12,17 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# O Arsenal: Puxa a variável GEMINI_API_KEYS (com S) e fatia nas vírgulas
-chaves_env = os.environ.get("GEMINI_API_KEYS", "")
-lista_chaves = [k.strip() for k in chaves_env.split(',')] if chaves_env else []
+# O Arsenal chumbado direto no código (CUIDADO SE O GITHUB FOR PÚBLICO)
+lista_chaves = [
+    "AIzaSyBvUYpI80CdGqRpOpxy-fsi-j7UmpnzrYQ",
+    "AIzaSyBIdIAbXELSEpTWgHZXkmASvJAZ6w9C1JI",
+    "AIzaSyB5bTPon3KiOVn_afwd1pyn3XhZZMBNcz8",
+    "AIzaSyA6SiktOYaxvd785fFCCstoB0yGodIQFsw",
+    "AIzaSyDBRYHqFxJql6xB6fjY_Ti_4kbmNE65tS8"
+]
 
 def get_cliente_gemini():
     """Sorteia uma chave da lista pra enganar o limite do Google."""
-    if not lista_chaves:
-        return None
     chave_sorteada = random.choice(lista_chaves)
     try:
         return genai.Client(api_key=chave_sorteada)
@@ -43,13 +46,13 @@ config_seguranca = [
 
 @app.route('/ping', methods=['GET'])
 def ping():
-    return jsonify({"status": f"Servidor rodando liso com {len(lista_chaves)} chaves no pente"}), 200
+    return jsonify({"status": f"Servidor rodando liso com 5 chaves chumbadas no pente"}), 200
 
 @app.route('/iniciar', methods=['GET'])
 def iniciar():
     client = get_cliente_gemini()
     if not client:
-        return jsonify({"narrativa": "[ERRO FATAL] Nenhuma chave encontrada. Verifique a variável GEMINI_API_KEYS no Render.", "novo_estado": {"urgency": 0, "gameOver": True}}), 200
+        return jsonify({"narrativa": "[ERRO FATAL] O arsenal de chaves quebrou.", "novo_estado": {"urgency": 0, "gameOver": True}}), 200
 
     dificuldade = request.args.get('dificuldade', 'medio')
     
@@ -58,7 +61,7 @@ def iniciar():
         "Fundação SCP: Instalação governamental em lockdown com anomalias.",
         "Serial Killers: Preso numa armadilha ou fugindo de um predador.",
         "Mitos e Lendas: Floresta fechada à noite com maldições e criptídeos.",
-        "Horror Cósmico / Lovecraftiano: Deuses antigos, cultos sombrios, arquitetura bizarra, loucura."
+        "Horror Cósmico / Lovecraftiano: Deuses antigos, cultos sombrios, arquitetura bizarra."
     ]
     tema_escolhido = random.choice(temas)
 
@@ -154,5 +157,5 @@ def jogar():
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
-    print(f"Servidor subindo na porta {port} com {len(lista_chaves)} chaves ativas...")
+    print(f"Servidor subindo na porta {port} com 5 chaves chumbadas...")
     app.run(host='0.0.0.0', port=port)
