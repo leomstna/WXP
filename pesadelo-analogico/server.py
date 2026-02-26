@@ -12,30 +12,32 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+# INICIALIZAÇÃO BLINDADA: Se faltar a chave, ele não capota o servidor.
+chave_api = os.environ.get("GEMINI_API_KEY")
+client = None
+if chave_api:
+    try:
+        client = genai.Client(api_key=chave_api)
+    except Exception as e:
+        print(f"Erro ao ligar a IA: {e}")
 
 def limpar_json(texto):
     try:
         texto_limpo = texto.replace('```json', '').replace('```', '').strip()
         return json.loads(texto_limpo)
     except Exception as e:
-        print(f"Erro ao forçar JSON: {e}")
         return {}
 
-config_seguranca = [
-    types.SafetySetting(category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold=types.HarmBlockThreshold.BLOCK_NONE),
-    types.SafetySetting(category=types.HarmCategory.HARM_CATEGORY_HARASSMENT, threshold=types.HarmBlockThreshold.BLOCK_NONE),
-    types.SafetySetting(category=types.HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold=types.HarmBlockThreshold.BLOCK_NONE),
-    types.SafetySetting(category=types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold=types.HarmBlockThreshold.BLOCK_NONE)
-]
-
-# ROTA NOVA: Pra acordar o servidor instantaneamente no fundo
 @app.route('/ping', methods=['GET'])
 def ping():
-    return jsonify({"status": "Acordado"}), 200
+    return jsonify({"status": "Servidor rodando liso"}), 200
 
 @app.route('/iniciar', methods=['GET'])
 def iniciar():
+    # Se o Render não tiver a chave da IA, avisa na tela do jogo!
+    if not client:
+        return jsonify({"narrativa": "[ERRO FATAL] O servidor do Render não encontrou a sua GEMINI_API_KEY. Vá no painel do Render > Environment e adicione a chave!", "novo_estado": {"urgency": 0, "gameOver": True}}), 200
+
     dificuldade = request.args.get('dificuldade', 'medio')
     
     temas = [
@@ -43,7 +45,7 @@ def iniciar():
         "Fundação SCP: Instalação governamental em lockdown com anomalias.",
         "Serial Killers: Preso numa armadilha ou fugindo de um predador.",
         "Mitos e Lendas: Floresta fechada à noite com maldições e criptídeos.",
-        "Horror Cósmico / Lovecraftiano: Deuses antigos, cultos sombrios, arquitetura bizarra, loucura."
+        "Horror Cósmico / Lovecraftiano: Deuses antigos, cultos sombrios."
     ]
     tema_escolhido = random.choice(temas)
 
@@ -54,29 +56,22 @@ def iniciar():
     
     Regras:
     1. Descreva o cenário inicial estabelecendo a tensão.
-    2. SEJA CONCISO. Escreva exatamente 1 parágrafo com no máximo 8 a 10 linhas. Sem enrolação.
-    3. Crie um problema inicial que exija exploração e observação.
-    4. Termine a narrativa com: 'O que você faz?'
+    2. SEJA CONCISO. Escreva 1 parágrafo com no máximo 8 linhas.
+    3. Termine com: 'O que você faz?'
     
-    Retorne EXATAMENTE este formato JSON:
+    Retorne EXATAMENTE este JSON:
     {{
-        "narrativa": "A descrição inicial (max 10 linhas)",
-        "contexto": "Resumo do local, dificuldade e situação para lembrar depois"
+        "narrativa": "A descrição inicial (max 8 linhas)",
+        "contexto": "Resumo do local e situação"
     }}
     """
     try:
         resposta = client.models.generate_content(
             model='gemini-2.0-flash', 
             contents=prompt,
-            config=types.GenerateContentConfig(response_mime_type="application/json", safety_settings=config_seguranca)
+            config=types.GenerateContentConfig(response_mime_type="application/json")
         )
-        
-        try:
-            texto_resposta = resposta.text
-        except ValueError:
-            return jsonify({"narrativa": "A conexão foi cortada por uma força maior. (Filtro ativado). Atualize.", "novo_estado": {"urgency": 0, "gameOver": False}}), 200
-
-        dados = limpar_json(texto_resposta)
+        dados = limpar_json(resposta.text)
         
         return jsonify({
             "narrativa": dados.get("narrativa", "O que você faz?"),
@@ -86,10 +81,13 @@ def iniciar():
         erro_str = str(e).lower()
         if "429" in erro_str or "quota" in erro_str:
             return jsonify({"narrativa": "[FIM DA TRANSMISSÃO] A cota diária desta máquina esgotou. Volte amanhã.", "novo_estado": {"urgency": 0, "gameOver": True}}), 200
-        return jsonify({"narrativa": "Erro na Matrix. A IA não respondeu.", "novo_estado": {"urgency": 0, "gameOver": False}}), 500
+        return jsonify({"narrativa": f"[ERRO DA IA] A matriz falhou: {e}", "novo_estado": {"urgency": 0, "gameOver": False}}), 500
 
 @app.route('/jogar', methods=['POST'])
 def jogar():
+    if not client:
+        return jsonify({"narrativa": "Servidor sem API Key configurada.", "novo_estado": {}}), 500
+
     dados = request.json
     comando_usuario = dados.get('comando', '')
     estado_atual = dados.get('estado_atual', {})
@@ -106,10 +104,10 @@ def jogar():
     1. Escreva 1 parágrafo CURTO (3 a 5 linhas) com o resultado.
     2. Urgência: Fácil (+5 erro, -15 acerto), Médio (+15 erro, -10 acerto), Difícil (+25 erro, -5 acerto).
     
-    Retorne EXATAMENTE este JSON:
+    Retorne JSON:
     {{
         "narrativa": "O que aconteceu...",
-        "urgency_change": inteiro negativo ou positivo,
+        "urgency_change": número inteiro,
         "morreu": true ou false,
         "escapou": true ou false,
         "contexto": "Situação atualizada"
@@ -119,28 +117,23 @@ def jogar():
         resposta = client.models.generate_content(
             model='gemini-2.0-flash', 
             contents=prompt,
-            config=types.GenerateContentConfig(response_mime_type="application/json", safety_settings=config_seguranca)
+            config=types.GenerateContentConfig(response_mime_type="application/json")
         )
         dados_ia = limpar_json(resposta.text)
         
-        if not dados_ia:
-            return jsonify({"narrativa": "A realidade distorceu. Tente de novo.", "novo_estado": estado_atual})
-
         mudanca = int(dados_ia.get("urgency_change", 15))
         nova_urgencia = max(0, min(100, urgencia_atual + mudanca))
-        
         morreu = bool(dados_ia.get("morreu", False))
         escapou = bool(dados_ia.get("escapou", False))
         
         return jsonify({
-            "narrativa": dados_ia.get("narrativa", "Sem resposta."),
+            "narrativa": dados_ia.get("narrativa", "Silêncio profundo."),
             "novo_estado": {"urgency": nova_urgencia, "gameOver": morreu or escapou or nova_urgencia >= 100, "venceu": escapou, "dificuldade": dificuldade, "contexto": dados_ia.get("contexto", contexto)}
         })
     except Exception as e:
-        return jsonify({"narrativa": "A conexão falhou. Tente novamente.", "novo_estado": estado_atual}), 500
+        return jsonify({"narrativa": f"A conexão falhou: {e}", "novo_estado": estado_atual}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
-    print(f"Servidor rodando na porta {port}... Cota de mendigo blindada!")
+    print(f"Servidor subindo na porta {port}...")
     app.run(host='0.0.0.0', port=port)
-
