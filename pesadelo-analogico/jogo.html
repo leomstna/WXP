@@ -185,7 +185,7 @@
 
     let state = {};
 
-    // PRÉ-AQUECIMENTO SILENCIOSO
+    // Ping pro servidor Render não dormir
     fetch('https://pesadelo-analogico-api.onrender.com/ping').catch(()=>console.log("Ping inicial."));
 
     function startGame(dificuldade) {
