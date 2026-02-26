@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Pega a lista de chaves separadas por vírgula e transforma num arsenal
-chaves_env = os.environ.get("AIzaSyBvUYpI80CdGqRpOpxy-fsi-j7UmpnzrYQ", "AIzaSyBIdIAbXELSEpTWgHZXkmASvJAZ6w9C1JI", "AIzaSyB5bTPon3KiOVn_afwd1pyn3XhZZMBNcz8", "AIzaSyA6SiktOYaxvd785fFCCstoB0yGodIQFsw", "AIzaSyDBRYHqFxJql6xB6fjY_Ti_4kbmNE65tS8")
+chaves_env = os.environ.get(("GEMINI_API_KEYS", "AIzaSyBvUYpI80CdGqRpOpxy-fsi-j7UmpnzrYQ", "AIzaSyBIdIAbXELSEpTWgHZXkmASvJAZ6w9C1JI", "AIzaSyB5bTPon3KiOVn_afwd1pyn3XhZZMBNcz8", "AIzaSyA6SiktOYaxvd785fFCCstoB0yGodIQFsw", "AIzaSyDBRYHqFxJql6xB6fjY_Ti_4kbmNE65tS8")
 lista_chaves = [k.strip() for k in chaves_env.split(',')] if chaves_env else []
 
 def get_cliente_gemini():
@@ -154,4 +154,5 @@ if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     print(f"Servidor subindo na porta {port} com {len(lista_chaves)} chaves ativas...")
     app.run(host='0.0.0.0', port=port)
+
 
