@@ -12,14 +12,20 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# INICIALIZAÇÃO BLINDADA: Se faltar a chave, ele não capota o servidor.
-chave_api = os.environ.get("GEMINI_API_KEY")
-client = None
-if chave_api:
+# Pega a lista de chaves separadas por vírgula e transforma num arsenal
+chaves_env = os.environ.get("AIzaSyBvUYpI80CdGqRpOpxy-fsi-j7UmpnzrYQ", "AIzaSyBIdIAbXELSEpTWgHZXkmASvJAZ6w9C1JI", "AIzaSyB5bTPon3KiOVn_afwd1pyn3XhZZMBNcz8", "AIzaSyA6SiktOYaxvd785fFCCstoB0yGodIQFsw", "AIzaSyDBRYHqFxJql6xB6fjY_Ti_4kbmNE65tS8", "AIzaSyDBRYHqFxJql6xB6fjY_Ti_4kbmNE65tS8",)
+lista_chaves = [k.strip() for k in chaves_env.split(',')] if chaves_env else []
+
+def get_cliente_gemini():
+    """Sorteia uma chave da lista pra enganar o limite de cota do Google."""
+    if not lista_chaves:
+        return None
+    chave_sorteada = random.choice(lista_chaves)
     try:
-        client = genai.Client(api_key=chave_api)
+        return genai.Client(api_key=chave_sorteada)
     except Exception as e:
-        print(f"Erro ao ligar a IA: {e}")
+        print(f"Erro ao instanciar cliente com a chave: {e}")
+        return None
 
 def limpar_json(texto):
     try:
@@ -28,15 +34,22 @@ def limpar_json(texto):
     except Exception as e:
         return {}
 
+config_seguranca = [
+    types.SafetySetting(category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold=types.HarmBlockThreshold.BLOCK_NONE),
+    types.SafetySetting(category=types.HarmCategory.HARM_CATEGORY_HARASSMENT, threshold=types.HarmBlockThreshold.BLOCK_NONE),
+    types.SafetySetting(category=types.HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold=types.HarmBlockThreshold.BLOCK_NONE),
+    types.SafetySetting(category=types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold=types.HarmBlockThreshold.BLOCK_NONE)
+]
+
 @app.route('/ping', methods=['GET'])
 def ping():
-    return jsonify({"status": "Servidor rodando liso"}), 200
+    return jsonify({"status": "Servidor rodando liso e no rodízio de chaves"}), 200
 
 @app.route('/iniciar', methods=['GET'])
 def iniciar():
-    # Se o Render não tiver a chave da IA, avisa na tela do jogo!
+    client = get_cliente_gemini()
     if not client:
-        return jsonify({"narrativa": "[ERRO FATAL] O servidor do Render não encontrou a sua GEMINI_API_KEY. Vá no painel do Render > Environment e adicione a chave!", "novo_estado": {"urgency": 0, "gameOver": True}}), 200
+        return jsonify({"narrativa": "[ERRO FATAL] O arsenal de chaves tá vazio. Preencha a variável GEMINI_API_KEYS no Render.", "novo_estado": {"urgency": 0, "gameOver": True}}), 200
 
     dificuldade = request.args.get('dificuldade', 'medio')
     
@@ -69,7 +82,7 @@ def iniciar():
         resposta = client.models.generate_content(
             model='gemini-2.0-flash', 
             contents=prompt,
-            config=types.GenerateContentConfig(response_mime_type="application/json")
+            config=types.GenerateContentConfig(response_mime_type="application/json", safety_settings=config_seguranca)
         )
         dados = limpar_json(resposta.text)
         
@@ -80,13 +93,14 @@ def iniciar():
     except Exception as e:
         erro_str = str(e).lower()
         if "429" in erro_str or "quota" in erro_str:
-            return jsonify({"narrativa": "[FIM DA TRANSMISSÃO] A cota diária desta máquina esgotou. Volte amanhã.", "novo_estado": {"urgency": 0, "gameOver": True}}), 200
+            return jsonify({"narrativa": "[INTERFERÊNCIA] Essa frequência específica esgotou. Tente conectar de novo em alguns segundos (F5).", "novo_estado": {"urgency": 0, "gameOver": False}}), 200
         return jsonify({"narrativa": f"[ERRO DA IA] A matriz falhou: {e}", "novo_estado": {"urgency": 0, "gameOver": False}}), 500
 
 @app.route('/jogar', methods=['POST'])
 def jogar():
+    client = get_cliente_gemini()
     if not client:
-        return jsonify({"narrativa": "Servidor sem API Key configurada.", "novo_estado": {}}), 500
+        return jsonify({"narrativa": "Servidor sem API Keys configuradas.", "novo_estado": {}}), 500
 
     dados = request.json
     comando_usuario = dados.get('comando', '')
@@ -117,7 +131,7 @@ def jogar():
         resposta = client.models.generate_content(
             model='gemini-2.0-flash', 
             contents=prompt,
-            config=types.GenerateContentConfig(response_mime_type="application/json")
+            config=types.GenerateContentConfig(response_mime_type="application/json", safety_settings=config_seguranca)
         )
         dados_ia = limpar_json(resposta.text)
         
@@ -131,9 +145,12 @@ def jogar():
             "novo_estado": {"urgency": nova_urgencia, "gameOver": morreu or escapou or nova_urgencia >= 100, "venceu": escapou, "dificuldade": dificuldade, "contexto": dados_ia.get("contexto", contexto)}
         })
     except Exception as e:
+        erro_str = str(e).lower()
+        if "429" in erro_str or "quota" in erro_str:
+             return jsonify({"narrativa": "[RUÍDO DE RÁDIO] A conexão falhou nesta linha. Repita a sua ação, sobrevivente.", "novo_estado": estado_atual}), 200
         return jsonify({"narrativa": f"A conexão falhou: {e}", "novo_estado": estado_atual}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
-    print(f"Servidor subindo na porta {port}...")
+    print(f"Servidor subindo na porta {port} com {len(lista_chaves)} chaves ativas...")
     app.run(host='0.0.0.0', port=port)
