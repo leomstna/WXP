@@ -14,11 +14,11 @@ CORS(app)
 
 # O Arsenal chumbado direto no código
 lista_chaves = [
-    "AIzaSyBvUYpI80CdGqRpOpxy-fsi-j7UmpnzrYQ",
-    "AIzaSyBIdIAbXELSEpTWgHZXkmASvJAZ6w9C1JI",
-    "AIzaSyB5bTPon3KiOVn_afwd1pyn3XhZZMBNcz8",
-    "AIzaSyA6SiktOYaxvd785fFCCstoB0yGodIQFsw",
-    "AIzaSyDBRYHqFxJql6xB6fjY_Ti_4kbmNE65tS8"
+    "AIzaSyBESyiyx10WZd7pp6rp-uLQCCCTU0MTtLo",
+    "AIzaSyDkuh5daUgMwKYcRcOGuvGgEubIscFRMY0",
+    "AIzaSyDod0YPW57GCm63oseUFFkTdjiMgu3sYOI",
+    "AIzaSyAEjMKvebY7VxL6pXzgseyvnLJpb34H3Dk",
+    "AIzaSyBeeeTCIi6CZOYvhh5b6Z31O_d6NEehPY8"
 ]
 
 def get_cliente_gemini():
@@ -152,3 +152,4 @@ if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     print(f"Servidor subindo na porta {port} com 5 chaves chumbadas...")
     app.run(host='0.0.0.0', port=port)
+
