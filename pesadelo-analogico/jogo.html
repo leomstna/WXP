@@ -185,8 +185,7 @@
 
     let state = {};
 
-    // PRÉ-AQUECIMENTO SILENCIOSO: Enquanto o jogador lê as opções, 
-    // nós damos um toque na IA pra ela ligar o motor, sem travar a tela depois.
+    // PRÉ-AQUECIMENTO SILENCIOSO
     fetch('https://pesadelo-analogico-api.onrender.com/ping').catch(()=>console.log("Ping inicial."));
 
     function startGame(dificuldade) {
