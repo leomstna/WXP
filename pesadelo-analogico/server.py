@@ -4,7 +4,6 @@ import random
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from google import genai
-from google.genai import types
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -12,18 +11,19 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# O Arsenal chumbado direto no código
-lista_chaves = [
-
-]
+# O Arsenal: Puxa as chaves secretas lá do painel do Render
+chaves_env = os.environ.get("GEMINI_API_KEYS", "")
+lista_chaves = [k.strip() for k in chaves_env.split(',')] if chaves_env else []
 
 def get_cliente_gemini():
     """Sorteia uma chave da lista pra enganar o limite do Google."""
+    if not lista_chaves:
+        return None
     chave_sorteada = random.choice(lista_chaves)
     try:
         return genai.Client(api_key=chave_sorteada)
     except Exception as e:
-        print(f"Erro ao instanciar cliente com a chave: {e}")
+        print(f"Erro ao ligar a IA com essa chave: {e}")
         return None
 
 def limpar_json(texto):
@@ -35,13 +35,13 @@ def limpar_json(texto):
 
 @app.route('/ping', methods=['GET'])
 def ping():
-    return jsonify({"status": f"Servidor rodando liso com 5 chaves chumbadas no pente"}), 200
+    return jsonify({"status": f"Servidor rodando liso com {len(lista_chaves)} chaves ativas"}), 200
 
 @app.route('/iniciar', methods=['GET'])
 def iniciar():
     client = get_cliente_gemini()
     if not client:
-        return jsonify({"narrativa": "[ERRO FATAL] O arsenal de chaves quebrou.", "novo_estado": {"urgency": 0, "gameOver": True}}), 200
+        return jsonify({"narrativa": "[ERRO FATAL] Nenhuma chave encontrada no Render. Coloque na variável GEMINI_API_KEYS.", "novo_estado": {"urgency": 0, "gameOver": True}}), 200
 
     dificuldade = request.args.get('dificuldade', 'medio')
     
@@ -50,7 +50,7 @@ def iniciar():
         "Fundação SCP: Instalação governamental em lockdown com anomalias.",
         "Serial Killers: Preso numa armadilha ou fugindo de um predador.",
         "Mitos e Lendas: Floresta fechada à noite com maldições e criptídeos.",
-        "Horror Cósmico / Lovecraftiano: Deuses antigos, cultos sombrios, arquitetura bizarra."
+        "Horror Cósmico / Lovecraftiano: Deuses antigos, cultos sombrios."
     ]
     tema_escolhido = random.choice(temas)
 
@@ -86,7 +86,7 @@ def iniciar():
     except Exception as e:
         erro_str = str(e).lower()
         if "429" in erro_str or "quota" in erro_str:
-            return jsonify({"narrativa": "[INTERFERÊNCIA] A cota dessa chave estourou. Dê F5 para o sistema sortear outra chave do arsenal.", "novo_estado": {"urgency": 0, "gameOver": False}}), 200
+            return jsonify({"narrativa": "[INTERFERÊNCIA] A cota estourou. Dê F5 para o sistema sortear outra chave do seu arsenal.", "novo_estado": {"urgency": 0, "gameOver": False}}), 200
         return jsonify({"narrativa": f"Erro na Matrix: {e}", "novo_estado": {"urgency": 0, "gameOver": False}}), 500
 
 @app.route('/jogar', methods=['POST'])
@@ -141,12 +141,10 @@ def jogar():
     except Exception as e:
         erro_str = str(e).lower()
         if "429" in erro_str or "quota" in erro_str:
-            return jsonify({"narrativa": "[RUÍDO DE RÁDIO] Frequência cheia. Repita seu comando para tentar outra linha.", "novo_estado": estado_atual}), 200
+            return jsonify({"narrativa": "[RUÍDO DE RÁDIO] Frequência cheia. Repita seu comando para tentar outra chave.", "novo_estado": estado_atual}), 200
         return jsonify({"narrativa": "A conexão falhou. Tente novamente.", "novo_estado": estado_atual}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
-    print(f"Servidor subindo na porta {port} com 5 chaves chumbadas...")
+    print(f"Servidor subindo na porta {port}...")
     app.run(host='0.0.0.0', port=port)
-
-
