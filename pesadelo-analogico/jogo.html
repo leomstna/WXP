@@ -63,16 +63,25 @@
             box-shadow: 0px 0px 15px rgba(0, 255, 0, 0.4);
         }
 
-        .diff-item h3 { margin: 0 0 5px 0; color: #fff; }
-        .diff-item p { margin: 0; font-size: 14px; color: #aaa; }
+        .diff-item h3 {
+            margin: 0 0 5px 0;
+            color: #fff;
+        }
+
+        .diff-item p {
+            margin: 0;
+            font-size: 14px;
+            color: #aaa;
+        }
 
         #game-container {
             width: 100%;
             max-width: 800px;
             padding: 20px;
             z-index: 1;
-            display: none;
+            display: flex;
             flex-direction: column;
+            display: none; 
             height: 100%;
         }
         
@@ -151,7 +160,9 @@
         <span>URGÊNCIA: <span id="urgency-display">0%</span></span>
         <span id="diff-display" style="color: #aaa;">DIF: ---</span>
     </div>
+    
     <div id="output"></div>
+
     <div class="input-area">
         <input type="text" id="command-input" placeholder="O que você faz?" autocomplete="off">
         <button class="action-btn" onclick="handleInput()">Enviar</button>
@@ -159,55 +170,34 @@
 </div>
 
 <script>
-    const outputDiv      = document.getElementById('output');
-    const inputField     = document.getElementById('command-input');
+    const outputDiv = document.getElementById('output');
+    const inputField = document.getElementById('command-input');
     const urgencyDisplay = document.getElementById('urgency-display');
-    const diffDisplay    = document.getElementById('diff-display');
-    const startScreen    = document.getElementById('start-screen');
-    const gameContainer  = document.getElementById('game-container');
-
+    const diffDisplay = document.getElementById('diff-display');
+    const startScreen = document.getElementById('start-screen');
+    const gameContainer = document.getElementById('game-container');
+    
     const audioTeclado = new Audio('teclando.MP3');
-    audioTeclado.loop  = true;
-    const audioRadio   = new Audio('radio.mp3');
-    audioRadio.loop    = true;
+    audioTeclado.loop = true;
+    
+    const audioRadio = new Audio('radio.mp3');
+    audioRadio.loop = true;
 
     let state = {};
 
-    const TEMAS = [
-        "Analog Horror / Espaços Liminares: Estética VHS, paranoia, backrooms.",
-        "Fundação SCP: Instalação governamental em lockdown com anomalias.",
-        "Serial Killers: Preso numa armadilha ou fugindo de um predador.",
-        "Mitos e Lendas: Floresta fechada à noite com maldições e criptídeos.",
-        "Horror Cósmico / Lovecraftiano: Deuses antigos, cultos sombrios, arquitetura bizarra, loucura."
-    ];
+    // PRÉ-AQUECIMENTO SILENCIOSO: Enquanto o jogador lê as opções, 
+    // nós damos um toque na IA pra ela ligar o motor, sem travar a tela depois.
+    fetch('https://pesadelo-analogico-api.onrender.com/ping').catch(()=>console.log("Ping inicial."));
 
-    // Chama a API da Anthropic direto — sem servidor intermediário
-    async function callAI(userPrompt) {
-        const res = await fetch("https://api.anthropic.com/v1/messages", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model: "claude-sonnet-4-20250514",
-                max_tokens: 1000,
-                messages: [{ role: "user", content: userPrompt }]
-            })
-        });
-        if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            throw new Error(err.error?.message || "HTTP " + res.status);
-        }
-        const data = await res.json();
-        return data.content.map(b => b.text || "").join("").replace(/```json|```/g, "").trim();
-    }
-
-    function parseJSON(text) {
-        try { return JSON.parse(text); }
-        catch(_) {
-            // Tenta extrair JSON de dentro do texto
-            const match = text.match(/\{[\s\S]*\}/);
-            if (match) { try { return JSON.parse(match[0]); } catch(_) {} }
-            return null;
-        }
+    function startGame(dificuldade) {
+        startScreen.style.display = 'none';
+        gameContainer.style.display = 'flex';
+        
+        diffDisplay.textContent = `DIF: ${dificuldade.toUpperCase()}`;
+        
+        audioTeclado.play().then(() => audioTeclado.pause()).catch(e => console.log(e));
+        
+        initGame(dificuldade);
     }
 
     async function typeWriter(text, isError = false) {
@@ -215,148 +205,110 @@
         const p = document.createElement('div');
         if (isError) p.style.color = "red";
         outputDiv.appendChild(p);
+        
         try { audioTeclado.play(); } catch(e) {}
+
         for (let i = 0; i < text.length; i++) {
             p.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
             outputDiv.scrollTop = outputDiv.scrollHeight;
             await new Promise(r => setTimeout(r, 15));
         }
+        
         audioTeclado.pause();
         outputDiv.appendChild(document.createElement('br'));
         if (!state.gameOver) inputField.disabled = false;
         inputField.focus();
     }
 
-    function startGame(dificuldade) {
-        startScreen.style.display = 'none';
-        gameContainer.style.display = 'flex';
-        diffDisplay.textContent = `DIF: ${dificuldade.toUpperCase()}`;
-        audioTeclado.play().then(() => audioTeclado.pause()).catch(() => {});
-        initGame(dificuldade);
-    }
-
     async function initGame(dificuldade) {
-        const tema = TEMAS[Math.floor(Math.random() * TEMAS.length)];
-
-        const loadMsg = document.createElement('div');
-        loadMsg.style.cssText = "font-style:italic; color:#555;";
-        loadMsg.textContent = "Sintonizando frequências de outras realidades...";
-        outputDiv.appendChild(loadMsg);
+        const p = document.createElement('div');
+        p.textContent = "Sintonizando frequências de outras realidades...\n";
+        p.style.fontStyle = "italic";
+        p.style.color = "#888";
+        outputDiv.appendChild(p);
         inputField.disabled = true;
 
         audioRadio.currentTime = 0;
-        audioRadio.play().catch(() => {});
-
-        const prompt = `Você é um Mestre de RPG de sobrevivência de terror. Responda APENAS com JSON puro, sem markdown, sem texto fora do JSON.
-
-Cenário: ${tema}
-Dificuldade: ${dificuldade}
-
-Regras:
-1. Descreva o cenário inicial com tensão e imersão.
-2. SEJA CONCISO. Máximo de 8 a 10 linhas no campo narrativa.
-3. Crie um problema inicial que exija exploração.
-4. Termine a narrativa com: "O que você faz?"
-
-Retorne este JSON exato:
-{"narrativa":"texto aqui","contexto":"resumo do local e situação"}`;
+        audioRadio.play().catch(e => console.log("Erro no rádio:", e));
 
         try {
-            const raw   = await callAI(prompt);
-            const dados = parseJSON(raw);
-            if (!dados || !dados.narrativa) throw new Error("Resposta inválida da IA");
+            const response = await fetch('https://pesadelo-analogico-api.onrender.com/iniciar?dificuldade=' + dificuldade);
+            
+            if (!response.ok) throw new Error("Erro no servidor");
 
+            const data = await response.json();
+            
+            audioRadio.pause();
+            outputDiv.innerHTML = ""; 
+            
+            state = data.novo_estado;
+            urgencyDisplay.textContent = `${state.urgency}%`;
+            
+            await typeWriter(data.narrativa);
+        } catch (error) {
             audioRadio.pause();
             outputDiv.innerHTML = "";
-            state = { urgency: 0, gameOver: false, venceu: false, dificuldade, contexto: dados.contexto || "Cenário inicial." };
-            urgencyDisplay.textContent = "0%";
-            await typeWriter(dados.narrativa);
-
-        } catch (err) {
-            audioRadio.pause();
-            if (outputDiv.contains(loadMsg)) outputDiv.removeChild(loadMsg);
-            console.error("initGame error:", err);
-            await typeWriter("ERRO AO INICIAR: " + err.message + "\n\nVerifique o console (F12) e tente recarregar.", true);
+            typeWriter("Sinal perdido. Conexão corrompida. O servidor do jogo está reiniciando ou falhou. Tente novamente mais tarde.", true);
         }
     }
 
     async function processCommand(cmd) {
         if (state.gameOver) return;
-
-        const loadMsg = document.createElement('div');
-        loadMsg.textContent = "Processando...";
-        loadMsg.style.color = "#555";
-        outputDiv.appendChild(loadMsg);
+        
+        const loadingMsg = document.createElement('div');
+        loadingMsg.textContent = "Processando...";
+        loadingMsg.style.color = "#555";
+        outputDiv.appendChild(loadingMsg);
         outputDiv.scrollTop = outputDiv.scrollHeight;
-        inputField.disabled = true;
-
-        const urgenciaAtual = parseInt(state.urgency || 0);
-
-        const prompt = `Você é um Mestre de RPG de terror. Responda APENAS com JSON puro, sem markdown.
-
-CENÁRIO: ${state.contexto}
-Dificuldade: ${state.dificuldade}
-Urgência atual: ${urgenciaAtual}%
-Ação do jogador: "${cmd}"
-
-Regras:
-1. Escreva 1 parágrafo CURTO (3 a 5 linhas) com o resultado.
-2. Urgência por dificuldade — facil: (+5 erro, -15 acerto), medio: (+15 erro, -10 acerto), dificil: (+25 erro, -5 acerto).
-3. morreu=true se urgência chegar a 100% ou ação fatal. escapou=true se encontrou saída.
-
-Retorne este JSON exato:
-{"narrativa":"texto","urgency_change":0,"morreu":false,"escapou":false,"contexto":"situação atualizada"}`;
 
         try {
-            const raw   = await callAI(prompt);
-            const dados = parseJSON(raw);
-            if (!dados || !dados.narrativa) throw new Error("Resposta inválida da IA");
+            const response = await fetch('https://pesadelo-analogico-api.onrender.com/jogar', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ comando: cmd, estado_atual: state })
+            });
 
-            if (outputDiv.contains(loadMsg)) outputDiv.removeChild(loadMsg);
+            if (!response.ok) throw new Error("Erro no servidor");
 
-            const mudanca     = parseInt(dados.urgency_change || 0);
-            const novaUrgencia = Math.max(0, Math.min(100, urgenciaAtual + mudanca));
-            const morreu      = !!dados.morreu;
-            const escapou     = !!dados.escapou;
+            const data = await response.json();
+            
+            outputDiv.removeChild(loadingMsg); 
+            
+            state = data.novo_estado;
+            urgencyDisplay.textContent = `${state.urgency}%`;
 
-            state = {
-                urgency:     novaUrgencia,
-                gameOver:    morreu || escapou || novaUrgencia >= 100,
-                venceu:      escapou,
-                dificuldade: state.dificuldade,
-                contexto:    dados.contexto || state.contexto
-            };
-
-            urgencyDisplay.textContent = `${novaUrgencia}%`;
-            await typeWriter(dados.narrativa);
+            await typeWriter(data.narrativa);
 
             if (state.gameOver) {
                 setTimeout(() => {
-                    const msg = state.venceu ? "\n=== VOCÊ VENCEU E ESCAPOU ===" : "\n=== FIM DE JOGO ===";
-                    typeWriter(msg, !state.venceu);
+                    const finalMsg = state.venceu ? "\n=== VOCÊ VENCEU E ESCAPOU ===" : "\n=== FIM DE JOGO ===";
+                    typeWriter(finalMsg, !state.venceu);
                 }, 500);
             }
-        } catch (err) {
-            if (outputDiv.contains(loadMsg)) outputDiv.removeChild(loadMsg);
-            console.error("processCommand error:", err);
-            await typeWriter("A conexão falhou: " + err.message + "\nTente enviar o comando novamente.", true);
-            if (!state.gameOver) inputField.disabled = false;
+        } catch (error) {
+            outputDiv.removeChild(loadingMsg);
+            typeWriter("A conexão com o pesadelo falhou. A entidade corrompeu seu comando.", true);
         }
     }
 
     function handleInput() {
         if (state.gameOver || inputField.disabled) return;
         const command = inputField.value.trim();
-        if (!command) return;
+        if (command === "") return;
+        
         inputField.value = "";
+        
         const p = document.createElement('div');
         p.textContent = `> ${command}\n`;
         p.style.color = "#fff";
         outputDiv.appendChild(p);
+        
         processCommand(command);
     }
 
-    inputField.addEventListener("keypress", (e) => { if (e.key === "Enter") handleInput(); });
+    inputField.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") handleInput();
+    });
 </script>
 
 </body>
