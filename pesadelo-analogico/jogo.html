@@ -3,300 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sobrevivência Analógica - Offline</title>
+    <title>Arquivo Confidencial - Sobrevivência</title>
     <style>
         * { box-sizing: border-box; }
         
         body {
             margin: 0;
             background-color: #050505;
-            color: #00ff00;
+            color: #33ff33;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
             justify-content: center;
-            height: 100vh;
-            overflow-y: auto;
-            overflow-x: hidden;
-            text-shadow: 0px 0px 5px #00ff00;
-        }
-
-        #start-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #000;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            text-align: center;
-            padding: 20px;
-            overflow-y: auto;
+            height: 100vh;
+            overflow: hidden;
+            text-shadow: 0px 0px 5px #33ff33;
         }
 
-        .diff-title {
-            font-size: 24px;
-            margin-bottom: 30px;
-            color: #fff;
-            text-shadow: 0px 0px 8px #fff;
+        .crt::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
         }
-
-        .diff-btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            max-width: 500px;
-            width: 100%;
-        }
-
-        .diff-item {
-            background-color: rgba(0, 255, 0, 0.05);
-            border: 1px solid #00ff00;
-            padding: 15px;
-            cursor: pointer;
-            transition: 0.2s;
-            text-align: left;
-        }
-
-        .diff-item:hover {
-            background-color: rgba(0, 255, 0, 0.2);
-            box-shadow: 0px 0px 15px rgba(0, 255, 0, 0.4);
-        }
-
-        .diff-item h3 { margin: 0 0 5px 0; color: #fff; }
-        .diff-item p { margin: 0; font-size: 14px; color: #aaa; }
 
         #game-container {
             width: 100%;
             max-width: 800px;
+            height: 90vh;
             padding: 20px;
-            z-index: 1;
             display: flex;
             flex-direction: column;
-            display: none; 
-            height: 100%;
+            border: 2px solid #33ff33;
+            box-shadow: inset 0px 0px 20px rgba(51, 255, 51, 0.2);
+            position: relative;
+            background-color: #000;
         }
-        
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-weight: bold;
-            color: #ff3333;
-            text-shadow: 0px 0px 5px #ff3333;
-            flex-shrink: 0;
-        }
-        
-        #output {
+
+        #texto-historia {
             flex-grow: 1;
+            font-size: 18px;
+            line-height: 1.5;
             overflow-y: auto;
-            border: 1px solid rgba(0, 255, 0, 0.3);
-            padding: 15px;
             margin-bottom: 20px;
-            background-color: rgba(0, 0, 0, 0.85);
+            padding-right: 10px;
             white-space: pre-wrap;
         }
-        
-        .input-area {
+
+        #botoes-container {
             display: flex;
+            flex-direction: column;
             gap: 10px;
-            flex-shrink: 0;
+            min-height: 150px;
         }
-        
-        input[type="text"] {
-            flex-grow: 1;
-            background-color: #000;
-            color: #00ff00;
-            border: 1px solid #00ff00;
-            padding: 10px;
+
+        .botao-escolha {
+            background-color: transparent;
+            color: #33ff33;
+            border: 1px solid #33ff33;
+            padding: 15px;
             font-family: 'Courier New', Courier, monospace;
             font-size: 16px;
-            outline: none;
-        }
-        
-        button.action-btn {
-            background-color: #00ff00;
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
+            text-align: left;
             cursor: pointer;
+            transition: all 0.2s;
+            text-shadow: 0px 0px 5px #33ff33;
         }
-        
-        button.action-btn:hover { background-color: #00cc00; }
+
+        .botao-escolha:hover {
+            background-color: #33ff33;
+            color: #000;
+            box-shadow: 0px 0px 15px #33ff33;
+        }
     </style>
 </head>
-<body>
+<body class="crt">
 
-<div id="start-screen">
-    <div class="diff-title">INICIALIZAR SISTEMA DE SOBREVIVÊNCIA</div>
-    <div class="diff-btn-group">
-        <div class="diff-item" onclick="startGame('facil', 10, 30)">
-            <h3>FÁCIL</h3>
-            <p>Mais margem para erro. Dicas sutis no ambiente. A urgência sobe devagar.</p>
-        </div>
-        <div class="diff-item" onclick="startGame('medio', 20, 50)">
-            <h3>MÉDIO</h3>
-            <p>A experiência balanceada. Erros machucam e cobram seu preço.</p>
-        </div>
-        <div class="diff-item" style="border-color: #ff3333;" onclick="startGame('dificil', 35, 75)">
-            <h3 style="color: #ff3333;">DIFÍCIL</h3>
-            <p>Ameaça implacável. Um vacilo e o sinal será corrompido para sempre.</p>
-        </div>
+    <div id="game-container">
+        <div id="texto-historia">Iniciando conexão segura... Aguardando sinal...</div>
+        <div id="botoes-container"></div>
     </div>
-</div>
 
-<div id="game-container">
-    <div class="status-bar">
-        <span>URGÊNCIA: <span id="urgency-display">0%</span></span>
-        <span id="diff-display" style="color: #aaa;">DIF: ---</span>
-    </div>
-    <div id="output"></div>
-    <div class="input-area">
-        <input type="text" id="command-input" placeholder="O que você faz?" autocomplete="off">
-        <button class="action-btn" onclick="handleInput()">Enviar</button>
-    </div>
-</div>
+    <script>
+        const audioTeclado = new Audio('teclando.MP3');
+        const audioFundo = new Audio('radio.mp3');
+        audioFundo.loop = true;
+        audioFundo.volume = 0.3;
 
-<script>
-    const outputDiv = document.getElementById('output');
-    const inputField = document.getElementById('command-input');
-    const urgencyDisplay = document.getElementById('urgency-display');
-    const diffDisplay = document.getElementById('diff-display');
-    const startScreen = document.getElementById('start-screen');
-    const gameContainer = document.getElementById('game-container');
-    
-    // Áudios (Se você tiver os arquivos na mesma pasta do GitHub)
-    const audioTeclado = new Audio('teclando.MP3');
-    audioTeclado.loop = true;
-    
-    // Banco de dados da IA Offline
-    const cenariosIniciais = [
-        "Você acorda em uma sala de azulejos brancos manchados. Uma luz fluorescente pisca e um zumbido grave ecoa pelas paredes. A única saída é uma porta de ferro enferrujada.",
-        "A floresta está escura. O nevoeiro é tão denso que você mal vê suas mãos. Você ouve galhos quebrando logo atrás de você, passos pesados e lentos.",
-        "Sinal de rádio interceptado... Você está em um bunker subterrâneo. Os monitores mostram que a contenção da criatura falhou. A energia principal acabou de cair.",
-        "Você está caminhando pelos corredores vazios do Nível 0 das Backrooms. O cheiro de carpete úmido é insuportável. Você ouve um sussurro vindo da próxima esquina."
-    ];
+        // VERSÃO LITE: Apenas 10 cenas para caber no celular.
+        const bancoDeDados = [
+          {
+            "id": "cena_1",
+            "texto": "A TV de tubo chia na sala em ruínas da Casa de Usher. Na tela granulada de VHS, um aviso de segurança decreta: 'Não olhe para a lua'. A madeira podre sob seus pés range, como se a casa respirasse.",
+            "opcoes": [
+              { "texto": "Desligar a TV e encarar a escuridão do corredor", "proximo_id": "cena_2" },
+              { "texto": "Olhar pela janela fechada com tábuas", "proximo_id": "cena_3" }
+            ]
+          },
+          {
+            "id": "cena_2",
+            "texto": "O corredor desce mais do que o alicerce permitiria. Nas paredes úmidas, você nota o logo da Fundação SCP entalhado na pedra profana. Um odor sufocante de cobre e formol invade seus pulmões.",
+            "opcoes": [
+              { "texto": "Descer até a zona de contenção violada", "proximo_id": "cena_4" },
+              { "texto": "Tentar arrombar a pesada porta blindada à direita", "proximo_id": "cena_5" }
+            ]
+          },
+          {
+            "id": "cena_3",
+            "texto": "Pelas frestas da janela, a luz de uma lua imensa e avermelhada banha o pátio. No telhado vizinho, um criptídeo esguio de pernas alongadas e rosto sem feições uiva para o céu noturno.",
+            "opcoes": [
+              { "texto": "Recuar em silêncio antes que a besta note", "proximo_id": "cena_5" },
+              { "texto": "Procurar uma arma improvisada no chão de tábuas", "proximo_id": "cena_6" }
+            ]
+          },
+          {
+            "id": "cena_4",
+            "texto": "A sala cheira a sangue doentio. Um caçador com roupas de couro rasgadas jaz morto ao lado de frascos de Yharnam. Das sombras profundas do necrotério, o som molhado de algo mastigando ecoa.",
+            "opcoes": [
+              { "texto": "Saquear o sangue pálido do cadáver", "proximo_id": "cena_7" },
+              { "texto": "Sacar sua arma e avançar contra a escuridão", "proximo_id": "cena_8" }
+            ]
+          },
+          {
+            "id": "cena_5",
+            "texto": "A porta cede. Você entra num labirinto úmido de masmorras sem fim. Um guerreiro ressecado está escorado na parede, murmurando sobre 'Buriedbornes'. O frio sepulcral paralisa seus ossos.",
+            "opcoes": [
+              { "texto": "Roubar o amuleto de alma do guerreiro morto", "proximo_id": "cena_8" },
+              { "texto": "Ignorá-lo e mergulhar pelas catacumbas", "proximo_id": "cena_9" }
+            ]
+          },
+          {
+            "id": "cena_6",
+            "texto": "Você ergue um atiçador de lareira enferrujado. Subitamente, o som zumbidor e implacável de uma lâmina descendo compassadamente começa a soar do teto, idêntico a um pêndulo.",
+            "opcoes": [
+              { "texto": "Rastejar sob a trajetória do pêndulo", "proximo_id": "cena_9" },
+              { "texto": "Quebrar o vidro e fugir para o nevoeiro", "proximo_id": "cena_10" }
+            ]
+          },
+          {
+            "id": "cena_7",
+            "texto": "O sangue arde nas veias e a geometria da sala colapsa. Você é sugado para um desfiladeiro de pilares titânicos esverdeados, cobertos por lodo e runas ininteligíveis da Cidade Sem Nome.",
+            "opcoes": [
+              { "texto": "Tocar a runa que pulsa com luz doentia", "proximo_id": "morte" },
+              { "texto": "Correr cegamente para o altar de obsidiana", "proximo_id": "morte" }
+            ]
+          },
+          {
+            "id": "cena_8",
+            "texto": "A iluminação falha e revela uma anomalia Classe Keter: uma massa de carne podre com dezenas de olhos frenéticos. Só de olhar, sua mente lateja, a sanidade escorrendo feito areia.",
+            "opcoes": [
+              { "texto": "Fechar os olhos e andar para trás lentamente", "proximo_id": "morte" },
+              { "texto": "Atacar a massa disforme em puro desespero", "proximo_id": "morte" }
+            ]
+          },
+          {
+            "id": "cena_9",
+            "texto": "Nas paredes não-euclidianas do labirinto, rostos esticados imploram. Uma fenda dimensional no ar mostra uma estática de VHS, transmitindo seu próprio rosto chorando lágrimas de mercúrio.",
+            "opcoes": [
+              { "texto": "Atravessar a distorção da TV", "proximo_id": "morte" },
+              { "texto": "Tapar os ouvidos e seguir pelo corredor", "proximo_id": "morte" }
+            ]
+          },
+          {
+            "id": "cena_10",
+            "texto": "Pisando no jardim morto dos Usher, a névoa espessa revela o Mothman de três metros. Suas asas bloqueiam o luar e seus olhos vermelhos escavam o fundo da sua alma.",
+            "opcoes": [
+              { "texto": "Gritar e correr de volta para a mansão", "proximo_id": "morte" },
+              { "texto": "Jogar-se no fosso do mausoléu da família", "proximo_id": "morte" }
+            ]
+          },
+          {
+            "id": "morte",
+            "texto": "O abismo te consome. A transmissão falhou. A sua sanidade chegou a zero e as entidades tomaram conta do que sobrou de você. \n\n=== FIM DA DEMONSTRAÇÃO ===",
+            "opcoes": [
+              { "texto": "Reiniciar o Pesadelo", "proximo_id": "cena_1" }
+            ]
+          }
+        ];
 
-    const respostasBoas = [
-        "Você age rápido e consegue se afastar da ameaça. O ambiente fica silencioso por um momento.",
-        "Sua ação funciona. Você encontra um momento para respirar, mas a sensação de estar sendo observado continua.",
-        "Você avança com cautela. A escuridão esconde você por enquanto, te dando tempo para pensar.",
-        "Você encontra um pequeno esconderijo seguro. Sua esperança aumenta um pouco e a entidade parece ter perdido o seu rastro."
-    ];
+        const elementoTexto = document.getElementById('texto-historia');
+        const elementoBotoes = document.getElementById('botoes-container');
+        let digitando = false;
 
-    const respostasRuins = [
-        "Você hesita e faz um barulho alto! Passos rápidos se aproximam na sua direção. Você precisa sair daí AGORA!",
-        "Péssima ideia. A entidade percebe sua presença. O ar fica gelado e sua visão começa a distorcer.",
-        "Você tropeça e cai. Algo roça na sua perna no escuro. A urgência da situação aumenta drasticamente!",
-        "Sua ação falha miseravelmente. A luz pisca e apaga por um segundo. Quando volta, a coisa está muito mais perto."
-    ];
+        document.body.addEventListener('click', () => {
+            if (elementoTexto.innerHTML.includes("Iniciando conexão")) {
+                try { audioFundo.play(); } catch(e){}
+                carregarCena("cena_1");
+            }
+        }, { once: true });
 
-    let state = {
-        urgency: 0,
-        gameOver: false,
-        dificuldade: '',
-        danoErro: 20,
-        chanceErro: 50,
-        turnosSobrevividos: 0
-    };
-
-    function startGame(dificuldade, dano, chance) {
-        state.dificuldade = dificuldade;
-        state.danoErro = dano;
-        state.chanceErro = chance;
-        
-        startScreen.style.display = 'none';
-        gameContainer.style.display = 'flex';
-        diffDisplay.textContent = `DIF: ${dificuldade.toUpperCase()}`;
-        
-        try { audioTeclado.play().then(() => audioTeclado.pause()); } catch(e){}
-        
-        const cenarioSorteado = cenariosIniciais[Math.floor(Math.random() * cenariosIniciais.length)];
-        typeWriter(`[SISTEMA INICIADO] Conexão estabelecida.\n\n${cenarioSorteado}\n\nO que você faz?`);
-    }
-
-    async function typeWriter(text, isError = false) {
-        inputField.disabled = true;
-        const p = document.createElement('div');
-        if (isError) p.style.color = "red";
-        outputDiv.appendChild(p);
-        
-        try { audioTeclado.play(); } catch(e) {}
-
-        for (let i = 0; i < text.length; i++) {
-            p.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
-            outputDiv.scrollTop = outputDiv.scrollHeight;
-            await new Promise(r => setTimeout(r, 15));
+        function encontrarCena(id) {
+            return bancoDeDados.find(cena => cena.id === id);
         }
-        
-        audioTeclado.pause();
-        outputDiv.appendChild(document.createElement('br'));
-        if (!state.gameOver) {
-            inputField.disabled = false;
-            inputField.focus();
+
+        async function carregarCena(id) {
+            const cena = encontrarCena(id);
+            if (!cena) return;
+
+            elementoBotoes.innerHTML = ''; 
+            elementoTexto.innerHTML = ''; 
+            
+            await digitarTexto(cena.texto);
+
+            cena.opcoes.forEach(opcao => {
+                const botao = document.createElement('button');
+                botao.className = 'botao-escolha';
+                botao.innerText = `> ${opcao.texto}`;
+                botao.onclick = () => {
+                    if(!digitando) carregarCena(opcao.proximo_id);
+                };
+                elementoBotoes.appendChild(botao);
+            });
         }
-    }
 
-    function processCommand(cmd) {
-        if (state.gameOver) return;
-        
-        state.turnosSobrevividos++;
-        
-        // Simula o tempo de raciocínio
-        setTimeout(() => {
-            // Se sobreviveu 10 turnos, ele vence o jogo!
-            if (state.turnosSobrevividos >= 10 && state.urgency < 100) {
-                state.gameOver = true;
-                typeWriter("Você encontrou uma saída e a luz do sol invade o ambiente. A entidade não pode te seguir. \n\n=== VOCÊ ESCAPOU E SOBREVIVEU ===", false);
-                return;
-            }
+        function digitarTexto(texto) {
+            return new Promise(resolve => {
+                digitando = true;
+                let i = 0;
+                try { audioTeclado.play(); } catch(e){}
 
-            // Rola o dado do RPG invisível (0 a 100)
-            const rolagem = Math.random() * 100;
-            let narrativa = "";
-
-            if (rolagem > state.chanceErro) {
-                // SUCESSO
-                state.urgency = Math.max(0, state.urgency - 5);
-                narrativa = respostasBoas[Math.floor(Math.random() * respostasBoas.length)];
-            } else {
-                // FRACASSO
-                state.urgency += state.danoErro;
-                narrativa = respostasRuins[Math.floor(Math.random() * respostasRuins.length)];
-            }
-
-            urgencyDisplay.textContent = `${state.urgency}%`;
-
-            if (state.urgency >= 100) {
-                state.gameOver = true;
-                typeWriter(narrativa + "\n\nA ameaça te alcançou. A tela fica estática.\n\n=== FIM DA TRANSMISSÃO. VOCÊ MORREU ===", true);
-            } else {
-                typeWriter(narrativa + "\nO que você faz agora?");
-            }
-        }, 500);
-    }
-
-    function handleInput() {
-        if (state.gameOver || inputField.disabled) return;
-        const command = inputField.value.trim();
-        if (command === "") return;
-        
-        inputField.value = "";
-        
-        const p = document.createElement('div');
-        p.textContent = `> ${command}\n`;
-        p.style.color = "#fff";
-        outputDiv.appendChild(p);
-        
-        processCommand(command);
-    }
-
-    inputField.addEventListener("keypress", function(event) {
-        if (event.key === "Enter") handleInput();
-    });
-</script>
-
+                function proximaLetra() {
+                    if (i < texto.length) {
+                        elementoTexto.innerHTML += texto.charAt(i) === '\n' ? '<br>' : texto.charAt(i);
+                        elementoTexto.scrollTop = elementoTexto.scrollHeight;
+                        i++;
+                        setTimeout(proximaLetra, 20); 
+                    } else {
+                        audioTeclado.pause();
+                        audioTeclado.currentTime = 0;
+                        digitando = false;
+                        resolve();
+                    }
+                }
+                proximaLetra();
+            });
+        }
+    </script>
 </body>
 </html>
