@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sobrevivência Analógica</title>
+    <title>Sobrevivência Analógica - Offline</title>
     <style>
         * { box-sizing: border-box; }
         
@@ -63,16 +63,8 @@
             box-shadow: 0px 0px 15px rgba(0, 255, 0, 0.4);
         }
 
-        .diff-item h3 {
-            margin: 0 0 5px 0;
-            color: #fff;
-        }
-
-        .diff-item p {
-            margin: 0;
-            font-size: 14px;
-            color: #aaa;
-        }
+        .diff-item h3 { margin: 0 0 5px 0; color: #fff; }
+        .diff-item p { margin: 0; font-size: 14px; color: #aaa; }
 
         #game-container {
             width: 100%;
@@ -140,17 +132,17 @@
 <div id="start-screen">
     <div class="diff-title">INICIALIZAR SISTEMA DE SOBREVIVÊNCIA</div>
     <div class="diff-btn-group">
-        <div class="diff-item" onclick="startGame('facil')">
+        <div class="diff-item" onclick="startGame('facil', 10, 30)">
             <h3>FÁCIL</h3>
-            <p>Mais margem para erro. Dicas sutis no ambiente. A urgência sobe devagar e o terror tem um pouco de paciência com você.</p>
+            <p>Mais margem para erro. Dicas sutis no ambiente. A urgência sobe devagar.</p>
         </div>
-        <div class="diff-item" onclick="startGame('medio')">
+        <div class="diff-item" onclick="startGame('medio', 20, 50)">
             <h3>MÉDIO</h3>
-            <p>A experiência balanceada. Erros machucam e cobram seu preço, mas a sobrevivência é possível se você usar a cabeça e investigar.</p>
+            <p>A experiência balanceada. Erros machucam e cobram seu preço.</p>
         </div>
-        <div class="diff-item" style="border-color: #ff3333;" onclick="startGame('dificil')">
+        <div class="diff-item" style="border-color: #ff3333;" onclick="startGame('dificil', 35, 75)">
             <h3 style="color: #ff3333;">DIFÍCIL</h3>
-            <p>Ameaça implacável. Recursos extremamente escassos. A urgência explode por qualquer barulho. Um vacilo e você já era.</p>
+            <p>Ameaça implacável. Um vacilo e o sinal será corrompido para sempre.</p>
         </div>
     </div>
 </div>
@@ -160,9 +152,7 @@
         <span>URGÊNCIA: <span id="urgency-display">0%</span></span>
         <span id="diff-display" style="color: #aaa;">DIF: ---</span>
     </div>
-    
     <div id="output"></div>
-
     <div class="input-area">
         <input type="text" id="command-input" placeholder="O que você faz?" autocomplete="off">
         <button class="action-btn" onclick="handleInput()">Enviar</button>
@@ -177,26 +167,54 @@
     const startScreen = document.getElementById('start-screen');
     const gameContainer = document.getElementById('game-container');
     
+    // Áudios (Se você tiver os arquivos na mesma pasta do GitHub)
     const audioTeclado = new Audio('teclando.MP3');
     audioTeclado.loop = true;
     
-    const audioRadio = new Audio('radio.mp3');
-    audioRadio.loop = true;
+    // Banco de dados da IA Offline
+    const cenariosIniciais = [
+        "Você acorda em uma sala de azulejos brancos manchados. Uma luz fluorescente pisca e um zumbido grave ecoa pelas paredes. A única saída é uma porta de ferro enferrujada.",
+        "A floresta está escura. O nevoeiro é tão denso que você mal vê suas mãos. Você ouve galhos quebrando logo atrás de você, passos pesados e lentos.",
+        "Sinal de rádio interceptado... Você está em um bunker subterrâneo. Os monitores mostram que a contenção da criatura falhou. A energia principal acabou de cair.",
+        "Você está caminhando pelos corredores vazios do Nível 0 das Backrooms. O cheiro de carpete úmido é insuportável. Você ouve um sussurro vindo da próxima esquina."
+    ];
 
-    let state = {};
+    const respostasBoas = [
+        "Você age rápido e consegue se afastar da ameaça. O ambiente fica silencioso por um momento.",
+        "Sua ação funciona. Você encontra um momento para respirar, mas a sensação de estar sendo observado continua.",
+        "Você avança com cautela. A escuridão esconde você por enquanto, te dando tempo para pensar.",
+        "Você encontra um pequeno esconderijo seguro. Sua esperança aumenta um pouco e a entidade parece ter perdido o seu rastro."
+    ];
 
-    // Ping pro servidor Render não dormir
-    fetch('https://pesadelo-analogico-api.onrender.com/ping').catch(()=>console.log("Ping inicial."));
+    const respostasRuins = [
+        "Você hesita e faz um barulho alto! Passos rápidos se aproximam na sua direção. Você precisa sair daí AGORA!",
+        "Péssima ideia. A entidade percebe sua presença. O ar fica gelado e sua visão começa a distorcer.",
+        "Você tropeça e cai. Algo roça na sua perna no escuro. A urgência da situação aumenta drasticamente!",
+        "Sua ação falha miseravelmente. A luz pisca e apaga por um segundo. Quando volta, a coisa está muito mais perto."
+    ];
 
-    function startGame(dificuldade) {
+    let state = {
+        urgency: 0,
+        gameOver: false,
+        dificuldade: '',
+        danoErro: 20,
+        chanceErro: 50,
+        turnosSobrevividos: 0
+    };
+
+    function startGame(dificuldade, dano, chance) {
+        state.dificuldade = dificuldade;
+        state.danoErro = dano;
+        state.chanceErro = chance;
+        
         startScreen.style.display = 'none';
         gameContainer.style.display = 'flex';
-        
         diffDisplay.textContent = `DIF: ${dificuldade.toUpperCase()}`;
         
-        audioTeclado.play().then(() => audioTeclado.pause()).catch(e => console.log(e));
+        try { audioTeclado.play().then(() => audioTeclado.pause()); } catch(e){}
         
-        initGame(dificuldade);
+        const cenarioSorteado = cenariosIniciais[Math.floor(Math.random() * cenariosIniciais.length)];
+        typeWriter(`[SISTEMA INICIADO] Conexão estabelecida.\n\n${cenarioSorteado}\n\nO que você faz?`);
     }
 
     async function typeWriter(text, isError = false) {
@@ -215,79 +233,49 @@
         
         audioTeclado.pause();
         outputDiv.appendChild(document.createElement('br'));
-        if (!state.gameOver) inputField.disabled = false;
-        inputField.focus();
-    }
-
-    async function initGame(dificuldade) {
-        const p = document.createElement('div');
-        p.textContent = "Sintonizando frequências de outras realidades...\n";
-        p.style.fontStyle = "italic";
-        p.style.color = "#888";
-        outputDiv.appendChild(p);
-        inputField.disabled = true;
-
-        audioRadio.currentTime = 0;
-        audioRadio.play().catch(e => console.log("Erro no rádio:", e));
-
-        try {
-            const response = await fetch('https://pesadelo-analogico-api.onrender.com/iniciar?dificuldade=' + dificuldade);
-            
-            if (!response.ok) throw new Error("Erro no servidor");
-
-            const data = await response.json();
-            
-            audioRadio.pause();
-            outputDiv.innerHTML = ""; 
-            
-            state = data.novo_estado;
-            urgencyDisplay.textContent = `${state.urgency}%`;
-            
-            await typeWriter(data.narrativa);
-        } catch (error) {
-            audioRadio.pause();
-            outputDiv.innerHTML = "";
-            typeWriter("Sinal perdido. Conexão corrompida. O servidor do jogo está reiniciando ou falhou. Tente novamente mais tarde.", true);
+        if (!state.gameOver) {
+            inputField.disabled = false;
+            inputField.focus();
         }
     }
 
-    async function processCommand(cmd) {
+    function processCommand(cmd) {
         if (state.gameOver) return;
         
-        const loadingMsg = document.createElement('div');
-        loadingMsg.textContent = "Processando...";
-        loadingMsg.style.color = "#555";
-        outputDiv.appendChild(loadingMsg);
-        outputDiv.scrollTop = outputDiv.scrollHeight;
+        state.turnosSobrevividos++;
+        
+        // Simula o tempo de raciocínio
+        setTimeout(() => {
+            // Se sobreviveu 10 turnos, ele vence o jogo!
+            if (state.turnosSobrevividos >= 10 && state.urgency < 100) {
+                state.gameOver = true;
+                typeWriter("Você encontrou uma saída e a luz do sol invade o ambiente. A entidade não pode te seguir. \n\n=== VOCÊ ESCAPOU E SOBREVIVEU ===", false);
+                return;
+            }
 
-        try {
-            const response = await fetch('https://pesadelo-analogico-api.onrender.com/jogar', { 
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ comando: cmd, estado_atual: state })
-            });
+            // Rola o dado do RPG invisível (0 a 100)
+            const rolagem = Math.random() * 100;
+            let narrativa = "";
 
-            if (!response.ok) throw new Error("Erro no servidor");
+            if (rolagem > state.chanceErro) {
+                // SUCESSO
+                state.urgency = Math.max(0, state.urgency - 5);
+                narrativa = respostasBoas[Math.floor(Math.random() * respostasBoas.length)];
+            } else {
+                // FRACASSO
+                state.urgency += state.danoErro;
+                narrativa = respostasRuins[Math.floor(Math.random() * respostasRuins.length)];
+            }
 
-            const data = await response.json();
-            
-            outputDiv.removeChild(loadingMsg); 
-            
-            state = data.novo_estado;
             urgencyDisplay.textContent = `${state.urgency}%`;
 
-            await typeWriter(data.narrativa);
-
-            if (state.gameOver) {
-                setTimeout(() => {
-                    const finalMsg = state.venceu ? "\n=== VOCÊ VENCEU E ESCAPOU ===" : "\n=== FIM DE JOGO ===";
-                    typeWriter(finalMsg, !state.venceu);
-                }, 500);
+            if (state.urgency >= 100) {
+                state.gameOver = true;
+                typeWriter(narrativa + "\n\nA ameaça te alcançou. A tela fica estática.\n\n=== FIM DA TRANSMISSÃO. VOCÊ MORREU ===", true);
+            } else {
+                typeWriter(narrativa + "\nO que você faz agora?");
             }
-        } catch (error) {
-            outputDiv.removeChild(loadingMsg);
-            typeWriter("A conexão com o pesadelo falhou. A entidade corrompeu seu comando.", true);
-        }
+        }, 500);
     }
 
     function handleInput() {
